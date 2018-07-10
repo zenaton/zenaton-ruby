@@ -25,6 +25,11 @@ jobs:
           key: v1-dependencies-{{ checksum "Gemfile.lock" }}
 
       - run:
+          name: run code linter
+          command: |
+            bundle exec rubocop
+
+      - run:
           name: run tests
           command: |
             bundle exec rake

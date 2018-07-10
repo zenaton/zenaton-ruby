@@ -1,0 +1,67 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://jsonplaceholder.typicode.com/posts
+    body:
+      encoding: UTF-8
+      string: '{"title":"Amazing post","body":"You really should read this","userId":1}'
+    headers:
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Tue, 10 Jul 2018 18:20:42 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '98'
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=dce70d994ce8178c6ede75b33ce9fd2091531246842; expires=Wed, 10-Jul-19
+        18:20:42 GMT; path=/; domain=.typicode.com; HttpOnly
+      X-Powered-By:
+      - Express
+      Vary:
+      - Origin, X-HTTP-Method-Override, Accept-Encoding
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - no-cache
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      Access-Control-Expose-Headers:
+      - Location
+      Location:
+      - http://jsonplaceholder.typicode.com/posts/101
+      X-Content-Type-Options:
+      - nosniff
+      Etag:
+      - W/"62-6zhpkE2oPU4eGf9evEhpxjZiYs8"
+      Via:
+      - 1.1 vegur
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 43850bbc2f4b6785-EZE
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "title": "Amazing post",
+          "body": "You really should read this",
+          "userId": 1,
+          "id": 101
+        }
+    http_version: 
+  recorded_at: Tue, 10 Jul 2018 18:20:42 GMT
+recorded_with: VCR 4.0.0

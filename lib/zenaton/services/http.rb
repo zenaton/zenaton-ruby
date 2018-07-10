@@ -40,7 +40,7 @@ module Zenaton
 
       def request(verb, url, options)
         make_request(verb, url, options)
-      rescue HTTParty::Error => error
+      rescue SocketError, HTTParty::Error => error
         raise Zenaton::ConnectionError, error
       end
 

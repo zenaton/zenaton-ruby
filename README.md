@@ -1,4 +1,5 @@
 # Zenaton::Ruby
+[![CircleCI](https://circleci.com/gh/zenaton/zenaton-ruby/tree/master.svg?style=svg&circle-token=99da357820821f49236b1e2f20657100fb382bd8)](https://circleci.com/gh/zenaton/zenaton-ruby/tree/master)
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/zenaton/ruby`. To experiment with that code, run `bin/console` for an interactive prompt.
 

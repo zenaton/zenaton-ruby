@@ -46,12 +46,16 @@ module Zenaton
 
       def make_request(verb, url, options)
         response = HTTParty.send(verb, url, options)
-        raise Zenaton::InternalError, response if errors?(response)
+        raise Zenaton::InternalError, format_error(response) if errors? response
         JSON.parse(response.body)
       end
 
       def errors?(response)
         response.code >= 400
+      end
+
+      def format_error(response)
+        "#{response.code}: #{response.message}"
       end
 
       def default_options

@@ -39,7 +39,8 @@ RSpec.describe Zenaton::Services::Http do
       end
 
       it 'raises an internal error' do
-        expect { request }.to raise_error Zenaton::InternalError
+        expect { request }.to \
+          raise_error Zenaton::InternalError, '404: Not Found'
       end
     end
 
@@ -95,7 +96,8 @@ RSpec.describe Zenaton::Services::Http do
       end
 
       it 'raises an internal error' do
-        expect { request }.to raise_error Zenaton::InternalError
+        expect { request }.to \
+          raise_error Zenaton::InternalError, '404: Not Found'
       end
     end
 
@@ -153,7 +155,8 @@ RSpec.describe Zenaton::Services::Http do
       end
 
       it 'raises an internal error' do
-        expect { request }.to raise_error Zenaton::InternalError
+        expect { request }.to \
+          raise_error Zenaton::InternalError, '404: Not Found'
       end
     end
 

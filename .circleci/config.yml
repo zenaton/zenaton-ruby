@@ -25,6 +25,17 @@ jobs:
           key: v1-dependencies-{{ checksum "Gemfile.lock" }}
 
       - run:
+          name: run code linter
+          command: |
+            bundle exec rubocop
+
+      - run:
           name: run tests
           command: |
             bundle exec rake
+
+      - run:
+          name: audit dependencies for known CVEs
+          command: |
+            gem install bundler-audit
+            bundle audit check --update

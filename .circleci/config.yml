@@ -28,3 +28,9 @@ jobs:
           name: run tests
           command: |
             bundle exec rake
+
+      - run:
+          name: audit dependencies for known CVEs
+          command: |
+            gem intall bundler-audit
+            bundle audit check --update

@@ -37,5 +37,5 @@ jobs:
       - run:
           name: audit dependencies for known CVEs
           command: |
-            gem intall bundler-audit
+            gem install bundler-audit
             bundle audit check --update

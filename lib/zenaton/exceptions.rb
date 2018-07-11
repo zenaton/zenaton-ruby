@@ -18,4 +18,7 @@ module Zenaton
 
   # Exception raised when network connectivity is lost
   class ConnectionError < Error; end
+
+  # Exception raised when interfaces are not fulfilled by client code
+  class NotImplemented < Error; end
 end

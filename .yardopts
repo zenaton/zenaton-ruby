@@ -1,1 +1,1 @@
-lib/**/*.rb - README.md LICENSE.txt CODE_OF_CONDUCT.md
+--no-private --markup markdown lib/**/*.rb - README.md LICENSE.txt CODE_OF_CONDUCT.md

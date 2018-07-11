@@ -232,7 +232,7 @@ RSpec.describe Zenaton::Engine do
 
   def setup_engine
     Singleton.__init__(described_class)
-    allow(Zenaton::Client).to receive(:new).and_return(client)
+    allow(Zenaton::Client).to receive(:instance).and_return(client)
   end
 
   def setup_task_double

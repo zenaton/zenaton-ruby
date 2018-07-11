@@ -20,7 +20,7 @@ module Zenaton
 
     # @private
     def initialize
-      @client = Zenaton::Client.new
+      @client = Zenaton::Client.instance
       @processor = nil
     end
 

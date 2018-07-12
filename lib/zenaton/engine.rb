@@ -2,8 +2,8 @@
 
 require 'singleton'
 require 'zenaton/exceptions'
-require 'zenaton/task'
-require 'zenaton/workflow'
+require 'zenaton/interfaces/task'
+require 'zenaton/interfaces/workflow'
 require 'zenaton/client'
 require 'zenaton/processor'
 
@@ -25,7 +25,7 @@ module Zenaton
     end
 
     # Executes jobs synchronously
-    # @param jobs [Array<Zenaton::Job>]
+    # @param jobs [Array<Zenaton::Interfaces::Job>]
     # @return [Array<String>, nil] the results if executed locally, or nil
     def execute(jobs)
       jobs.map(&method(:check_argument))
@@ -34,7 +34,7 @@ module Zenaton
     end
 
     # Executes jobs asynchronously
-    # @param jobs [Array<Zenaton::Job>]
+    # @param jobs [Array<Zenaton::Interfaces::Job>]
     # @return nil
     def dispatch(jobs)
       jobs.map(&method(:check_argument))
@@ -50,7 +50,7 @@ module Zenaton
     end
 
     def local_dispatch(job)
-      if job.is_a? Zenaton::Workflow
+      if job.is_a? Interfaces::Workflow
         @client.start_workflow(job)
       else
         job.handle
@@ -66,7 +66,7 @@ module Zenaton
     end
 
     def valid_job?(job)
-      job.is_a?(Zenaton::Task) || job.is_a?(Zenaton::Workflow)
+      job.is_a?(Interfaces::Task) || job.is_a?(Interfaces::Workflow)
     end
   end
 end

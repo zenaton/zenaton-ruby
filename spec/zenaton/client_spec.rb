@@ -8,9 +8,9 @@ RSpec.describe Zenaton::Client do
   let(:http) { instance_double(Zenaton::Services::Http, post: nil) }
   let(:workflow) do
     instance_double(
-      Zenaton::Workflow,
-      get_id: custom_id,
-      class: Zenaton::Workflow
+      Zenaton::Interfaces::Workflow,
+      id: custom_id,
+      class: Zenaton::Interfaces::Workflow
     )
   end
 
@@ -56,7 +56,7 @@ RSpec.describe Zenaton::Client do
     end
   end
 
-  describe '#get_worker_url' do
+  describe '#worker_url' do
     context 'with environment variables but no instance variables set' do
       around do |example|
         ENV['ZENATON_WORKER_URL'] = 'http://192.168.1.1'
@@ -67,7 +67,7 @@ RSpec.describe Zenaton::Client do
       end
 
       it 'returns the worker url with params' do
-        url = client.get_worker_url('my_resource', 'myParam=1')
+        url = client.worker_url('my_resource', 'myParam=1')
         expect(url).to \
           eq('http://192.168.1.1:42/api/v_newton/my_resource?myParam=1')
       end
@@ -85,7 +85,7 @@ RSpec.describe Zenaton::Client do
       end
 
       it 'returns the worker url with params and app env' do
-        url = client.get_worker_url('my_resource', 'myParam=1')
+        url = client.worker_url('my_resource', 'myParam=1')
         expect(url).to \
           eq('http://192.168.1.1:42/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId&myParam=1')
       end
@@ -95,7 +95,7 @@ RSpec.describe Zenaton::Client do
       before { described_class.init('AppId', 'ApiToken', 'AppEnv') }
 
       it 'returns the default worker url with params and app env' do
-        url = client.get_worker_url('my_resource', 'myParam=1')
+        url = client.worker_url('my_resource', 'myParam=1')
         expect(url).to \
           eq('http://localhost:4001/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId&myParam=1')
       end
@@ -103,14 +103,14 @@ RSpec.describe Zenaton::Client do
 
     context 'with no environment nor instances variables set' do
       it 'returns the default worker url with params' do
-        url = client.get_worker_url('my_resource', 'myParam=1')
+        url = client.worker_url('my_resource', 'myParam=1')
         expect(url).to \
           eq('http://localhost:4001/api/v_newton/my_resource?myParam=1')
       end
     end
   end
 
-  describe '#get_website_url' do
+  describe '#website_url' do
     before { described_class.init('AppId', 'ApiToken', 'AppEnv') }
 
     context 'with environment variables set' do
@@ -121,7 +121,7 @@ RSpec.describe Zenaton::Client do
       end
 
       it 'returns the website url with params and api token' do
-        url = client.get_website_url('my_resource', 'myParam=1')
+        url = client.website_url('my_resource', 'myParam=1')
         expect(url).to \
           eq('http://192.168.1.1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId&myParam=1')
       end
@@ -129,7 +129,7 @@ RSpec.describe Zenaton::Client do
 
     context 'with no environment variables set' do
       it 'returns the default website url with params and api token' do
-        url = client.get_website_url('my_resource', 'myParam=1')
+        url = client.website_url('my_resource', 'myParam=1')
         expect(url).to \
           eq('https://zenaton.com/api/v1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId&myParam=1')
       end
@@ -143,9 +143,9 @@ RSpec.describe Zenaton::Client do
     let(:expected_url) { 'http://localhost:4001/api/v_newton/instances?' }
     let(:expected_hash) do
       {
-        'programming_language' => 'RUBY',
+        'programming_language' => 'Ruby',
         'canonical_name' => nil,
-        'name' => 'Zenaton::Workflow',
+        'name' => 'Zenaton::Interfaces::Workflow',
         'data' => '{"hard_coded":"json"}',
         'custom_id' => nil
       }

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'zenaton/job'
+require 'zenaton/interfaces/job'
 
-RSpec.describe Zenaton::Job do
+RSpec.describe Zenaton::Interfaces::Job do
   let(:job) { described_class.new }
 
   describe '#handle' do

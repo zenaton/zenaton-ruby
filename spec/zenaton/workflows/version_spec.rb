@@ -2,19 +2,7 @@
 
 require 'zenaton/workflows/version'
 require 'shared_examples/zenatonable'
-
-# Fake Subclasses for testing
-class Workflow1 < Zenaton::Workflow
-  def initialize(_first, _secondn, _third); end
-end
-class Workflow2 < Zenaton::Workflow
-  def initialize(_first, _secondn, _third); end
-end
-class FakeVersion < Zenaton::Workflows::Version
-  def versions
-    [Workflow1, Workflow2]
-  end
-end
+require 'fakes/version'
 
 RSpec.describe Zenaton::Workflows::Version do
   let(:version) { FakeVersion.new(1, 2, 3) }

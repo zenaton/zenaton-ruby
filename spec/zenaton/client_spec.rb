@@ -143,7 +143,7 @@ RSpec.describe Zenaton::Client do
     let(:expected_url) { 'http://localhost:4001/api/v_newton/instances?' }
     let(:expected_hash) do
       {
-        'programming_language' => 'RUBY',
+        'programming_language' => 'Ruby',
         'canonical_name' => nil,
         'name' => 'Zenaton::Interfaces::Workflow',
         'data' => '{"hard_coded":"json"}',

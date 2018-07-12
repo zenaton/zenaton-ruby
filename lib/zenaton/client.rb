@@ -28,7 +28,7 @@ module Zenaton
     ATTR_PROG = 'programming_language'
     ATTR_MODE = 'mode'
 
-    PROG = 'RUBY'
+    PROG = 'Ruby'
 
     EVENT_INPUT = 'event_input'
     EVENT_NAME = 'event_name'

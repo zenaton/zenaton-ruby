@@ -2,12 +2,14 @@
 
 require 'singleton'
 require 'zenaton/services/http'
+require 'zenaton/workflows/version'
 require 'zenaton/workflow'
 
 module Zenaton
   # Zenaton Client
   class Client
     include Singleton
+
     ZENATON_API_URL = 'https://zenaton.com/api/v1'
     ZENATON_WORKER_URL = 'http://localhost'
     DEFAULT_WORKER_PORT = 4001
@@ -74,14 +76,13 @@ module Zenaton
     # Start the specified workflow
     # @param workflow [Zenaton::Workflow]
     def start_workflow(flow)
-      custom_id = parse_custom_id_from(flow)
       @http.post(
         get_instance_worker_url,
         ATTR_PROG => PROG,
-        ATTR_CANONICAL => nil,
-        ATTR_NAME => get_class(flow),
+        ATTR_CANONICAL => canonical_name(flow),
+        ATTR_NAME => class_name(flow),
         ATTR_DATA => { hard_coded: 'json' }.to_json,
-        ATTR_ID => custom_id
+        ATTR_ID => parse_custom_id_from(flow)
       )
     end
 
@@ -106,10 +107,6 @@ module Zenaton
       get_worker_url('events')
     end
 
-    def get_class(object)
-      object.class.name
-    end
-
     # rubocop:disable Metrics/MethodLength
     def parse_custom_id_from(flow)
       custom_id = flow.get_id
@@ -127,5 +124,14 @@ module Zenaton
       custom_id
     end
     # rubocop:enable Metrics/MethodLength
+
+    def canonical_name(flow)
+      flow.class.name if flow.is_a? Workflows::Version
+    end
+
+    def class_name(flow)
+      return flow.class.name unless flow.is_a? Workflows::Version
+      flow.current_implementation.class.name
+    end
   end
 end

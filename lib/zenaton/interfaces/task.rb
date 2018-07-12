@@ -4,7 +4,7 @@ require 'zenaton/interfaces/job'
 
 module Zenaton
   module Interfaces
-    # @abstrat Subclass and override {#handle} to define your custom tasks
+    # @abstract Subclass and override {#handle} to define your custom tasks
     class Task < Job
       # Child classes should implement the handle method
       def handle

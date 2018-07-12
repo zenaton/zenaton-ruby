@@ -4,6 +4,7 @@ require 'zenaton/engine'
 
 module Zenaton
   module Traits
+    # Module to be included in tasks and workflows
     module Zenatonable
       def execute
         Engine.instance.execute([self])[0]

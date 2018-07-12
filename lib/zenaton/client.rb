@@ -77,7 +77,7 @@ module Zenaton
     # @param workflow [Zenaton::Workflow]
     def start_workflow(flow)
       @http.post(
-        get_instance_worker_url,
+        instance_worker_url,
         ATTR_PROG => PROG,
         ATTR_CANONICAL => canonical_name(flow),
         ATTR_NAME => class_name(flow),
@@ -95,15 +95,15 @@ module Zenaton
       "#{url}#{app_env}#{app_id}#{params}"
     end
 
-    def get_instance_website_url(params)
+    def instance_website_url(params)
       get_website_url('instances', params)
     end
 
-    def get_instance_worker_url(params = '')
+    def instance_worker_url(params = '')
       get_worker_url('instances', params)
     end
 
-    def get_send_url # rubocop:disable Naming/AccessorMethodName
+    def send_event_url
       get_worker_url('events')
     end
 

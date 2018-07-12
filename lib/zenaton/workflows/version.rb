@@ -22,18 +22,25 @@ module Zenaton
         @args = args
       end
 
+      # Calls handle on the current implementation
       def handle
         current_implementation.handle
       end
 
+      # Get the current implementation class
+      # @return [Class]
       def current
         _get_versions[-1]
       end
 
+      # Get the first implementation class
+      # @return [Class]
       def initial
         _get_versions[0]
       end
 
+      # Returns an instance of the current implementation
+      # @return [Zenaton::Workflow]
       def current_implementation
         current.new(*@args)
       end

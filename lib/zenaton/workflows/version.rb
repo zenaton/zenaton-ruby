@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 require 'zenaton/exceptions'
-require 'zenaton/workflow'
+require 'zenaton/interfaces/workflow'
 require 'zenaton/traits/zenatonable'
 
 module Zenaton
   module Workflows
     # @abstract Subclass and override {#versions} to create your own versionned
     # workflows
-    class Version < Zenaton::Workflow
-      include Zenaton::Traits::Zenatonable
+    class Version < Interfaces::Workflow
+      include Traits::Zenatonable
 
       # @return [Array<Class>] an array containing the class name for each
       # version, ordered from the oldest to the most recent version
@@ -40,7 +40,7 @@ module Zenaton
       end
 
       # Returns an instance of the current implementation
-      # @return [Zenaton::Workflow]
+      # @return [Zenaton::Interfaces::Workflow]
       def current_implementation
         current.new(*@args)
       end
@@ -51,7 +51,7 @@ module Zenaton
         raise ExternalError unless versions.is_a? Array
         raise ExternalError unless versions.any?
         versions.each do |version|
-          raise ExternalError unless version < Zenaton::Workflow
+          raise ExternalError unless version < Interfaces::Workflow
         end
         versions
       end

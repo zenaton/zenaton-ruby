@@ -12,13 +12,13 @@ RSpec.describe Zenaton::Engine do
   end
   let(:task) do
     instance_double(
-      Zenaton::Task,
+      Zenaton::Interfaces::Task,
       handle: 'result1'
     )
   end
   let(:workflow) do
     instance_double(
-      Zenaton::Workflow,
+      Zenaton::Interfaces::Workflow,
       handle: 'result2'
     )
   end
@@ -236,12 +236,20 @@ RSpec.describe Zenaton::Engine do
   end
 
   def setup_task_double
-    allow(task).to receive(:is_a?).with(Zenaton::Workflow).and_return(false)
-    allow(task).to receive(:is_a?).with(Zenaton::Task).and_return(true)
+    allow(task).to receive(:is_a?)
+      .with(Zenaton::Interfaces::Workflow)
+      .and_return(false)
+    allow(task).to receive(:is_a?)
+      .with(Zenaton::Interfaces::Task)
+      .and_return(true)
   end
 
   def setup_worflow_double
-    allow(workflow).to receive(:is_a?).with(Zenaton::Task).and_return(false)
-    allow(workflow).to receive(:is_a?).with(Zenaton::Workflow).and_return(true)
+    allow(workflow).to receive(:is_a?)
+      .with(Zenaton::Interfaces::Task)
+      .and_return(false)
+    allow(workflow).to receive(:is_a?)
+      .with(Zenaton::Interfaces::Workflow)
+      .and_return(true)
   end
 end

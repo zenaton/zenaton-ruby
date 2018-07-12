@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'zenaton/workflow'
+require 'zenaton/interfaces/workflow'
 
-RSpec.describe Zenaton::Workflow do
+RSpec.describe Zenaton::Interfaces::Workflow do
   let(:flow) { described_class.new }
 
   describe '#handle' do

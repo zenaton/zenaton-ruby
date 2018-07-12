@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'zenaton/task'
+require 'zenaton/interfaces/task'
 
-RSpec.describe Zenaton::Task do
+RSpec.describe Zenaton::Interfaces::Task do
   let(:task) { described_class.new }
 
   describe '#handle' do

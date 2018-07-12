@@ -3,7 +3,7 @@
 require 'singleton'
 require 'zenaton/services/http'
 require 'zenaton/workflows/version'
-require 'zenaton/workflow'
+require 'zenaton/interfaces/workflow'
 
 module Zenaton
   # Zenaton Client
@@ -56,7 +56,7 @@ module Zenaton
     # @param resource [String] the endpoint for the worker
     # @param params [String] url encoded parameters to include in request
     # @return [String] the workers url with parameters
-    def get_worker_url(resource = '', params = '')
+    def worker_url(resource = '', params = '')
       base_url = ENV['ZENATON_WORKER_URL'] || ZENATON_WORKER_URL
       port = ENV['ZENATON_WORKER_PORT'] || DEFAULT_WORKER_PORT
       url = "#{base_url}:#{port}/api/#{WORKER_API_VERSION}/#{resource}?"
@@ -67,14 +67,14 @@ module Zenaton
     # @param resource [String] the endpoint for the api
     # @param params [String] url encoded parameters to include in request
     # @return [String] the api url with parameters
-    def get_website_url(resource = '', params = '')
+    def website_url(resource = '', params = '')
       api_url = ENV['ZENATON_API_URL'] || ZENATON_API_URL
       url = "#{api_url}/#{resource}?#{API_TOKEN}=#{@api_token}&"
       add_app_env(url, params)
     end
 
     # Start the specified workflow
-    # @param workflow [Zenaton::Workflow]
+    # @param workflow [Zenaton::Interfaces::Workflow]
     def start_workflow(flow)
       @http.post(
         instance_worker_url,
@@ -96,20 +96,20 @@ module Zenaton
     end
 
     def instance_website_url(params)
-      get_website_url('instances', params)
+      website_url('instances', params)
     end
 
     def instance_worker_url(params = '')
-      get_worker_url('instances', params)
+      worker_url('instances', params)
     end
 
     def send_event_url
-      get_worker_url('events')
+      worker_url('events')
     end
 
     # rubocop:disable Metrics/MethodLength
     def parse_custom_id_from(flow)
-      custom_id = flow.get_id
+      custom_id = flow.id
       if custom_id
         unless custom_id.is_a?(String) || custom_id.is_a?(Integer)
           raise InvalidArgumentError,

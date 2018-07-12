@@ -7,3 +7,8 @@ Metrics/BlockLength:
   Enabled: true
   Exclude:
     - 'spec/**/*_spec.rb'
+
+Metrics/ClassLength:
+  Enabled: true
+  Exclude:
+    - 'lib/zenaton/client.rb'

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'zenaton/client'
+require 'fakes/version'
 
 RSpec.describe Zenaton::Client do
   let(:client) { described_class.instance }
@@ -137,6 +138,8 @@ RSpec.describe Zenaton::Client do
 
   describe '#start_workflow' do
     let(:start_workflow) { client.start_workflow(workflow) }
+    let(:start_version_workflow) { client.start_workflow(version) }
+    let(:version) { FakeVersion.new(1, 2, 3) }
     let(:expected_url) { 'http://localhost:4001/api/v_newton/instances?' }
     let(:expected_hash) do
       {
@@ -192,6 +195,20 @@ RSpec.describe Zenaton::Client do
       it 'sends a post request to the http client' do
         start_workflow
         expect(http).to have_received(:post).with(expected_url, expected_hash)
+      end
+    end
+
+    context 'with a version workflow' do
+      it 'sends the version class name as the canonical name' do
+        start_version_workflow
+        expect(http).to have_received(:post)
+          .with(expected_url, hash_including('canonical_name' => 'FakeVersion'))
+      end
+
+      it 'sends the workflow name as the name' do
+        start_version_workflow
+        expect(http).to have_received(:post)
+          .with(expected_url, hash_including('name' => 'Workflow2'))
       end
     end
   end

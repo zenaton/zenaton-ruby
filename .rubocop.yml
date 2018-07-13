@@ -7,6 +7,8 @@ Metrics/BlockLength:
   Enabled: true
   Exclude:
     - 'spec/**/*_spec.rb'
+    - 'spec/shared_examples/*.rb'
+    - 'zenaton-ruby.gemspec'
 
 Metrics/ClassLength:
   Enabled: true

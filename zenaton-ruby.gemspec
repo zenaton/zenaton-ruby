@@ -22,7 +22,9 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
+  spec.add_runtime_dependency 'activesupport'
   spec.add_runtime_dependency 'httparty'
+  spec.add_runtime_dependency 'tzinfo-data'
 
   spec.add_development_dependency 'bundler', '~> 1.16'
   spec.add_development_dependency 'pry'
@@ -30,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
+  spec.add_development_dependency 'timecop'
   spec.add_development_dependency 'vcr'
   spec.add_development_dependency 'webmock'
 end

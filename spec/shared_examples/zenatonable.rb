@@ -21,4 +21,8 @@ RSpec.shared_examples 'Zenatonable' do
   it 'executes through the engine' do
     expect(zenatonable.execute).to eq(1)
   end
+
+  it 'exposes a query builder' do
+    expect(zenatonable.where_id('MyId')).to be_a(Zenaton::Query::Builder)
+  end
 end

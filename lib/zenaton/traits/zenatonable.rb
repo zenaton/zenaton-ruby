@@ -20,6 +20,10 @@ module Zenaton
         Engine.instance.dispatch([self])[0]
       end
 
+      # Search for workflows to interact with.
+      # For available methods, see {Zenaton::Query::Builder}
+      # @param id [String] (Optional) ID for a given worflow
+      # @return [Zenaton::Query::Builer] a query builder object
       def where_id(id)
         Query::Builder.new(self.class).where_id(id)
       end

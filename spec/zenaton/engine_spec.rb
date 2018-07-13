@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'zenaton/engine'
+require 'fakes/tasks'
+require 'fakes/version'
 
 RSpec.describe Zenaton::Engine do
   let(:engine) { described_class.instance }
@@ -10,24 +12,13 @@ RSpec.describe Zenaton::Engine do
   let(:client) do
     instance_double(Zenaton::Client, start_workflow: nil)
   end
-  let(:task) do
-    instance_double(
-      Zenaton::Interfaces::Task,
-      handle: 'result1'
-    )
-  end
-  let(:workflow) do
-    instance_double(
-      Zenaton::Interfaces::Workflow,
-      handle: 'result2'
-    )
-  end
+  let(:task) { FakeTask1.new }
+  let(:workflow) { FakeWorkflow1.new(1, 2) }
   let(:invalid_job) { Object.new }
 
   before do
     setup_engine
-    setup_task_double
-    setup_worflow_double
+    setup_worflow
   end
 
   describe 'initialization' do
@@ -96,14 +87,6 @@ RSpec.describe Zenaton::Engine do
       it 'does not call the processor' do
         expect(processor).not_to have_received(:process)
       end
-
-      it 'sends `handle` to tasks' do
-        expect(task).to have_received(:handle).with(no_args)
-      end
-
-      it 'sends `handle` to workflows' do
-        expect(workflow).to have_received(:handle).with(no_args)
-      end
     end
 
     context 'when there is a processor but no jobs to process' do
@@ -138,14 +121,6 @@ RSpec.describe Zenaton::Engine do
       it 'tells the processor to process' do
         expect(processor).to \
           have_received(:process).with([task, workflow], true)
-      end
-
-      it 'does not send `handle` to tasks' do
-        expect(task).not_to have_received(:handle)
-      end
-
-      it 'does not send `handle` to workflows' do
-        expect(workflow).not_to have_received(:handle)
       end
     end
   end
@@ -194,10 +169,6 @@ RSpec.describe Zenaton::Engine do
         expect(results).to be_nil
       end
 
-      it 'calls handle on task' do
-        expect(task).to have_received(:handle).with(no_args)
-      end
-
       it 'sends workflows to the client' do
         expect(client).to have_received(:start_workflow).with(workflow)
       end
@@ -213,10 +184,6 @@ RSpec.describe Zenaton::Engine do
 
       it 'returns nothing' do
         expect(results).to be_nil
-      end
-
-      it 'does not call handle on jobs' do
-        expect(task).not_to have_received(:handle)
       end
 
       it 'does not send workflows to the client' do
@@ -235,21 +202,7 @@ RSpec.describe Zenaton::Engine do
     allow(Zenaton::Client).to receive(:instance).and_return(client)
   end
 
-  def setup_task_double
-    allow(task).to receive(:is_a?)
-      .with(Zenaton::Interfaces::Workflow)
-      .and_return(false)
-    allow(task).to receive(:is_a?)
-      .with(Zenaton::Interfaces::Task)
-      .and_return(true)
-  end
-
-  def setup_worflow_double
-    allow(workflow).to receive(:is_a?)
-      .with(Zenaton::Interfaces::Task)
-      .and_return(false)
-    allow(workflow).to receive(:is_a?)
-      .with(Zenaton::Interfaces::Workflow)
-      .and_return(true)
+  def setup_worflow
+    workflow.define_singleton_method(:handle) { 'result2' }
   end
 end

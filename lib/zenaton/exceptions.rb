@@ -7,10 +7,10 @@ module Zenaton
   # Exception raised when communication with workers failed
   class InternalError < Error; end
 
-  # :nodoc:
+  # Exception raise when clien code is invalid
   class ExternalError < Error; end
 
-  # :nodoc:
+  # Exception raised when wrong argument type is provided
   class InvalidArgumentError < ExternalError; end
 
   # :nodoc:

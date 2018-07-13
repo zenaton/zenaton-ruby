@@ -3,6 +3,7 @@
 require 'zenaton/engine'
 
 module Zenaton
+  # Reusable modules from the Zenaton library
   module Traits
     # Module to be included in tasks and workflows
     module Zenatonable

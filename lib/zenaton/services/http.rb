@@ -4,6 +4,7 @@ require 'httparty'
 require 'zenaton/exceptions'
 
 module Zenaton
+  # Collection of utility classes for the Zenaton library
   module Services
     # Wrapper class around HTTParty that:
     # - handles http calls

@@ -13,7 +13,8 @@ module Zenaton
       # Creates a new wait task and validates the event given
       # @param event [Zenaton::Interfaces::Event]
       def initialize(event = nil)
-        raise ExternalError, error unless event && (event.is_a?(String) || event.is_a?(Interfaces::Event))
+        raise ExternalError, error unless \
+          event && (event.is_a?(String) || event.is_a?(Interfaces::Event))
         @event = event
       end
 

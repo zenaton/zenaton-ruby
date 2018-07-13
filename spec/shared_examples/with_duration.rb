@@ -6,6 +6,12 @@ RSpec.shared_examples 'WithDuration' do |initial_arg|
   let(:with_duration) { described_class.new(initial_arg) }
 
   context 'without timezone' do
+    around do |example|
+      Timecop.freeze(Time.new(2018, 7, 13))
+      example.run
+      Timecop.return
+    end
+
     it 'adds seconds' do
       with_duration.seconds(2)
       expect(with_duration._get_duration).to eq(2)
@@ -18,9 +24,7 @@ RSpec.shared_examples 'WithDuration' do |initial_arg|
 
     it 'adds years' do
       with_duration.years(1)
-      seconds = 365 * 24 * 3_600
-      seconds += 24 * 3_600 if Date.today.leap?
-      expect(with_duration._get_duration).to eq(seconds)
+      expect(with_duration._get_duration).to eq(365 * 24 * 3_600)
     end
 
     it 'adds multiple units of time' do

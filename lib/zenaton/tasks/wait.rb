@@ -3,12 +3,16 @@
 require 'zenaton/exceptions'
 require 'zenaton/interfaces/task'
 require 'zenaton/interfaces/event'
+require 'zenaton/traits/with_duration'
 
 module Zenaton
+  # Subclasses of Zenaton::Interfaces::Task
   module Tasks
     # Class for creating waiting tasks
     class Wait < Interfaces::Task
       attr_reader :event
+
+      include Traits::WithDuration
 
       # Creates a new wait task and validates the event given
       # @param event [Zenaton::Interfaces::Event]

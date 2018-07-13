@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'zenaton/client'
-require 'fakes/version'
-require 'fakes/event'
+require 'fixtures/version'
+require 'fixtures/event'
 
 RSpec.describe Zenaton::Client do
   let(:client) { described_class.instance }

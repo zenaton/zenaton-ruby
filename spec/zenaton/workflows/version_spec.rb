@@ -2,7 +2,7 @@
 
 require 'zenaton/workflows/version'
 require 'shared_examples/zenatonable'
-require 'fakes/version'
+require 'fixtures/version'
 
 RSpec.describe Zenaton::Workflows::Version do
   let(:version) { FakeVersion.new(1, 2) }

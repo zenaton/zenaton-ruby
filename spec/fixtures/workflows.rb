@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'zenaton/interfaces/workflow'
-require 'fakes/tasks'
+require 'fixtures/tasks'
 
 class FakeWorkflow1 < Zenaton::Interfaces::Workflow
   def initialize(_first, _second); end

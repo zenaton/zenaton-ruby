@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'zenaton/workflows/version'
-require 'fakes/workflows'
+require 'fixtures/workflows'
 
 class FakeVersion < Zenaton::Workflows::Version
   def versions

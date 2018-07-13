@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'zenaton/engine'
-require 'fakes/tasks'
-require 'fakes/version'
+require 'fixtures/tasks'
+require 'fixtures/version'
 
 RSpec.describe Zenaton::Engine do
   let(:engine) { described_class.instance }

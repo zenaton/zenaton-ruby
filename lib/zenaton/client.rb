@@ -3,8 +3,6 @@
 require 'singleton'
 require 'zenaton/services/http'
 require 'zenaton/workflows/version'
-require 'zenaton/interfaces/workflow'
-require 'zenaton/interfaces/event'
 
 module Zenaton
   # Zenaton Client

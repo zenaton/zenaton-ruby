@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'zenaton/client'
-require 'fakes/version'
+require 'fixtures/version'
+require 'fixtures/event'
 
 RSpec.describe Zenaton::Client do
   let(:client) { described_class.instance }
@@ -13,19 +14,9 @@ RSpec.describe Zenaton::Client do
       get: workflow_data
     )
   end
-  let(:workflow) do
-    instance_double(
-      Zenaton::Interfaces::Workflow,
-      id: custom_id,
-      class: Zenaton::Interfaces::Workflow
-    )
-  end
-  let(:event) do
-    instance_double(
-      Zenaton::Interfaces::Event,
-      class: Zenaton::Interfaces::Event
-    )
-  end
+  let(:workflow) { FakeWorkflow1.new(1, 2) }
+  let(:event) { FakeEvent.new }
+  let(:version) { FakeVersion.new(1, 2) }
   let(:workflow_data) { { 'name' => 'Zenaton::Interfaces::Workflow' } }
 
   before do
@@ -153,20 +144,19 @@ RSpec.describe Zenaton::Client do
   describe '#start_workflow' do
     let(:start_workflow) { client.start_workflow(workflow) }
     let(:start_version_workflow) { client.start_workflow(version) }
-    let(:version) { FakeVersion.new(1, 2, 3) }
     let(:expected_url) { 'http://localhost:4001/api/v_newton/instances?' }
     let(:expected_hash) do
       {
         'programming_language' => 'Ruby',
         'canonical_name' => nil,
-        'name' => 'Zenaton::Interfaces::Workflow',
+        'name' => 'FakeWorkflow1',
         'data' => '{"hard_coded":"json"}',
         'custom_id' => nil
       }
     end
 
     context 'with an integer custom id' do
-      let(:custom_id) { 123 }
+      before { workflow.define_singleton_method(:id) { 123 } }
 
       it 'sends the custom id as a string' do
         start_workflow
@@ -176,7 +166,7 @@ RSpec.describe Zenaton::Client do
     end
 
     context 'with an string custom id' do
-      let(:custom_id) { 'MyWorkflowId' }
+      before { workflow.define_singleton_method(:id) { 'MyWorkflowId' } }
 
       it 'sends the custom id' do
         start_workflow
@@ -186,7 +176,7 @@ RSpec.describe Zenaton::Client do
     end
 
     context 'with an invalid custom id type' do
-      let(:custom_id) { {} }
+      before { workflow.define_singleton_method(:id) { {} } }
 
       it 'raises an error' do
         expect { start_workflow }.to \
@@ -195,7 +185,7 @@ RSpec.describe Zenaton::Client do
     end
 
     context 'with a custom id too long' do
-      let(:custom_id) { 'a' * 300 }
+      before { workflow.define_singleton_method(:id) { 'a' * 300 } }
 
       it 'raises an error' do
         expect { start_workflow }.to \
@@ -204,8 +194,6 @@ RSpec.describe Zenaton::Client do
     end
 
     context 'without a custom id' do
-      let(:custom_id) { nil }
-
       it 'sends a post request to the http client' do
         start_workflow
         expect(http).to have_received(:post).with(expected_url, expected_hash)
@@ -222,7 +210,7 @@ RSpec.describe Zenaton::Client do
       it 'sends the workflow name as the name' do
         start_version_workflow
         expect(http).to have_received(:post)
-          .with(expected_url, hash_including('name' => 'Workflow2'))
+          .with(expected_url, hash_including('name' => 'FakeWorkflow2'))
       end
     end
   end
@@ -315,7 +303,7 @@ RSpec.describe Zenaton::Client do
         'programming_language' => 'Ruby',
         'name' => 'MyWorkflow',
         'custom_id' => 'MyCustomId',
-        'event_name' => 'Zenaton::Interfaces::Event',
+        'event_name' => 'FakeEvent',
         'event_input' => { hardcoded: 'json' }.to_json
       }
     end

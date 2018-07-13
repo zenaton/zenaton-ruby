@@ -17,9 +17,10 @@ module Zenaton
 
       # Sets the id of the workflow we want to find
       # @param id [String, NilClass] the id
-      # @return [String, NilClass]
+      # @return [Zenaton::Query::Builder] the current builder
       def where_id(id)
         @id = id
+        self
       end
 
       # Finds a workflow

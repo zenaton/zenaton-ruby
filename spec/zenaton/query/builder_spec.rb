@@ -43,6 +43,10 @@ RSpec.describe Zenaton::Query::Builder do
       builder.where_id('MyId')
       expect(builder.instance_variable_get(:@id)).to eq('MyId')
     end
+
+    it 'returns itself' do
+      expect(builder.where_id('MyId')).to eq(builder)
+    end
   end
 
   describe '#find' do

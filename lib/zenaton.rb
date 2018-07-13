@@ -2,7 +2,6 @@
 
 require 'zenaton/version'
 
-# :nodoc:
+# Top level namespace for the Zenaton ruby library
 module Zenaton
-  # Your code goes here...
 end

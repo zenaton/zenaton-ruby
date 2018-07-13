@@ -5,6 +5,7 @@ require 'zenaton/interfaces/workflow'
 require 'zenaton/traits/zenatonable'
 
 module Zenaton
+  # Module for the workflow manager and the versioned workflows
   module Workflows
     # @abstract Subclass and override {#versions} to create your own versionned
     # workflows

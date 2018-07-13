@@ -5,7 +5,14 @@ require 'fakes/version'
 
 RSpec.describe Zenaton::Client do
   let(:client) { described_class.instance }
-  let(:http) { instance_double(Zenaton::Services::Http, post: nil) }
+  let(:http) do
+    instance_double(
+      Zenaton::Services::Http,
+      post: nil,
+      put: nil,
+      get: workflow_data
+    )
+  end
   let(:workflow) do
     instance_double(
       Zenaton::Interfaces::Workflow,
@@ -13,6 +20,13 @@ RSpec.describe Zenaton::Client do
       class: Zenaton::Interfaces::Workflow
     )
   end
+  let(:event) do
+    instance_double(
+      Zenaton::Interfaces::Event,
+      class: Zenaton::Interfaces::Event
+    )
+  end
+  let(:workflow_data) { { 'name' => 'Zenaton::Interfaces::Workflow' } }
 
   before do
     setup_client
@@ -210,6 +224,106 @@ RSpec.describe Zenaton::Client do
         expect(http).to have_received(:post)
           .with(expected_url, hash_including('name' => 'Workflow2'))
       end
+    end
+  end
+
+  describe '#kill_workflow' do
+    let(:expected_url) do
+      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId'
+    end
+    let(:expected_options) do
+      {
+        'programming_language' => 'Ruby',
+        'name' => 'MyWorkflow',
+        'mode' => 'kill'
+      }
+    end
+
+    before { client.kill_workflow('MyWorkflow', 'MyCustomId') }
+
+    it 'makes a put request' do
+      expect(http).to have_received(:put).with(expected_url, expected_options)
+    end
+  end
+
+  describe '#pause_workflow' do
+    let(:expected_url) do
+      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId'
+    end
+    let(:expected_options) do
+      {
+        'programming_language' => 'Ruby',
+        'name' => 'MyWorkflow',
+        'mode' => 'pause'
+      }
+    end
+
+    before { client.pause_workflow('MyWorkflow', 'MyCustomId') }
+
+    it 'makes a put request' do
+      expect(http).to have_received(:put).with(expected_url, expected_options)
+    end
+  end
+
+  describe '#resume_workflow' do
+    let(:expected_url) do
+      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId'
+    end
+    let(:expected_options) do
+      {
+        'programming_language' => 'Ruby',
+        'name' => 'MyWorkflow',
+        'mode' => 'run'
+      }
+    end
+
+    before { client.resume_workflow('MyWorkflow', 'MyCustomId') }
+
+    it 'makes a put request' do
+      expect(http).to have_received(:put).with(expected_url, expected_options)
+    end
+  end
+
+  describe '#find_workflow' do
+    let(:expected_url) do
+      'https://zenaton.com/api/v1/instances?api_token=ApiToken&custom_id=MyCustomId&name=Zenaton::Interfaces::Workflow&programming_language=Ruby'
+    end
+    let(:result) do
+      client.find_workflow('Zenaton::Interfaces::Workflow', 'MyCustomId')
+    end
+
+    before do
+      described_class.init(nil, 'ApiToken', nil)
+      result
+    end
+
+    it 'makes a get request' do
+      expect(http).to have_received(:get).with(expected_url)
+    end
+
+    it 'returns the requested instance' do
+      expect(result).to be_a Zenaton::Interfaces::Workflow
+    end
+  end
+
+  describe '#send_event' do
+    let(:expected_url) do
+      'http://localhost:4001/api/v_newton/events?'
+    end
+    let(:expected_options) do
+      {
+        'programming_language' => 'Ruby',
+        'name' => 'MyWorkflow',
+        'custom_id' => 'MyCustomId',
+        'event_name' => 'Zenaton::Interfaces::Event',
+        'event_input' => { hardcoded: 'json' }.to_json
+      }
+    end
+
+    before { client.send_event('MyWorkflow', 'MyCustomId', event) }
+
+    it 'makes a post request' do
+      expect(http).to have_received(:post).with(expected_url, expected_options)
     end
   end
 

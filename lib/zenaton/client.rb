@@ -4,6 +4,7 @@ require 'singleton'
 require 'zenaton/services/http'
 require 'zenaton/workflows/version'
 require 'zenaton/interfaces/workflow'
+require 'zenaton/interfaces/event'
 
 module Zenaton
   # Zenaton Client
@@ -74,7 +75,7 @@ module Zenaton
     end
 
     # Start the specified workflow
-    # @param workflow [Zenaton::Interfaces::Workflow]
+    # @param flow [Zenaton::Interfaces::Workflow]
     def start_workflow(flow)
       @http.post(
         instance_worker_url,
@@ -84,6 +85,58 @@ module Zenaton
         ATTR_DATA => { hard_coded: 'json' }.to_json,
         ATTR_ID => parse_custom_id_from(flow)
       )
+    end
+
+    # Stops a workflow
+    # @param workflow_name [String] the class name of the workflow
+    # @param custom_id [String] the custom ID of the workflow (if any)
+    # @return [NilClass]
+    def kill_workflow(workflow_name, custom_id)
+      update_instance(workflow_name, custom_id, WORKFLOW_KILL)
+    end
+
+    # Pauses a workflow
+    # @param workflow_name [String] the class name of the workflow
+    # @param custom_id [String] the custom ID of the workflow (if any)
+    # @return [NilClass]
+    def pause_workflow(workflow_name, custom_id)
+      update_instance(workflow_name, custom_id, WORKFLOW_PAUSE)
+    end
+
+    # Resumes a workflow
+    # @param workflow_name [String] the class name of the workflow
+    # @param custom_id [String] the custom ID of the workflow (if any)
+    # @return [NilClass]
+    def resume_workflow(workflow_name, custom_id)
+      update_instance(workflow_name, custom_id, WORKFLOW_RUN)
+    end
+
+    # Finds a workflow
+    # @param workflow_name [String] the class name of the workflow
+    # @param custom_id [String] the custom ID of the workflow (if any)
+    # @return [Zenaton::Interfaces::Workflow]
+    def find_workflow(workflow_name, custom_id)
+      # rubocop:disable Metrics/LineLength
+      params = "#{ATTR_ID}=#{custom_id}&#{ATTR_NAME}=#{workflow_name}&#{ATTR_PROG}=#{PROG}"
+      # rubocop:enable Metrics/LineLength
+      data = @http.get(instance_website_url(params))
+      Object.const_get(data['name']).new
+    end
+
+    # Sends an event to a workflow
+    # @param workflow_name [String] the class name of the workflow
+    # @param custom_id [String] the custom ID of the workflow (if any)
+    # @param event [Zenaton::Interfaces::Event] the event to send
+    # @return [NilClass]
+    def send_event(workflow_name, custom_id, event)
+      body = {
+        ATTR_PROG => PROG,
+        ATTR_NAME => workflow_name,
+        ATTR_ID => custom_id,
+        EVENT_NAME => event.class.name,
+        EVENT_INPUT => { hardcoded: 'json' }.to_json
+      }
+      @http.post(send_event_url, body)
     end
 
     private
@@ -132,6 +185,17 @@ module Zenaton
     def class_name(flow)
       return flow.class.name unless flow.is_a? Workflows::Version
       flow.current_implementation.class.name
+    end
+
+    def update_instance(workflow_name, custom_id, mode)
+      params = "#{ATTR_ID}=#{custom_id}"
+      url = instance_worker_url(params)
+      options = {
+        ATTR_PROG => PROG,
+        ATTR_NAME => workflow_name,
+        ATTR_MODE => mode
+      }
+      @http.put(url, options)
     end
   end
 end

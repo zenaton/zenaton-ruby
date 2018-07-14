@@ -3,7 +3,8 @@
 require 'timecop'
 
 RSpec.shared_examples 'WithDuration' do |initial_arg|
-  let(:with_duration) { described_class.new(initial_arg) }
+  let(:klass) { described_class }
+  let(:with_duration) { klass.new(initial_arg) }
 
   context 'without timezone' do
     around do |example|
@@ -37,7 +38,7 @@ RSpec.shared_examples 'WithDuration' do |initial_arg|
     let(:timezone) { 'America/New_York' }
 
     before do
-      with_duration.define_singleton_method(:_timezone) { 'America/New_York' }
+      klass.class_variable_set(:@@_timezone, 'America/New_York')
     end
 
     around do |example|

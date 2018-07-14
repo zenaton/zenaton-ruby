@@ -7,7 +7,7 @@ RSpec.shared_examples 'WithTimestamp' do |initial_arg|
   describe 'timezone writer' do
     it 'sets the timezone class variable' do
       klass.timezone = 'America/Sao_Paulo'
-      expect(klass.class_variable_get(:@@timezone)).to \
+      expect(klass.class_variable_get(:@@_timezone)).to \
         eq('America/Sao_Paulo')
     end
 

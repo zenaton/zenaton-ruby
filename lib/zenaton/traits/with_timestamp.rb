@@ -17,14 +17,14 @@ module Zenaton
       MODE_TIMESTAMP = 'TIMESTAMP'
 
       included do
-        @@timezone = nil
+        @@_timezone = nil
       end
 
       class_methods do
         def timezone=(timezone)
           error = 'Unknown timezone'
           raise ExternalError, error unless valid_timezone?(timezone)
-          @@timezone = timezone
+          @@_timezone = timezone
         end
 
         private

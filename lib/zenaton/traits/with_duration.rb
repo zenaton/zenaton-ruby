@@ -27,8 +27,7 @@ module Zenaton
       private
 
       def _init_now_then
-        time_zone = respond_to?(:_timezone) ? _timezone : 'UTC'
-        Time.zone = time_zone
+        Time.zone = self.class.class_variable_get(:@@_timezone) || 'UTC'
         now = Time.zone.now
         Time.zone = nil # Resets time zone
         [now, now.dup]

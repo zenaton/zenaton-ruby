@@ -20,8 +20,14 @@ RSpec.shared_examples 'WithTimestamp' do |initial_arg|
     end
   end
 
-  describe '_get_timestamp_or_duration' do
+  context 'without timezones' do
     subject { with_timestamp._get_timestamp_or_duration }
+
+    let(:today) { Time.utc(2018, 7, 13, 12, 2, 0) }
+
+    before { Timecop.freeze(today) }
+
+    after { Timecop.return }
 
     context 'when there is no buffer' do
       it { is_expected.to eq [nil, nil] }
@@ -33,61 +39,294 @@ RSpec.shared_examples 'WithTimestamp' do |initial_arg|
       it { is_expected.to eq [nil, 1] }
     end
 
-    context 'when applying weekday method' do
-      let(:next_monday) { Date.new(2018, 7, 13) + 3.days }
+    context 'when specifying a timestamp' do
+      let(:expected_timestamp) { 1522591200 }
 
-      before { with_timestamp.monday }
+      before { with_timestamp.timestamp(1522591200) }
 
-      around do |example|
-        # 13/07/2018 was a Friday
-        Timecop.freeze(Date.new(2018, 7, 13))
-        example.run
-        Timecop.return
-      end
-
-      it { is_expected.to eq [next_monday.to_time.to_i, nil] }
+      it { is_expected.to eq([expected_timestamp, nil]) }
     end
 
-    context 'when applying a timestamp' do
-      before { with_timestamp.timestamp(100) }
-
-      it { is_expected.to eq([100, nil]) }
-    end
-
-    context 'when applying an at hour' do
-      let(:expected_time) { Time.parse('2018-11-04 15:10:23 EST -05:00') }
+    context 'when specifying an full hour' do
+      let(:expected_time) { Time.utc(2018, 7, 13, 15, 10, 23) }
 
       before { with_timestamp.at('15:10:23') }
 
-      around do |example|
-        described_class.timezone = 'America/New_York'
-        Timecop.freeze(Time.parse('2018-11-04 01:59:00 EDT -04:00'))
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying an hour without seconds' do
+      let(:expected_time) { Time.utc(2018, 7, 13, 15, 10, 0) }
+
+      before { with_timestamp.at('15:10') }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying an hour without minutes or seconds' do
+      let(:expected_time) { Time.utc(2018, 7, 13, 15, 0, 0) }
+
+      before { with_timestamp.at('15') }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying a day of the month' do
+      let(:expected_time) { Time.utc(2018, 8, 12, 12, 2, 0) }
+
+      before { with_timestamp.on_day(12) }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next monday' do
+      let(:expected_time) { Time.utc(2018, 7, 16, 12, 2, 0) }
+
+      before { with_timestamp.monday }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next tuesday' do
+      let(:expected_time) { Time.utc(2018, 7, 17, 12, 2, 0) }
+
+      before { with_timestamp.tuesday(1) }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying second wednesday from now' do
+      let(:expected_time) { Time.utc(2018, 7, 25, 12, 2, 0) }
+
+      before { with_timestamp.wednesday(2) }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next thursday' do
+      let(:expected_time) { Time.utc(2018, 7, 19, 12, 2, 0) }
+
+      before { with_timestamp.thursday }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next friday' do
+      let(:expected_time) { Time.utc(2018, 7, 20, 12, 2, 0) }
+
+      before { with_timestamp.friday }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next saturday' do
+      let(:expected_time) { Time.utc(2018, 7, 14, 12, 2, 0) }
+
+      before { with_timestamp.saturday }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next sunday' do
+      let(:expected_time) { Time.utc(2018, 7, 15, 12, 2, 0) }
+
+      before { with_timestamp.sunday }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next monday at 8:00AM' do
+      let(:expected_time) { Time.utc(2018, 7, 16, 8, 0, 0) }
+
+      before { with_timestamp.monday.at('8:00') }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next 12th at 6PM' do
+      let(:expected_time) { Time.utc(2018, 8, 12, 18, 0, 0) }
+
+      before { with_timestamp.on_day(12).at('18') }
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+  end
+
+  context 'with timezones' do
+    subject { with_timestamp._get_timestamp_or_duration }
+
+    let(:timezone) { 'America/New_York' }
+    let(:today) { Time.zone.local(2018, 7, 13, 12, 2, 0) }
+
+    before do
+      klass.timezone = Time.zone = timezone
+      Timecop.freeze(today)
+    end
+
+    after do
+      Timecop.return
+      klass.timezone = Time.zone = nil
+    end
+
+    context 'when there is no buffer' do
+      it { is_expected.to eq [nil, nil] }
+    end
+
+    context 'when applying duration methods' do
+      before { with_timestamp.seconds }
+
+      it { is_expected.to eq [nil, 1] }
+    end
+
+    context 'when specifying a timestamp' do
+      let(:expected_timestamp) { 1522591200 }
+
+      before { with_timestamp.timestamp(1522591200) }
+
+      it { is_expected.to eq([expected_timestamp, nil]) }
+    end
+
+    context 'when specifying an full hour' do
+      let(:expected_time) { Time.zone.local(2018, 7, 13, 15, 10, 23) }
+
+      before do
         expected_time
-        example.run
-        Timecop.return
-        described_class.timezone = nil
+        with_timestamp.at('15:10:23')
       end
 
       it { is_expected.to eq([expected_time.to_i, nil]) }
     end
 
-    context 'when applying a day of month' do
-      let(:expected_time) { Time.zone.parse('2018-08-12 23:10:15') }
+    context 'when specifying an hour without seconds' do
+      let(:expected_time) { Time.zone.local(2018, 7, 13, 15, 10, 0) }
 
-      before { with_timestamp.on_day(12) }
-
-      around do |example|
-        klass.timezone = 'Europe/Paris'
-        Time.zone = 'Europe/Paris'
-        Timecop.freeze(Time.zone.parse('2018-07-16 23:10:15'))
+      before do
         expected_time
-        example.run
-        Timecop.return
-        Time.zone = nil
-        klass.timezone = nil
+        with_timestamp.at('15:10')
       end
 
       it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying an hour without minutes or seconds' do
+      let(:expected_time) { Time.zone.local(2018, 7, 13, 15, 0, 0) }
+
+      before do
+        expected_time
+        with_timestamp.at('15')
+      end
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying a day of the month' do
+      let(:expected_time) { Time.zone.local(2018, 8, 12, 12, 2, 0) }
+
+      before do
+        expected_time
+        with_timestamp.on_day(12)
+      end
+
+      it { is_expected.to eq([expected_time.to_i, nil]) }
+    end
+
+    context 'when specifying next monday' do
+      let(:expected_time) { Time.zone.local(2018, 7, 16, 12, 2, 0) }
+
+      before do
+        expected_time
+        with_timestamp.monday
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
+    end
+
+    context 'when specifying next tuesday' do
+      let(:expected_time) { Time.zone.local(2018, 7, 17, 12, 2, 0) }
+
+      before do
+        expected_time
+        with_timestamp.tuesday(1)
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
+    end
+
+    context 'when specifying second wednesday from now' do
+      let(:expected_time) { Time.zone.local(2018, 7, 25, 12, 2, 0) }
+
+      before do
+        expected_time
+        with_timestamp.wednesday(2)
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
+    end
+
+    context 'when specifying next thursday' do
+      let(:expected_time) { Time.zone.local(2018, 7, 19, 12, 2, 0) }
+
+      before do
+        expected_time
+        with_timestamp.thursday
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
+    end
+
+    context 'when specifying next friday' do
+      let(:expected_time) { Time.zone.local(2018, 7, 20, 12, 2, 0) }
+
+      before do
+        expected_time
+        with_timestamp.friday
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
+    end
+
+    context 'when specifying next saturday' do
+      let(:expected_time) { Time.zone.local(2018, 7, 14, 12, 2, 0) }
+
+      before do
+        expected_time
+        with_timestamp.saturday
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
+    end
+
+    context 'when specifying next sunday' do
+      let(:expected_time) { Time.zone.local(2018, 7, 15, 12, 2, 0) }
+
+      before do
+        expected_time
+        with_timestamp.sunday
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
+    end
+
+    context 'when specifying next monday at 8:00AM' do
+      let(:expected_time) { Time.zone.local(2018, 7, 16, 8, 0, 0) }
+
+      before do
+        expected_time
+        with_timestamp.monday.at('8:00')
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
+    end
+
+    context 'when specifying next 12th at 6PM' do
+      let(:expected_time) { Time.zone.local(2018, 8, 12, 18, 0, 0) }
+
+      before do
+        expected_time
+        with_timestamp.on_day(12).at('18')
+      end
+
+      it { is_expected.to eq [expected_time.to_i, nil] }
     end
   end
 end

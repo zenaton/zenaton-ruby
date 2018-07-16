@@ -32,7 +32,7 @@ module Zenaton
         [now_dup.to_i, nil]
       end
 
-      %i[timestamp at on_day monday tuesday wednesday thurday friday saturday sunday]. each do |method_name|
+      %i[timestamp at on_day monday tuesday wednesday thursday friday saturday sunday]. each do |method_name|
         define_method method_name do |value = 1|
           @buffer ||= {}
           @buffer[method_name] = value
@@ -70,7 +70,7 @@ module Zenaton
       def _at(time, now, now_dup)
         _set_mode(MODE_AT)
         hour, min, sec = time.split(':').map(&:to_i)
-        now_dup = now_dup.change(hour: hour, min: min, sec: sec)
+        now_dup = now_dup.change(hour: hour, min: min, sec: sec || 0)
         if now > now_dup
           case @_mode
           when MODE_AT

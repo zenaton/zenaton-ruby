@@ -41,6 +41,10 @@ RSpec.shared_examples 'WithDuration' do |initial_arg|
       klass.class_variable_set(:@@_timezone, 'America/New_York')
     end
 
+    after do
+      klass.class_variable_set(:@@_timezone, nil)
+    end
+
     around do |example|
       Time.zone = timezone
       Timecop.freeze(Time.zone.parse('2018-11-04 01:59:00'))

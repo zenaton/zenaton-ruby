@@ -28,7 +28,7 @@ module Zenaton
         # @param id [String] (Optional) ID for a given worflow
         # @return [Zenaton::Query::Builder] a query builder object
         def where_id(id)
-          Query::Builder.new(self.class).where_id(id)
+          Query::Builder.new(self).where_id(id)
         end
       end
     end

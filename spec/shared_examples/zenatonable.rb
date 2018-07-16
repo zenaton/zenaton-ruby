@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'Zenatonable' do
-  let(:zenatonable) { described_class.new }
+  let(:klass) { described_class }
+  let(:zenatonable) { klass.new }
   let(:engine) do
     instance_double(
       Zenaton::Engine,
@@ -23,6 +24,6 @@ RSpec.shared_examples 'Zenatonable' do
   end
 
   it 'exposes a query builder' do
-    expect(zenatonable.where_id('MyId')).to be_a(Zenaton::Query::Builder)
+    expect(klass.where_id('MyId')).to be_a(Zenaton::Query::Builder)
   end
 end

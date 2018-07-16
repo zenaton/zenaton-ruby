@@ -3,12 +3,14 @@
 require 'zenaton/tasks/wait'
 require 'fixtures/event'
 require 'shared_examples/with_duration'
+require 'shared_examples/with_timestamp'
 
 RSpec.describe Zenaton::Tasks::Wait do
   let(:wait) { described_class.new(event) }
   let(:event) { FakeEvent.new }
 
   it_behaves_like 'WithDuration', FakeEvent.new
+  it_behaves_like 'WithTimestamp', FakeEvent.new
 
   describe 'initialization' do
     context 'with an event' do

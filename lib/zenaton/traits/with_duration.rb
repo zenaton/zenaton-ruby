@@ -18,8 +18,7 @@ module Zenaton
 
       %i[seconds minutes hours days weeks months years].each do |method_name|
         define_method method_name do |value = 1|
-          @buffer ||= {}
-          @buffer[method_name] = value
+          _push(method_name, value)
           self
         end
       end
@@ -27,11 +26,15 @@ module Zenaton
       private
 
       def _init_now_then
-        time_zone = respond_to?(:_timezone) ? _timezone : 'UTC'
-        Time.zone = time_zone
+        Time.zone = self.class.class_variable_get(:@@_timezone) || 'UTC'
         now = Time.zone.now
         Time.zone = nil # Resets time zone
         [now, now.dup]
+      end
+
+      def _push(method_name, value)
+        @buffer ||= {}
+        @buffer[method_name] = value
       end
 
       def _apply_duration(time_unit, time_value, time)

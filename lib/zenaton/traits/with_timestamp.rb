@@ -7,21 +7,24 @@ require 'zenaton/traits/with_duration'
 
 module Zenaton
   module Traits
-    # Module to calculate timestamp for events
+    # Module to calculate unix timestamps for events
     module WithTimestamp
       include WithDuration
       extend ActiveSupport::Concern
 
+      # Array of weekdays as symbols from ActiveSupport
       WEEKDAYS = DateAndTime::Calculations::DAYS_INTO_WEEK.keys
-      MODE_AT = 'AT'
-      MODE_WEEK_DAY = 'WEEK_DAY'
-      MODE_MONTH_DAY = 'MONTH_DAY'
-      MODE_TIMESTAMP = 'TIMESTAMP'
+      MODE_AT = 'AT' # When specifying a time
+      MODE_WEEK_DAY = 'WEEK_DAY' # When specifying a day of the week
+      MODE_MONTH_DAY = 'MONTH_DAY' # When specifying a day of the month
+      MODE_TIMESTAMP = 'TIMESTAMP' # When specifying a unix timestamp
 
       included do
         @@_timezone = nil
       end
 
+      # Calculates the timestamp based on either timestamp or duration methods
+      # @return Array<Interger, NilClass>
       def _get_timestamp_or_duration
         return [nil, nil] unless @buffer
         now, now_dup = _init_now_then

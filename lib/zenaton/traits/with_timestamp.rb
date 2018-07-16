@@ -7,6 +7,7 @@ require 'zenaton/traits/with_duration'
 
 module Zenaton
   module Traits
+    # Module to calculate timestamp for events
     module WithTimestamp
       include WithDuration
       extend ActiveSupport::Concern
@@ -32,16 +33,19 @@ module Zenaton
         [now_dup.to_i, nil]
       end
 
-      %i[timestamp at on_day monday tuesday wednesday thursday friday saturday sunday]. each do |method_name|
+      %i[
+        timestamp at on_day monday tuesday wednesday thursday
+        friday saturday sunday
+      ]. each do |method_name|
         define_method method_name do |value = 1|
-          @buffer ||= {}
-          @buffer[method_name] = value
+          _push(method_name, value)
           self
         end
       end
 
       private
 
+      # rubocop:disable Metrics/MethodLength
       def _apply(method, value, now, now_dup)
         if WEEKDAYS.include?(method)
           _weekday(value, method, now_dup)
@@ -55,6 +59,7 @@ module Zenaton
           _apply_duration(method, value, now_dup)
         end
       end
+      # rubocop:enable Metrics/MethodLength
 
       def _weekday(value, day, now_dup)
         _set_mode(MODE_WEEK_DAY)
@@ -71,20 +76,21 @@ module Zenaton
         _set_mode(MODE_AT)
         hour, min, sec = time.split(':').map(&:to_i)
         now_dup = now_dup.change(hour: hour, min: min, sec: sec || 0)
-        if now > now_dup
-          case @_mode
-          when MODE_AT
-            now_dup += 1.day
-          when MODE_WEEK_DAY
-            now_dup += 1.week
-          when MODE_MONTH_DAY
-            now_dup += 1.month
-          else
-            raise ExternalError "Unknown mode: #{@_mode}"
-          end
-        end
-
+        now_dup += delay if now > now_dup
         now_dup
+      end
+
+      def delay
+        case @_mode
+        when MODE_AT
+          1.day
+        when MODE_WEEK_DAY
+          1.week
+        when MODE_MONTH_DAY
+          1.month
+        else
+          raise InternalError "Unknown mode: #{@_mode}"
+        end
       end
 
       def _on_day(day, now, now_dup)
@@ -95,8 +101,9 @@ module Zenaton
       end
 
       def _set_mode(mode)
-        raise ExternalError if mode == @_mode
-        raise ExternalError if timestamp_mode_set?(mode)
+        error = 'Incompatible definition in Wait methods'
+        raise ExternalError,  error if mode == @_mode
+        raise ExternalError, error if timestamp_mode_set?(mode)
         @_mode = mode if @_mode.nil? || @_mode == MODE_AT
       end
 

@@ -23,7 +23,13 @@ RSpec.shared_examples 'Zenatonable' do |*initial_args|
     expect(zenatonable.execute).to eq(1)
   end
 
+  # rubocop:disable RSpec/MultipleExpectations
   it 'exposes a query builder' do
-    expect(klass.where_id('MyId')).to be_a(Zenaton::Query::Builder)
+    if klass < Zenaton::Interfaces::Workflow
+      expect(klass.where_id('MyId')).to be_a(Zenaton::Query::Builder)
+    else
+      expect { klass.where_id('MyId') }.to raise_error Zenaton::ExternalError
+    end
   end
+  # rubocop:enable RSpec/MultipleExpectations
 end

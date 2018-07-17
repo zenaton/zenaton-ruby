@@ -2,9 +2,9 @@
 
 require 'timecop'
 
-RSpec.shared_examples 'WithDuration' do |initial_arg|
+RSpec.shared_examples 'WithDuration' do |*initial_args|
   let(:klass) { described_class }
-  let(:with_duration) { klass.new(initial_arg) }
+  let(:with_duration) { klass.new(*initial_args) }
 
   context 'without timezone' do
     around do |example|

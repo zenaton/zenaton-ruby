@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'Zenatonable' do
+RSpec.shared_examples 'Zenatonable' do |*initial_args|
   let(:klass) { described_class }
-  let(:zenatonable) { klass.new }
+  let(:zenatonable) { klass.new(*initial_args) }
   let(:engine) do
     instance_double(
       Zenaton::Engine,

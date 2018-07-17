@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
+require 'zenaton'
 require 'pry'
 
 RSpec.configure do |config|

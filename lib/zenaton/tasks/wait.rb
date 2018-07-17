@@ -19,8 +19,7 @@ module Zenaton
       # Creates a new wait task and validates the event given
       # @param event [Zenaton::Interfaces::Event]
       def initialize(event = nil)
-        raise ExternalError, error unless \
-          event && (event.is_a?(String) || event.is_a?(Interfaces::Event))
+        raise ExternalError, error unless valid_param(event)
         @event = event
       end
 
@@ -33,6 +32,14 @@ module Zenaton
         # rubocop:disable Metrics/LineLength
         "#{self.class}: Invalid parameter - argument must be a Zenaton::Interfaces::Event subclass"
         # rubocop:enable Metrics/LineLength
+      end
+
+      def valid_param(event)
+        event.nil? || event.is_a?(String) || event_class?(event)
+      end
+
+      def event_class?(event)
+        event.class == Class && event < Zenaton::Interfaces::Event
       end
     end
   end

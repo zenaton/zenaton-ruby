@@ -24,7 +24,7 @@ module Zenaton
       end
 
       # Calculates the timestamp based on either timestamp or duration methods
-      # @return Array<Interger, NilClass>
+      # @return Array<Integer, NilClass>
       def _get_timestamp_or_duration
         return [nil, nil] unless @buffer
         now, now_dup = _init_now_then

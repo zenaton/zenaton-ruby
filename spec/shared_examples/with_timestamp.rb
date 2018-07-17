@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'WithTimestamp' do |initial_arg|
+RSpec.shared_examples 'WithTimestamp' do |*initial_args|
   let(:klass) { described_class }
-  let(:with_timestamp) { klass.new(initial_arg) }
+  let(:with_timestamp) { klass.new(*initial_args) }
 
   describe 'timezone writer' do
     after { klass.timezone = nil }

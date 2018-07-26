@@ -4,6 +4,7 @@ require 'zenaton/version'
 require 'zenaton/client'
 require 'zenaton/interfaces/event'
 require 'zenaton/tasks/wait'
+require 'zenaton/parallel'
 
 # Top level namespace for the Zenaton ruby library
 module Zenaton

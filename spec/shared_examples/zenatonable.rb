@@ -16,7 +16,7 @@ RSpec.shared_examples 'Zenatonable' do |*initial_args|
   end
 
   it 'dispatches through the engine' do
-    expect(zenatonable.dispatch).to eq(0)
+    expect(zenatonable.dispatch).to eq([0])
   end
 
   it 'executes through the engine' do

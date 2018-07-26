@@ -19,7 +19,7 @@ module Zenaton
       # Sends self as the single job to be dispatched to the engine and returns
       # the result
       def dispatch
-        Engine.instance.dispatch([self])[0]
+        Engine.instance.dispatch([self])
       end
 
       class_methods do

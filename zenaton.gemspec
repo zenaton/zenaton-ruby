@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'zenaton/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'zenaton-ruby'
+  spec.name          = 'zenaton'
   spec.version       = Zenaton::VERSION
   spec.authors       = ['Zenaton']
   spec.email         = ['contact@zenaton.com']

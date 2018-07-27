@@ -9,3 +9,18 @@ class SerializeMe
     @initialized || false
   end
 end
+
+module SerializeCircular
+  class Parent
+    attr_accessor :child
+
+    def initialize
+      @child = Child.new
+      @child.parent = self
+    end
+  end
+
+  class Child
+    attr_accessor :parent
+  end
+end

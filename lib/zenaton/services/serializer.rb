@@ -4,21 +4,23 @@ require 'zenaton/services/properties'
 
 module Zenaton
   module Services
+    # Encoding and decoding ruby objects into Zenaton's json format
     class Serializer
       # this string prefixs ids that are used to identify objects
       ID_PREFIX = '@zenaton#'
 
-      KEY_OBJECT = 'o'
-      KEY_OBJECT_NAME = 'n'
-      KEY_OBJECT_PROPERTIES = 'p'
-      KEY_ARRAY = 'a'
-      KEY_DATA = 'd'
-      KEY_STORE = 's'
+      KEY_OBJECT = 'o' # JSON key for objects
+      KEY_OBJECT_NAME = 'n' # JSON key for class name
+      KEY_OBJECT_PROPERTIES = 'p' # JSON key for object ivars
+      KEY_ARRAY = 'a' # JSON key for array and hashes
+      KEY_DATA = 'd' # JSON key for json compatibles types
+      KEY_STORE = 's' # JSON key for deserialized complex object
 
       def initialize
         @properties = Properties.new
       end
 
+      # Encodes a given ruby object to Zenaton's json format
       def encode(data)
         @encoded = []
         @decoded = []
@@ -37,6 +39,7 @@ module Zenaton
         value.to_json
       end
 
+      # Decodes Zenaton's format in a valid Ruby object
       def decode(json)
         parsed_json = JSON.parse(json)
         @decoded = []

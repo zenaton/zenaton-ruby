@@ -45,7 +45,7 @@ module Zenaton
 
       def basic_type?(data)
         data.is_a?(String) \
-          || data.is_a?(Integer) \
+          || data.is_a?(Numeric) \
           || data == true \
           || data == false \
           || data.nil?

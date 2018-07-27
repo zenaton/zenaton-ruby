@@ -26,6 +26,14 @@ RSpec.describe Zenaton::Services::Serializer do
       end
     end
 
+    context 'with a float' do
+      let(:data) { 1.8 }
+
+      it 'represents the float as a data' do
+        expect(parsed_json).to eq('d' => 1.8, 's' => [])
+      end
+    end
+
     context 'with true' do
       let(:data) { true }
 

@@ -20,6 +20,8 @@ module Zenaton
         @properties = Properties.new
       end
 
+      # rubocop:disable Metrics/MethodLength
+
       # Encodes a given ruby object to Zenaton's json format
       def encode(data)
         @encoded = []
@@ -54,6 +56,7 @@ module Zenaton
           return decode_object(id, @encoded[id])
         end
       end
+      # rubocop:enable Metrics/MethodLength
 
       private
 
@@ -124,6 +127,7 @@ module Zenaton
         hash.transform_values { |value| decode_element(value) }
       end
 
+      # rubocop:disable Metrics/MethodLength
       def decode_element(value)
         if object_id?(value)
           id = value[ID_PREFIX.length..-1].to_i
@@ -137,6 +141,7 @@ module Zenaton
           value
         end
       end
+      # rubocop:enable Metrics/MethodLength
 
       def decode_object(id, encoded_object)
         decoded = @decoded[id]

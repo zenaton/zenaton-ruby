@@ -14,6 +14,7 @@ Metrics/ClassLength:
   Enabled: true
   Exclude:
     - 'lib/zenaton/client.rb'
+    - 'lib/zenaton/services/serializer.rb'
 
 Style/NumericLiterals:
   Enabled: false

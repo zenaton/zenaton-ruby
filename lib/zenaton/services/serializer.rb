@@ -38,7 +38,7 @@ module Zenaton
           value[KEY_OBJECT] = encode_object(data)
         end
         value[KEY_STORE] = @encoded
-        value.to_json
+        value
       end
 
       # Decodes Zenaton's format in a valid Ruby object

@@ -150,7 +150,7 @@ RSpec.describe Zenaton::Client do
         'programming_language' => 'Ruby',
         'canonical_name' => nil,
         'name' => 'FakeWorkflow1',
-        'data' => '{"hard_coded":"json"}',
+        'data' => '{"a":{"@first":1,"@second":2},"s":[]}',
         'custom_id' => nil
       }
     end
@@ -279,18 +279,26 @@ RSpec.describe Zenaton::Client do
     let(:result) do
       client.find_workflow('Zenaton::Interfaces::Workflow', 'MyCustomId')
     end
+    let(:sample_response) do
+      {
+        'name' => 'FakeWorkflow1',
+        'properties' => {
+          'a' => { '@first' => 1, '@second' => 2 },
+          's' => []
+        }
+      }
+    end
 
     before do
       described_class.init(nil, 'ApiToken', nil)
+      allow(http).to receive(:get)
+        .with(expected_url)
+        .and_return(sample_response)
       result
     end
 
-    it 'makes a get request' do
-      expect(http).to have_received(:get).with(expected_url)
-    end
-
     it 'returns the requested instance' do
-      expect(result).to be_a Zenaton::Interfaces::Workflow
+      expect(result).to be_a FakeWorkflow1
     end
   end
 
@@ -304,7 +312,7 @@ RSpec.describe Zenaton::Client do
         'name' => 'MyWorkflow',
         'custom_id' => 'MyCustomId',
         'event_name' => 'FakeEvent',
-        'event_input' => { hardcoded: 'json' }.to_json
+        'event_input' => '{"a":{},"s":[]}'
       }
     end
 

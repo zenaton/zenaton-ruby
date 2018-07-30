@@ -2,6 +2,8 @@
 
 require 'singleton'
 require 'zenaton/services/http'
+require 'zenaton/services/properties'
+require 'zenaton/services/serializer'
 require 'zenaton/workflows/version'
 
 module Zenaton
@@ -54,6 +56,8 @@ module Zenaton
     # @private
     def initialize
       @http = Services::Http.new
+      @serializer = Services::Serializer.new
+      @properties = Services::Properties.new
     end
 
     # Gets the url for the workers
@@ -85,7 +89,7 @@ module Zenaton
         ATTR_PROG => PROG,
         ATTR_CANONICAL => canonical_name(flow),
         ATTR_NAME => class_name(flow),
-        ATTR_DATA => { hard_coded: 'json' }.to_json,
+        ATTR_DATA => @serializer.encode(@properties.from(flow)),
         ATTR_ID => parse_custom_id_from(flow)
       )
     end
@@ -123,7 +127,10 @@ module Zenaton
       params = "#{ATTR_ID}=#{custom_id}&#{ATTR_NAME}=#{workflow_name}&#{ATTR_PROG}=#{PROG}"
       # rubocop:enable Metrics/LineLength
       data = @http.get(instance_website_url(params))
-      Object.const_get(data['name']).new
+      @properties.object_from(
+        data['name'],
+        @serializer.decode(data['properties'])
+      )
     end
 
     # Sends an event to a workflow
@@ -137,7 +144,7 @@ module Zenaton
         ATTR_NAME => workflow_name,
         ATTR_ID => custom_id,
         EVENT_NAME => event.class.name,
-        EVENT_INPUT => { hardcoded: 'json' }.to_json
+        EVENT_INPUT => @serializer.encode(@properties.from(event))
       }
       @http.post(send_event_url, body)
     end

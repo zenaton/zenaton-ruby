@@ -42,8 +42,7 @@ module Zenaton
       end
 
       # Decodes Zenaton's format in a valid Ruby object
-      def decode(json)
-        parsed_json = JSON.parse(json)
+      def decode(parsed_json)
         @decoded = []
         @encoded = parsed_json.delete(KEY_STORE)
         case parsed_json.keys.first
@@ -110,7 +109,7 @@ module Zenaton
       def object_id?(string)
         string.is_a?(String) \
           && string.start_with?(ID_PREFIX) \
-          && string[ID_PREFIX.length..-1].to_i <= @encoded_length
+          && string[ID_PREFIX.length..-1].to_i <= @encoded.length
       end
 
       def decode_enumerable(enumerable)

@@ -135,7 +135,7 @@ RSpec.describe Zenaton::Services::Serializer do
     let(:decoded) { serializer.decode(json) }
 
     context 'with a string do' do
-      let(:json) { { 'd' => 'e', 's' => [] }.to_json }
+      let(:json) { { 'd' => 'e', 's' => [] } }
 
       it 'returns the string' do
         expect(decoded).to eq('e')
@@ -143,7 +143,7 @@ RSpec.describe Zenaton::Services::Serializer do
     end
 
     context 'with an integer do' do
-      let(:json) { { 'd' => 1, 's' => [] }.to_json }
+      let(:json) { { 'd' => 1, 's' => [] } }
 
       it 'returns the integer' do
         expect(decoded).to eq(1)
@@ -151,7 +151,7 @@ RSpec.describe Zenaton::Services::Serializer do
     end
 
     context 'with a float' do
-      let(:json) { { 'd' => 1.8, 's' => [] }.to_json }
+      let(:json) { { 'd' => 1.8, 's' => [] } }
 
       it 'returns the float' do
         expect(decoded).to eq(1.8)
@@ -159,7 +159,7 @@ RSpec.describe Zenaton::Services::Serializer do
     end
 
     context 'with true' do
-      let(:json) { { 'd' => true, 's' => [] }.to_json }
+      let(:json) { { 'd' => true, 's' => [] } }
 
       it 'returns the boolean' do
         expect(decoded).to eq(true)
@@ -167,7 +167,7 @@ RSpec.describe Zenaton::Services::Serializer do
     end
 
     context 'with false' do
-      let(:json) { { 'd' => false, 's' => [] }.to_json }
+      let(:json) { { 'd' => false, 's' => [] } }
 
       it 'returns the boolean' do
         expect(decoded).to eq(false)
@@ -175,7 +175,7 @@ RSpec.describe Zenaton::Services::Serializer do
     end
 
     context 'with nil' do
-      let(:json) { { 'd' => nil, 's' => [] }.to_json }
+      let(:json) { { 'd' => nil, 's' => [] } }
 
       it 'returns the nil object' do
         expect(decoded).to be_nil
@@ -183,7 +183,7 @@ RSpec.describe Zenaton::Services::Serializer do
     end
 
     context 'with an array' do
-      let(:json) { { 'a' => [1, 'e'], 's' => [] }.to_json }
+      let(:json) { { 'a' => [1, 'e'], 's' => [] } }
 
       it 'returns the array' do
         expect(decoded).to eq([1, 'e'])
@@ -191,7 +191,7 @@ RSpec.describe Zenaton::Services::Serializer do
     end
 
     context 'with a hash' do
-      let(:json) { { 'a' => { 'key' => 'value' }, 's' => [] }.to_json }
+      let(:json) { { 'a' => { 'key' => 'value' }, 's' => [] } }
 
       it 'returns the hash' do
         expect(decoded).to eq('key' => 'value')
@@ -210,7 +210,7 @@ RSpec.describe Zenaton::Services::Serializer do
               }
             }
           ]
-        }.to_json
+        }
       end
 
       it 'returns a new instance of the object' do
@@ -240,15 +240,15 @@ RSpec.describe Zenaton::Services::Serializer do
               }
             }
           ]
-        }.to_json
+        }
+      end
 
-        it 'returns the correct object type' do
-          expect(decoded).to be_a(SerializeCircular::Parent)
-        end
+      it 'returns the correct object type' do
+        expect(decoded).to be_a(SerializeCircular::Parent)
+      end
 
-        it 'correctly instantes child objects' do
-          expected(decoded.child).to be_a(SerializeCircular::Child)
-        end
+      it 'correctly instantes child objects' do
+        expect(decoded.child).to be_a(SerializeCircular::Child)
       end
     end
   end

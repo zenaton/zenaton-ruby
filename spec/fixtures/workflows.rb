@@ -4,7 +4,10 @@ require 'zenaton/interfaces/workflow'
 require 'fixtures/tasks'
 
 class FakeWorkflow1 < Zenaton::Interfaces::Workflow
-  def initialize(_first, _second); end
+  def initialize(first, second)
+    @first = first
+    @second = second
+  end
 
   def handle
     FakeTask1.new.dispatch

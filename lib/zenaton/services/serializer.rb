@@ -38,11 +38,12 @@ module Zenaton
           value[KEY_OBJECT] = encode_object(data)
         end
         value[KEY_STORE] = @encoded
-        value
+        value.to_json
       end
 
       # Decodes Zenaton's format in a valid Ruby object
-      def decode(parsed_json)
+      def decode(json_string)
+        parsed_json = JSON.parse(json_string)
         @decoded = []
         @encoded = parsed_json.delete(KEY_STORE)
         case parsed_json.keys.first

@@ -1,8 +1,22 @@
 # frozen_string_literal: true
 
+require 'singleton'
+
 class SerializeMe
   def initialize
     @initialized = true
+  end
+
+  def initialized?
+    @initialized || false
+  end
+end
+
+class SerializeSingleton
+  include Singleton
+
+  def initialize
+    @intialized = true
   end
 
   def initialized?

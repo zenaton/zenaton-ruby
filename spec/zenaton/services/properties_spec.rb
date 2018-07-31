@@ -7,16 +7,32 @@ RSpec.describe Zenaton::Services::Properties do
   let(:properties) { described_class.new }
 
   describe '#blank_instance' do
-    let(:instance) do
-      properties.blank_instance('SerializeMe')
+    context 'with a regular class' do
+      let(:instance) do
+        properties.blank_instance('SerializeMe')
+      end
+
+      it 'creates a new instance of the provided class' do
+        expect(instance).to be_a(SerializeMe)
+      end
+
+      it 'does not call initialize when instantiating' do
+        expect(instance).not_to be_initialized
+      end
     end
 
-    it 'creates a new instance of the provided class' do
-      expect(instance).to be_a(SerializeMe)
-    end
+    context 'with a singleton class' do
+      let(:instance) do
+        properties.blank_instance('SerializeSingleton')
+      end
 
-    it 'does not call initialize when instantiating' do
-      expect(instance).not_to be_initialized
+      it 'fetches the instance of the provided class' do
+        expect(instance).to be_a(SerializeSingleton)
+      end
+
+      it 'does not call initialize when instantiating' do
+        expect(instance).not_to be_initialized
+      end
     end
   end
 
@@ -70,7 +86,7 @@ RSpec.describe Zenaton::Services::Properties do
     end
 
     it 'does not raise if object is an instance of superclass' do
-      expect { valid_object_with_superclass }.not_to raise_error ArgumentError
+      expect { valid_object_with_superclass }.not_to raise_error
     end
 
     it 'sets the given instance variables on the object' do

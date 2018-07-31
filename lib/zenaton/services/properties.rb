@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'singleton'
+
 module Zenaton
   module Services
     # Wrapper class to read instance variables from an object and
@@ -9,7 +11,12 @@ module Zenaton
       # @param class_name [String] the name of the class to allocate
       # @return [Object]
       def blank_instance(class_name)
-        Object.const_get(class_name).allocate
+        klass = Object.const_get(class_name)
+        if klass < Singleton
+          klass.instance
+        else
+          klass.allocate
+        end
       end
 
       # Returns a hash with the instance variables of a given object

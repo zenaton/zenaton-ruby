@@ -66,6 +66,56 @@ RSpec.describe Zenaton::Services::Serializer do
       end
     end
 
+    context 'with a Time' do
+      let(:data) { Time.at(15) }
+
+      it 'represents the time as an object' do
+        expect(parsed_json).to \
+          eq('o' => '@zenaton#0',
+             's' => [{ 'n' => 'Time', 'p' => { 's' => 15, 'n' => 0 } }])
+      end
+    end
+
+    context 'with a Date' do
+      let(:data) { Date.new(2018, 8, 1) }
+      let(:expected_serialization) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'n' => 'Date',
+            'p' => { 'y' => 2018, 'm' => 8, 'd' => 1, 'sg' => 2299161.0 }
+          }]
+        }
+      end
+
+      it 'represents the date as a data' do
+        expect(parsed_json).to eq(expected_serialization)
+      end
+    end
+
+    context 'with a DateTime' do
+      # rubocop:disable Style/DateTime
+      let(:data) { DateTime.parse('2018-08-01T16:21:31+02:00') }
+
+      let(:expected_serialization) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'n' => 'DateTime',
+            'p' => {
+              'y' => 2018, 'm' => 8, 'd' => 1, 'sg' => 2299161.0,
+              'H' => 16, 'M' => 21, 'S' => 31, 'of' => '1/12'
+            }
+          }]
+        }
+      end
+
+      it 'represents the time as a data' do
+        expect(parsed_json).to eq(expected_serialization)
+      end
+      # rubocop:enable Style/DateTime
+    end
+
     context 'with an array' do
       let(:data) { [1, 'e'] }
 
@@ -180,6 +230,58 @@ RSpec.describe Zenaton::Services::Serializer do
       it 'returns the nil object' do
         expect(decoded).to be_nil
       end
+    end
+
+    context 'with a Time' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{ 'n' => 'Time', 'p' => { 's' => 15, 'n' => 0 } }]
+        }.to_json
+      end
+
+      it 'returns the correct time' do
+        expect(decoded).to eq(Time.at(15))
+      end
+    end
+
+    context 'with a Date' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'n' => 'Date',
+            'p' => { 'y' => 2018, 'm' => 8, 'd' => 1, 'sg' => 2299161.0 }
+          }]
+        }.to_json
+      end
+      let(:date) { Date.new(2018, 8, 1) }
+
+      it 'returns the correct date' do
+        expect(decoded).to eq(date)
+      end
+    end
+
+    context 'with a DateTime' do
+      # rubocop:disable Style/DateTime
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'n' => 'DateTime',
+            'p' => {
+              'y' => 2018, 'm' => 8, 'd' => 1, 'sg' => 2299161.0,
+              'H' => 16, 'M' => 21, 'S' => 31, 'of' => '1/12'
+            }
+          }]
+        }.to_json
+      end
+      let(:date_time) { DateTime.parse('2018-08-01T16:21:31+02:00') }
+
+      it 'returns the correct datetime' do
+        expect(decoded).to eq(date_time)
+      end
+      # rubocop:enable Style/DateTime
     end
 
     context 'with an array' do

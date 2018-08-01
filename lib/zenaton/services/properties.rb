@@ -7,6 +7,9 @@ module Zenaton
     # Wrapper class to read instance variables from an object and
     # to create new objects with a given set of instance variables.
     class Properties
+      # Handle (de)serializaton separately for these classes.
+      SPECIAL_CASES = [Time, Date, DateTime].freeze
+
       # Returns an allocated instance of the given class name
       # @param class_name [String] the name of the class to allocate
       # @return [Object]
@@ -23,6 +26,7 @@ module Zenaton
       # @param object [Object] the object to be read
       # @return [Hash]
       def from(object)
+        return from_complex_type(object) if special_case?(object)
         object.instance_variables.map do |ivar|
           value = object.instance_variable_get(ivar)
           [ivar, value]
@@ -34,6 +38,7 @@ module Zenaton
       # @param properties [Hash] the properties to be written
       # @return [Object]
       def set(object, properties)
+        return set_complex_type(object, properties) if special_case?(object)
         properties.each do |ivar, value|
           object.instance_variable_set(ivar, value)
         end
@@ -62,6 +67,75 @@ module Zenaton
 
       def valid_object(object, super_class)
         super_class.nil? || object.is_a?(super_class)
+      end
+
+      def from_complex_type(object)
+        case object.class.name
+        when 'Time'
+          from_time(object)
+        when 'Date'
+          from_date(object)
+        when 'DateTime'
+          from_date_time(object)
+        end
+      end
+
+      def from_time(object)
+        nanoseconds = [object.tv_usec * 1_000]
+        object.respond_to?(:tv_nsec) && nanoseconds << object.tv_nsec
+        { 's' => object.tv_sec, 'n' => nanoseconds.max }
+      end
+
+      def from_date(object)
+        { 'y' => object.year, 'm' => object.month,
+          'd' => object.day, 'sg' => object.start }
+      end
+
+      def from_date_time(object)
+        {
+          'y' => object.year, 'm' => object.month, 'd' => object.day,
+          'H' => object.hour, 'M' => object.minute, 'S' => object.sec,
+          'of' => object.offset.to_s, 'sg' => object.start
+        }
+      end
+
+      def set_complex_type(object, props)
+        case object.class.name
+        when 'Time'
+          return_time(object, props)
+        when 'Date'
+          return_date(props)
+        when 'DateTime'
+          return_date_time(props)
+        end
+      end
+
+      def return_time(object, props)
+        if object.respond_to?(:tv_usec)
+          Time.at(props['s'], Rational(props['n'], 1000))
+        else
+          Time.at(props['s'], props['n'] / 1000)
+        end
+      end
+
+      def return_date(props)
+        Date.civil(*props.values_at('y', 'm', 'd', 'sg'))
+      end
+
+      def return_date_time(props)
+        args = props.values_at('y', 'm', 'd', 'H', 'M', 'S')
+        of_a, of_b = props['of'].split('/')
+        args << if of_b && of_b != 0
+                  Rational(of_a.to_i, of_b.to_i)
+                else
+                  of_a
+                end
+        args << props['sg']
+        DateTime.civil(*args) # rubocop:disable Style/DateTime
+      end
+
+      def special_case?(object)
+        SPECIAL_CASES.include?(object.class)
       end
     end
   end

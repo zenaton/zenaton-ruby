@@ -37,19 +37,92 @@ RSpec.describe Zenaton::Services::Properties do
   end
 
   describe '#from' do
-    let(:object) { SerializeMe.new }
+    let(:result) { properties.from(object) }
 
-    it 'returns a hash of the object instance variables' do
-      expect(properties.from(object)).to eq(:@initialized => true)
+    context 'with time objects' do
+      let(:object) { Time.at(15) }
+
+      it 'returns the number of seconds and nanoseconds since epoch' do
+        expect(result).to eq('s' => 15, 'n' => 0)
+      end
+    end
+
+    context 'with date objects' do
+      let(:object) { Date.new(2018, 8, 1) }
+
+      it 'returns the year, month, day and day of calendar reform' do
+        expect(result).to eq('y' => 2018, 'm' => 8, 'd' => 1, 'sg' => 2299161.0)
+      end
+    end
+
+    context 'with DateTime objects' do
+      # rubocop:disable Style/DateTime
+      let(:object) { DateTime.parse('2018-08-01T08:21:31+02:00') }
+
+      it 'returns the year, month, day and day of calendar reform' do
+        expect(result).to \
+          eq('y' => 2018, 'm' => 8, 'd' => 1, 'H' => 8, 'M' => 21,
+             'S' => 31, 'of' => '1/12', 'sg' => 2299161.0)
+      end
+      # rubocop:enable Style/DateTime
+    end
+
+    context 'with other objects' do
+      let(:object) { SerializeMe.new }
+
+      it 'returns a hash of the object instance variables' do
+        expect(result).to eq(:@initialized => true)
+      end
     end
   end
 
   describe '#set' do
-    let(:blank_object) { properties.blank_instance('SerializeMe') }
-    let(:setup_object) { properties.set(blank_object, :@initialized => true) }
+    let(:blank_object) { properties.blank_instance(object_name) }
+    let(:setup_object) { properties.set(blank_object, props) }
 
-    it 'sets the given instance variables' do
-      expect(setup_object.instance_variable_get(:@initialized)).to eq(true)
+    context 'with time objects' do
+      let(:object_name) { 'Time' }
+      let(:props) { { 's' => 15, 'n' => 0 } }
+      let(:expected_time) { Time.at(15) }
+
+      it 'sets the props correctly' do
+        expect(setup_object).to eq(expected_time)
+      end
+    end
+
+    context 'with date objects' do
+      let(:object_name) { 'Date' }
+      let(:props) { { 'y' => 2018, 'm' => 12, 'd' => 1, 'sg' => 2299161.0 } }
+      let(:expected_date) { Date.new(2018, 12, 1) }
+
+      it 'sets the props correctly' do
+        expect(setup_object).to eq(expected_date)
+      end
+    end
+
+    context 'with date objects' do
+      # rubocop:disable Style/DateTime
+      let(:object_name) { 'DateTime' }
+      let(:props) do
+        { 'y' => 2018, 'm' => 8, 'd' => 1,
+          'H' => 8, 'M' => 21, 'S' => 31,
+          'of' => '1/12', 'sg' => 2299161.0 }
+      end
+      let(:expected_date_time) { DateTime.parse('2018-08-01T08:21:31+02:00') }
+
+      it 'sets the props correctly' do
+        expect(setup_object).to eq(expected_date_time)
+      end
+      # rubocop:enable Style/DateTime
+    end
+
+    context 'with other objects' do
+      let(:object_name) { 'SerializeMe' }
+      let(:props) { { :@initialized => true } }
+
+      it 'sets the given instance variables' do
+        expect(setup_object.instance_variable_get(:@initialized)).to eq(true)
+      end
     end
   end
 

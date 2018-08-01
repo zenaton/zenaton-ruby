@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'zenaton/version'
+require 'zenaton/exceptions'
 require 'zenaton/client'
 require 'zenaton/interfaces/event'
 require 'zenaton/tasks/wait'

@@ -126,8 +126,8 @@ module Zenaton
       # rubocop:disable Metrics/LineLength
       params = "#{ATTR_ID}=#{custom_id}&#{ATTR_NAME}=#{workflow_name}&#{ATTR_PROG}=#{PROG}"
       # rubocop:enable Metrics/LineLength
-      data = @http.get(instance_website_url(params))
-      @properties.object_from(
+      data = @http.get(instance_website_url(params))['data']
+      data && @properties.object_from(
         data['name'],
         @serializer.decode(data['properties'])
       )

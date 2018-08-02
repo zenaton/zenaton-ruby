@@ -274,22 +274,10 @@ RSpec.describe Zenaton::Client do
 
   describe '#find_workflow' do
     let(:expected_url) do
-      'https://zenaton.com/api/v1/instances?api_token=ApiToken&custom_id=MyCustomId&name=Zenaton::Interfaces::Workflow&programming_language=Ruby'
+      'https://zenaton.com/api/v1/instances?api_token=ApiToken&custom_id=MyCustomId&name=FakeWorkflow1&programming_language=Ruby'
     end
     let(:result) do
-      client.find_workflow('Zenaton::Interfaces::Workflow', 'MyCustomId')
-    end
-    let(:sample_response) do
-      {
-        'data' => {
-          'status' => 'ok',
-          'properties' => '{\"a\":{\"@id\":2,\"@max\":10},\"s\":[]}',
-          'name' => 'RecursiveWorkflow',
-          'mode' => 'paused',
-          'custom_id' => 'MyCustomId',
-          'canonical_name' => 'RecursiveWorkflow'
-        }
-      }
+      client.find_workflow('FakeWorkflow1', 'MyCustomId')
     end
 
     before do
@@ -300,8 +288,37 @@ RSpec.describe Zenaton::Client do
       result
     end
 
-    it 'returns the requested instance' do
-      expect(result).to be_a FakeWorkflow1
+    context 'when there is a matching workflow' do
+      let(:sample_response) do
+        {
+          'data' => {
+            'status' => 'ok',
+            'properties' => '{"a":{"@id":2,"@max":10},"s":[]}',
+            'name' => 'FakeWorkflow1',
+            'mode' => 'paused',
+            'custom_id' => 'MyCustomId',
+            'canonical_name' => 'FakeWorkflow1'
+          }
+        }
+      end
+
+      it 'returns the requested instance' do
+        expect(result).to be_a FakeWorkflow1
+      end
+
+      it 'sets the instance variable of the workflow' do
+        expect(result.instance_variable_get(:@id)).to eq(2)
+      end
+    end
+
+    context 'when there is no matching workflow' do
+      let(:sample_response) do
+        { 'error' => 'No workflow instance found with the id : 2' }
+      end
+
+      it 'returns nil ' do
+        expect(result).to be_nil
+      end
     end
   end
 

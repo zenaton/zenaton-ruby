@@ -87,7 +87,7 @@ that you configure with
 
     $ zenaton listen --env=.env --boot=boot.rb
 
-where `.env` is the env file containing your credentials, and `boot.rb` is a file that will be included before each task execution = this file should load all workflow classes.
+where `.env` is the env file containing your credentials, and `boot.rb` is a file that will be included before each task execution - this file should load all workflow classes.
 
 ## Documentation
 

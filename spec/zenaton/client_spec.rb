@@ -281,11 +281,14 @@ RSpec.describe Zenaton::Client do
     end
     let(:sample_response) do
       {
-        'name' => 'FakeWorkflow1',
-        'properties' => {
-          'a' => { '@first' => 1, '@second' => 2 },
-          's' => []
-        }.to_json
+        'data' => {
+          'status' => 'ok',
+          'properties' => '{\"a\":{\"@id\":2,\"@max\":10},\"s\":[]}',
+          'name' => 'RecursiveWorkflow',
+          'mode' => 'paused',
+          'custom_id' => 'MyCustomId',
+          'canonical_name' => 'RecursiveWorkflow'
+        }
       }
     end
 

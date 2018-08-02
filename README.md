@@ -3,6 +3,9 @@
 
 This Zenaton library for Ruby lets you code and launch workflows using Zenaton platform. You can sign up for an account at [https://zenaton/com](http://zenaton.com)
 
+**DISCLAIMER** The ruby library is currently in public beta. Please open an
+issue if you find any bugs.
+
 ## Requirements
 
 This gem has been tested with Ruby 2.3 or later.

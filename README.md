@@ -80,14 +80,12 @@ MyWorkflow.new.dispatch
 ### Worker Installation
 
 Your workflow's tasks will be executed on your worker servers. Please install a Zenaton worker on it:
-```
-curl https://install.zenaton.com | sh
-```
+
+    $ curl https://install.zenaton.com | sh
 
 that you configure with
-```
-zenaton listen --env=.env --boot=boot.rb
-```
+
+    $ zenaton listen --env=.env --boot=boot.rb
 
 where `.env` is the env file containing your credentials, and `boot.rb` is a file that will be included before each task execution = this file should load all workflow classes.
 

@@ -8,7 +8,7 @@ issue if you find any bugs.
 
 ## Requirements
 
-This gem has been tested with Ruby 2.3 or later.
+This gem has been tested with Ruby 2.3 and later.
 
 ## Installation
 
@@ -86,9 +86,9 @@ Your workflow's tasks will be executed on your worker servers. Please install a 
 
     $ curl https://install.zenaton.com | sh
 
-that you configure with
+that you can start and configure with
 
-    $ zenaton listen --env=.env --boot=boot.rb
+    $ zenaton start && zenaton listen --env=.env --boot=boot.rb
 
 where `.env` is the env file containing your credentials, and `boot.rb` is a file that will be included before each task execution - this file should load all workflow classes.
 

@@ -78,7 +78,7 @@ module Zenaton
       end
 
       def encode_hash(hash)
-        hash.transform_values { |value| encode_value(value) }
+        transform_values(hash) { |value| encode_value(value) }
       end
 
       def encode_value(value)
@@ -124,7 +124,7 @@ module Zenaton
       end
 
       def decode_hash(hash)
-        hash.transform_values { |value| decode_element(value) }
+        transform_values(hash) { |value| decode_element(value) }
       end
 
       # rubocop:disable Metrics/MethodLength
@@ -150,6 +150,12 @@ module Zenaton
         @decoded[id] = object
         properties = decode_hash(encoded_object[KEY_OBJECT_PROPERTIES])
         @properties.set(object, properties)
+      end
+
+      def transform_values(hash)
+        hash.each_with_object({}) do |(k, v), acc|
+          acc[k] = yield(v)
+        end
       end
     end
   end

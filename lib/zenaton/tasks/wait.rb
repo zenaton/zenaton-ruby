@@ -17,7 +17,7 @@ module Zenaton
       include Traits::Zenatonable
 
       # Creates a new wait task and validates the event given
-      # @param event [Zenaton::Interfaces::Event]
+      # @param event [Class, String]
       def initialize(event = nil)
         raise ExternalError, error unless valid_param(event)
         @event = event

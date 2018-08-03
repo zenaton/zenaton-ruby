@@ -1,45 +1,64 @@
 version: 2
+
+shared: &shared
+  working_directory: ~/repo
+
+  steps:
+    - checkout
+
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "Gemfile.lock" }}
+        - v1-dependencies-
+
+    - run:
+        name: install dependencies
+        command: |
+          bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+    - save_cache:
+        paths:
+          - ./vendor/bundle
+        key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+
+    - run:
+        name: run code linter
+        command: |
+          bundle exec rubocop
+
+    - run:
+        name: run tests
+        command: |
+          bundle exec rake
+
+    - run:
+        name: audit dependencies for known CVEs
+        command: |
+          gem install bundler-audit
+          bundle audit check --update
+
+    - store_artifacts:
+        path: ./coverage
+        destination: coverage
+
 jobs:
-  build:
+  "ruby-2.3":
+    <<: *shared
     docker:
-       - image: circleci/ruby:2.5.1
+       - image: circleci/ruby:2.3
+  "ruby-2.4":
+    <<: *shared
+    docker:
+       - image: circleci/ruby:2.4
+  "ruby-2.5":
+    <<: *shared
+    docker:
+       - image: circleci/ruby:2.5
 
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "Gemfile.lock" }}
-          - v1-dependencies-
-
-      - run:
-          name: install dependencies
-          command: |
-            bundle install --jobs=4 --retry=3 --path vendor/bundle
-
-      - save_cache:
-          paths:
-            - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
-
-      - run:
-          name: run code linter
-          command: |
-            bundle exec rubocop
-
-      - run:
-          name: run tests
-          command: |
-            bundle exec rake
-
-      - run:
-          name: audit dependencies for known CVEs
-          command: |
-            gem install bundler-audit
-            bundle audit check --update
-
-      - store_artifacts:
-          path: ./coverage
-          destination: coverage
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "ruby-2.3"
+      - "ruby-2.4"
+      - "ruby-2.5"

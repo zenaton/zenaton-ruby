@@ -83,18 +83,23 @@ module Zenaton
       def store_and_encode(object)
         id = @decoded.length
         @decoded[id] = object
-        @encoded[id] = if object.is_a?(Array)
-                         encode_array(object)
-                       elsif object.is_a?(Hash)
-                         encode_hash(object)
-                       else
-                         encode_object(object)
-                       end
+        @encoded[id] = encoded_object_by_type(object)
         store_id(id)
       end
 
       def store_id(id)
         "#{ID_PREFIX}#{id}"
+      end
+
+      def encoded_object_by_type(object)
+        case object
+        when Array
+          encode_array(object)
+        when Hash
+          encode_hash(object)
+        else
+          encode_object(object)
+        end
       end
 
       def encode_object(object)
@@ -172,11 +177,23 @@ module Zenaton
       def decode_from_store(id, encoded)
         decoded = @decoded[id]
         return decoded if decoded
-        values = encoded[KEY_ARRAY]
-        if values.is_a?(Array)
-          decode_array(id, values)
-        elsif values.is_a?(Hash)
-          decode_hash(id, values)
+        case encoded[KEY_ARRAY]
+        when Array
+          decode_array(id, encoded[KEY_ARRAY])
+        when Hash
+          decode_hash(id, encoded[KEY_ARRAY])
+        else
+          decode_object(id, encoded)
+        end
+      end
+
+      def decoded_object_by_type(id, encoded)
+        enumerable = encoded[KEY_ARRAY]
+        case enumerable
+        when Array
+          decode_array(id, enumerable)
+        when Hash
+          decode_hash(id, enumerable)
         else
           decode_object(id, encoded)
         end

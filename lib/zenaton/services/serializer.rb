@@ -28,14 +28,10 @@ module Zenaton
         @decoded = []
         value = {}
         raise ArgumentError, 'Procs cannot be serialized' if data.is_a?(Proc)
-        if data.is_a?(Array)
-          value[KEY_OBJECT] = encode_array(data)
-        elsif data.is_a?(Hash)
-          value[KEY_OBJECT] = encode_hash(data)
-        elsif basic_type?(data)
+        if basic_type?(data)
           value[KEY_DATA] = data
         else
-          value[KEY_OBJECT] = encode_object(data)
+          value[KEY_OBJECT] = encode_to_store(data)
         end
         value[KEY_STORE] = @encoded
         value.to_json
@@ -53,16 +49,12 @@ module Zenaton
           return decode_enumerable(parsed_json[KEY_ARRAY])
         when KEY_OBJECT
           id = parsed_json[KEY_OBJECT][ID_PREFIX.length..-1].to_i
-          return decode_object(id, @encoded[id])
+          return decode_from_store(id, @encoded[id])
         end
       end
       # rubocop:enable Metrics/MethodLength
 
       private
-
-      def array_type?(data)
-        data.is_a?(Array) || data.is_a?(Hash)
-      end
 
       def basic_type?(data)
         data.is_a?(String) \
@@ -73,98 +65,127 @@ module Zenaton
           || data.nil?
       end
 
-      def encode_array(array)
-        id = @decoded.index(array)
-        unless id
-          id = @decoded.length
-          @decoded[id] = array
-          @encoded[id] = {
-            KEY_ARRAY => array.map(&method(:encode_value))
-          }
-        end
-        "#{ID_PREFIX}#{id}"
-      end
-
-      def encode_hash(hash)
-        id = @decoded.index(hash)
-        unless id
-          id = @decoded.length
-          @decoded[id] = hash
-          @encoded[id] = {
-            KEY_ARRAY => transform_values(hash, &method(:encode_value))
-          }
-        end
-        "#{ID_PREFIX}#{id}"
-      end
-
       def encode_value(value)
         raise ArgumentError, 'Procs cannot be serialized' if value.is_a?(Proc)
-        if value.is_a?(Array)
-          encode_array(value)
-        elsif value.is_a?(Hash)
-          encode_hash(value)
-        elsif basic_type?(value)
+        if basic_type?(value)
           value
         else
-          encode_object(value)
+          encode_to_store(value)
         end
+      end
+
+      def encode_to_store(object)
+        id = @decoded.index(object)
+        return store_id(id) if id
+        store_and_encode(object)
+      end
+
+      def store_and_encode(object)
+        id = @decoded.length
+        @decoded[id] = object
+        @encoded[id] = if object.is_a?(Array)
+                         encode_array(object)
+                       elsif object.is_a?(Hash)
+                         encode_hash(object)
+                       else
+                         encode_object(object)
+                       end
+        store_id(id)
+      end
+
+      def store_id(id)
+        "#{ID_PREFIX}#{id}"
       end
 
       def encode_object(object)
-        id = @decoded.index(object)
-        unless id
-          id = @decoded.length
-          @decoded[id] = object
-          @encoded[id] = {
-            KEY_OBJECT_NAME => object.class.name,
-            KEY_OBJECT_PROPERTIES => transform_values(@properties.from(object), &method(:encode_value))
-          }
-        end
-        "#{ID_PREFIX}#{id}"
+        {
+          KEY_OBJECT_NAME => object.class.name,
+          KEY_OBJECT_PROPERTIES => encode_legacy_hash(@properties.from(object))
+        }
       end
 
-      def object_id?(string)
+      def encode_array(array)
+        {
+          KEY_ARRAY => array.map(&method(:encode_value))
+        }
+      end
+
+      def encode_hash(hash)
+        {
+          KEY_ARRAY => transform_values(hash, &method(:encode_value))
+        }
+      end
+
+      def encode_legacy_hash(hash)
+        transform_values(hash, &method(:encode_value))
+      end
+
+      def store_id?(string)
         string.is_a?(String) \
           && string.start_with?(ID_PREFIX) \
           && string[ID_PREFIX.length..-1].to_i <= @encoded.length
       end
 
-      def decode_enumerable(enumerable)
-        return decode_array(enumerable) if enumerable.is_a?(Array)
-        return decode_hash(enumerable) if enumerable.is_a?(Hash)
-        raise ArgumentError, 'Unknown type'
-      end
-
-      def decode_array(array)
-        array.map { |elem| decode_element(elem) }
-      end
-
-      def decode_hash(hash)
-        transform_values(hash) { |value| decode_element(value) }
-      end
-
       # rubocop:disable Metrics/MethodLength
       def decode_element(value)
-        if object_id?(value)
+        if store_id?(value)
           id = value[ID_PREFIX.length..-1].to_i
           encoded = @encoded[id]
-          decode_object(id, encoded) if encoded.is_a?(Hash)
+          decode_from_store(id, encoded)
         elsif value.is_a?(Array)
-          decode_array(value)
+          decode_legacy_array(value)
         elsif value.is_a?(Hash)
-          decode_hash(value)
+          decode_legacy_hash(value)
         else
           value
         end
       end
       # rubocop:enable Metrics/MethodLength
 
-      def decode_object(id, encoded_object)
+      def decode_enumerable(enumerable)
+        return decode_legacy_array(enumerable) if enumerable.is_a?(Array)
+        return decode_legacy_hash(enumerable) if enumerable.is_a?(Hash)
+        raise ArgumentError, 'Unknown type'
+      end
+
+      def decode_legacy_array(array)
+        array.map(&method(:decode_element))
+      end
+
+      def decode_legacy_hash(hash)
+        transform_values(hash, &method(:decode_element))
+      end
+
+      def decode_array(id, array)
+        @decoded[id] = object = []
+        object.concat(array.map(&method(:decode_element)))
+      end
+
+      def decode_hash(id, hash)
+        @decoded[id] = {}
+        hash.each do |key, value|
+          @decoded[id][key] = decode_element(value)
+        end
+        @decoded[id]
+      end
+
+      def decode_from_store(id, encoded)
         decoded = @decoded[id]
         return decoded if decoded
+        values = encoded[KEY_ARRAY]
+        if values.is_a?(Array)
+          decode_array(id, values)
+        elsif values.is_a?(Hash)
+          decode_hash(id, values)
+        else
+          decode_object(id, encoded)
+        end
+      end
+
+      def decode_object(id, encoded_object)
         object = @properties.blank_instance(encoded_object[KEY_OBJECT_NAME])
         @decoded[id] = object
-        properties = decode_hash(encoded_object[KEY_OBJECT_PROPERTIES])
+        properties = decode_legacy_hash(encoded_object[KEY_OBJECT_PROPERTIES])
         @properties.set(object, properties)
       end
 

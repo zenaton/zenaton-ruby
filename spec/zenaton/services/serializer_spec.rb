@@ -357,7 +357,7 @@ RSpec.describe Zenaton::Services::Serializer do
       # rubocop:enable Style/DateTime
     end
 
-    context 'with an array' do
+    context 'with an old array format' do
       let(:json) { { 'a' => [1, 'e'], 's' => [] }.to_json }
 
       it 'returns the array' do
@@ -365,11 +365,80 @@ RSpec.describe Zenaton::Services::Serializer do
       end
     end
 
-    context 'with a hash' do
+    context 'with an old hash format' do
       let(:json) { { 'a' => { 'key' => 'value' }, 's' => [] }.to_json }
 
       it 'returns the hash' do
         expect(decoded).to eq('key' => 'value')
+      end
+    end
+
+    context 'with nested old format' do
+      let(:json) do
+        {
+          'a' => expected_structure,
+          's' => []
+        }.to_json
+      end
+      let(:expected_structure) do
+        {
+          'array' => [{ 'key' => 'value' }],
+          'hash' => {
+            'subarray' => [1, 2, 3]
+          }
+        }
+      end
+
+      it 'parses the nested arrays and hashes successfully' do
+        expect(decoded).to eq(expected_structure)
+      end
+    end
+
+    context 'with a new array format' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => [1, '@zenaton#1']
+          }, {
+            'a' => [2, '@zenaton#0']
+          }]
+        }.to_json
+      end
+
+      it 'returns an array' do
+        expect(decoded).to be_an(Array)
+      end
+
+      it 'has correct cyclic structure' do
+        expect(decoded[-1][-1]).to eq(decoded)
+      end
+    end
+
+    context 'with a new hash format' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => {
+              'first' => 1,
+              'child' => '@zenaton#1'
+            }
+          }, {
+            'a' => {
+              'second' => 2,
+              'parent' => '@zenaton#0'
+            }
+          }]
+        }.to_json
+      end
+
+      it 'returns a hash' do
+        expect(decoded).to be_a(Hash)
+      end
+
+      it 'has correct circular structure' do
+        expect(decoded['child']['parent']).to eq(decoded)
       end
     end
 

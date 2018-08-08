@@ -150,7 +150,10 @@ RSpec.describe Zenaton::Client do
         'programming_language' => 'Ruby',
         'canonical_name' => nil,
         'name' => 'FakeWorkflow1',
-        'data' => { 'a' => { :@first => 1, :@second => 2 }, 's' => [] }.to_json,
+        'data' => {
+          'o' => '@zenaton#0',
+          's' => [{ 'a' => { :@first => 1, :@second => 2 } }]
+        }.to_json,
         'custom_id' => nil
       }
     end
@@ -332,7 +335,7 @@ RSpec.describe Zenaton::Client do
         'name' => 'MyWorkflow',
         'custom_id' => 'MyCustomId',
         'event_name' => 'FakeEvent',
-        'event_input' => { 'a' => {}, 's' => [] }.to_json
+        'event_input' => { 'o' => '@zenaton#0', 's' => [{ 'a' => {} }] }.to_json
       }
     end
 

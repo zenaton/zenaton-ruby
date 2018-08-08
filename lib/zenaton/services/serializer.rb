@@ -29,9 +29,9 @@ module Zenaton
         value = {}
         raise ArgumentError, 'Procs cannot be serialized' if data.is_a?(Proc)
         if data.is_a?(Array)
-          value[KEY_ARRAY] = encode_array(data)
+          value[KEY_OBJECT] = encode_array(data)
         elsif data.is_a?(Hash)
-          value[KEY_ARRAY] = encode_hash(data)
+          value[KEY_OBJECT] = encode_hash(data)
         elsif basic_type?(data)
           value[KEY_DATA] = data
         else
@@ -74,11 +74,27 @@ module Zenaton
       end
 
       def encode_array(array)
-        array.map { |elem| encode_value(elem) }
+        id = @decoded.index(array)
+        unless id
+          id = @decoded.length
+          @decoded[id] = array
+          @encoded[id] = {
+            KEY_ARRAY => array.map(&method(:encode_value))
+          }
+        end
+        "#{ID_PREFIX}#{id}"
       end
 
       def encode_hash(hash)
-        transform_values(hash) { |value| encode_value(value) }
+        id = @decoded.index(hash)
+        unless id
+          id = @decoded.length
+          @decoded[id] = hash
+          @encoded[id] = {
+            KEY_ARRAY => transform_values(hash, &method(:encode_value))
+          }
+        end
+        "#{ID_PREFIX}#{id}"
       end
 
       def encode_value(value)
@@ -101,7 +117,7 @@ module Zenaton
           @decoded[id] = object
           @encoded[id] = {
             KEY_OBJECT_NAME => object.class.name,
-            KEY_OBJECT_PROPERTIES => encode_hash(@properties.from(object))
+            KEY_OBJECT_PROPERTIES => transform_values(@properties.from(object), &method(:encode_value))
           }
         end
         "#{ID_PREFIX}#{id}"

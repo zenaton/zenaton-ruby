@@ -118,18 +118,91 @@ RSpec.describe Zenaton::Services::Serializer do
 
     context 'with an array' do
       let(:data) { [1, 'e'] }
+      let(:expected_representation) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => [1, 'e']
+          }]
+        }
+      end
 
-      it 'represents the array as an array' do
-        expect(parsed_json).to eq('a' => [1, 'e'], 's' => [])
+      it 'represents the array as an object' do
+        expect(parsed_json).to eq(expected_representation)
+      end
+    end
+
+    context 'with recursive arrays' do
+      let(:array1) { [1, 2, 3] }
+      let(:array2) { [4, 5, 6] }
+      let(:data) { array1 }
+      let(:expected_representation) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => [1, 2, 3, '@zenaton#1']
+          }, {
+            'a' => [4, 5, 6, '@zenaton#0']
+          }]
+        }
+      end
+
+      before do
+        array1 << array2
+        array2 << array1
+      end
+
+      it 'represents the array as an object' do
+        expect(parsed_json).to eq(expected_representation)
       end
     end
 
     context 'with a hash' do
       let(:data) { { 'key' => 'value' } }
+      let(:expected_representation) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => {
+              'key' => 'value'
+            }
+          }]
+        }
+      end
 
-      it 'represents the hash as an array' do
-        expect(parsed_json).to \
-          eq('a' => { 'key' => 'value' }, 's' => [])
+      it 'represents the hash as an object' do
+        expect(parsed_json).to eq(expected_representation)
+      end
+    end
+
+    context 'with circular hashes' do
+      let(:hash1) { { 'first' => 1 } }
+      let(:hash2) { { 'second' => 2 } }
+      let(:data) { hash1 }
+      let(:expected_representation) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => {
+              'first' => 1,
+              'child' => '@zenaton#1'
+            }
+          }, {
+            'a' => {
+              'second' => 2,
+              'parent' => '@zenaton#0'
+            }
+          }]
+        }
+      end
+
+      before do
+        hash1[:child] = hash2
+        hash2[:parent] = hash1
+      end
+
+      it 'represents the hash as an object' do
+        expect(parsed_json).to eq(expected_representation)
       end
     end
 

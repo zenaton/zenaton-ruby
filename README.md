@@ -106,7 +106,7 @@ zenaton:
   api_token: abcdefgh
 ```
 
-Then create an initializer in `config/initializers/zenaton/rb` with the
+Then create an initializer in `config/initializers/zenaton.rb` with the
 following:
 ```ruby
 Zenaton::Client.init(
@@ -131,7 +131,7 @@ end
 ```
 Note that your workflow implementation should be idempotent. See [documentation](https://zenaton.com/app/documentation#workflow-basics-implementation).
 
-And we can create a task in `app/tasks/my_task`.
+And we can create a task in `app/tasks/my_task.rb`.
 ```ruby
 class MyTask < Zenaton::Interfaces::Task
   include Zenatonable
@@ -162,7 +162,7 @@ that you can start and configure from your application directory with
 where `.env` is the env file containing your credentials.
 
 **Note** In this example we created our workflows and tasks in the `/app`
-folder since Rails will autoload ruby file in that path. If you create your
+folder since Rails will autoload ruby files in that path. If you create your
 workflows and tasks somewhere else, ensure Rails loads them at boot time.
 
 ## Documentation

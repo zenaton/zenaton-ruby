@@ -67,6 +67,14 @@ RSpec.describe Zenaton::Services::Properties do
       # rubocop:enable Style/DateTime
     end
 
+    context 'with rational numbers' do
+      let(:object) { 2 / 3r }
+
+      it 'returns the numerator and denominator' do
+        expect(result).to eq('n' => 2, 'd' => 3)
+      end
+    end
+
     context 'with other objects' do
       let(:object) { SerializeMe.new }
 
@@ -114,6 +122,15 @@ RSpec.describe Zenaton::Services::Properties do
         expect(setup_object).to eq(expected_date_time)
       end
       # rubocop:enable Style/DateTime
+    end
+
+    context 'with rational numbers' do
+      let(:object_name) { 'Rational' }
+      let(:props) { { 'n' => 2, 'd' => 3 } }
+
+      it 'sets the props correctly' do
+        expect(setup_object).to eq(2 / 3r)
+      end
     end
 
     context 'with other objects' do

@@ -8,7 +8,7 @@ module Zenaton
     # to create new objects with a given set of instance variables.
     class Properties
       # Handle (de)serializaton separately for these classes.
-      SPECIAL_CASES = [Time, Date, DateTime].freeze
+      SPECIAL_CASES = [Time, Date, DateTime, Rational].freeze
 
       # Returns an allocated instance of the given class name
       # @param class_name [String] the name of the class to allocate
@@ -17,6 +17,8 @@ module Zenaton
         klass = Object.const_get(class_name)
         if klass < Singleton
           klass.instance
+        elsif klass == Rational
+          Rational(1, 1)
         else
           klass.allocate
         end
@@ -77,6 +79,8 @@ module Zenaton
           from_date(object)
         when 'DateTime'
           from_date_time(object)
+        when 'Rational'
+          from_rational(object)
         end
       end
 
@@ -99,6 +103,10 @@ module Zenaton
         }
       end
 
+      def from_rational(object)
+        { 'n' => object.numerator, 'd' => object.denominator }
+      end
+
       def set_complex_type(object, props)
         case object.class.name
         when 'Time'
@@ -107,6 +115,8 @@ module Zenaton
           return_date(props)
         when 'DateTime'
           return_date_time(props)
+        when 'Rational'
+          return_rational(props)
         end
       end
 
@@ -132,6 +142,10 @@ module Zenaton
                 end
         args << props['sg']
         DateTime.civil(*args) # rubocop:disable Style/DateTime
+      end
+
+      def return_rational(props)
+        Rational(props['n'], props['d'])
       end
 
       def special_case?(object)

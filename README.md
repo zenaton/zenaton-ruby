@@ -29,7 +29,7 @@ Or install it yourself as:
 
 ## Usage in plain Ruby
 
-For more detailed examples, please check [Zenaton Ruby examples](https://github.com/zenaton/example-ruby).
+For more detailed examples, please check [Zenaton Ruby examples](https://github.com/zenaton/examples-ruby).
 
 ### Client Initialization
 

@@ -27,7 +27,7 @@ Or install it yourself as:
 
     $ gem install zenaton
 
-## Usage
+## Usage in plain Ruby
 
 For more detailed examples, please check [Zenaton Ruby examples](https://github.com/zenaton/example-ruby).
 
@@ -92,6 +92,78 @@ that you can start and configure with
     $ zenaton start && zenaton listen --env=.env --boot=boot.rb
 
 where `.env` is the env file containing your credentials, and `boot.rb` is a file that will be included before each task execution - this file should load all workflow classes.
+
+## Usage inside a Ruby on Rails application
+
+### Client initialization
+
+Edit your application secrets with `rails credentials:edit` and add your Zenaton
+credentials to it (you'll find them [here](https://zenaton/app/api)). For
+example:
+```yml
+zenaton:
+  app_id: 123456
+  api_token: abcdefgh
+```
+
+Then create an initializer in `config/initializers/zenaton/rb` with the
+following:
+```ruby
+Zenaton::Client.init(
+  Rails.application.credentials.zenaton[:app_id],
+  Rails.application.credentials.zenaton[:api_token],
+  Rails.env.production? ? 'production' : 'dev'
+)
+```
+
+### Writing Workflows and Tasks
+
+We can create a workflow in `app/workflows/my_workflow.rb`.
+
+```ruby
+class MyWorkflow < Zenaton::Interfaces::Worflow
+  include Zenatonable
+
+  def handle
+    # Your workflow implementation
+  end
+end
+```
+Note that your workflow implementation should be idempotent. See [documentation](https://zenaton.com/app/documentation#workflow-basics-implementation).
+
+And we can create a task in `app/tasks/my_task`.
+```ruby
+class MyTask < Zenaton::Interfaces::Task
+  include Zenatonable
+
+  def handle
+    # Your task implementation
+  end
+end
+```
+
+### Lauching a workflow
+
+We can start a workflow from anywhere in our application code with:
+```ruby
+MyWorkflow.new.dispatch
+```
+
+### Worker Installation
+
+Your workflow's tasks will be executed on your worker servers. Please install a Zenaton worker on it:
+
+    $ curl https://install.zenaton.com | sh
+
+that you can start and configure from your application directory with
+
+    $ zenaton start && zenaton listen --env=.env --rails
+
+where `.env` is the env file containing your credentials.
+
+**Note** In this example we created our workflows and tasks in the `/app`
+folder since Rails will autoload ruby file in that path. If you create your
+workflows and tasks somewhere else, ensure Rails loads them at boot time.
 
 ## Documentation
 

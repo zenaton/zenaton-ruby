@@ -75,6 +75,14 @@ RSpec.describe Zenaton::Services::Properties do
       end
     end
 
+    context 'with complex numbers' do
+      let(:object) { 1 + 2i }
+
+      it 'returns the numerator and denominator' do
+        expect(result).to eq('r' => 1, 'i' => 2)
+      end
+    end
+
     context 'with other objects' do
       let(:object) { SerializeMe.new }
 
@@ -130,6 +138,15 @@ RSpec.describe Zenaton::Services::Properties do
 
       it 'sets the props correctly' do
         expect(setup_object).to eq(2 / 3r)
+      end
+    end
+
+    context 'with complex numbers' do
+      let(:object_name) { 'Complex' }
+      let(:props) { { 'r' => 1, 'i' => 2 } }
+
+      it 'returns the complex number' do
+        expect(setup_object).to eq(1 + 2i)
       end
     end
 

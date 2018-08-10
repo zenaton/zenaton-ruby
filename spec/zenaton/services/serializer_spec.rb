@@ -157,6 +157,31 @@ RSpec.describe Zenaton::Services::Serializer do
       end
     end
 
+    context 'with empty arrays' do
+      let(:array1) { [] }
+      let(:array2) { [] }
+      let(:data) { array1 }
+      let(:expected_representation) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => ['@zenaton#1']
+          }, {
+            'a' => ['@zenaton#0']
+          }]
+        }
+      end
+
+      before do
+        array1 << array2
+        array2 << array1
+      end
+
+      it 'represents the two empty arrays as distinct objects' do
+        expect(parsed_json).to eq(expected_representation)
+      end
+    end
+
     context 'with a hash' do
       let(:data) { { 'key' => 'value' } }
       let(:expected_representation) do
@@ -202,6 +227,31 @@ RSpec.describe Zenaton::Services::Serializer do
       end
 
       it 'represents the hash as an object' do
+        expect(parsed_json).to eq(expected_representation)
+      end
+    end
+
+    context 'with empty circular hashes' do
+      let(:hash1) { {} }
+      let(:hash2) { {} }
+      let(:data) { hash1 }
+      let(:expected_representation) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => { 'foo' => '@zenaton#1' }
+          }, {
+            'a' => { 'foo' => '@zenaton#0' }
+          }]
+        }
+      end
+
+      before do
+        hash1[:foo] = hash2
+        hash2[:foo] = hash1
+      end
+
+      it 'represents the two empty hashes as distinct objects' do
         expect(parsed_json).to eq(expected_representation)
       end
     end

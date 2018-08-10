@@ -75,7 +75,7 @@ module Zenaton
       end
 
       def encode_to_store(object)
-        id = @decoded.index(object)
+        id = @decoded.index { |decoded| decoded.object_id == object.object_id }
         return store_id(id) if id
         store_and_encode(object)
       end

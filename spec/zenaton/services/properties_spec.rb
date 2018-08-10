@@ -83,6 +83,64 @@ RSpec.describe Zenaton::Services::Properties do
       end
     end
 
+    context 'with big decimals' do
+      let(:object) { BigDecimal(1, 1) }
+
+      it 'returns the decimal dump' do
+        expect(result).to eq('b' => '27:0.1e1')
+      end
+    end
+
+    context 'with open structs' do
+      let(:object) { OpenStruct.new(a: 1) }
+
+      it 'returns the struct instance variables table' do
+        expect(result).to eq('t' => { 'a' => 1 })
+      end
+    end
+
+    context 'with symbols' do
+      let(:object) { :hello }
+
+      it 'returns the symbols as a string' do
+        expect(result).to eq('s' => 'hello')
+      end
+    end
+
+    context 'with ranges' do
+      let(:object) { 1..5 }
+
+      it 'returns the range delimiters' do
+        expect(result).to eq('a' => [1, 5, false])
+      end
+    end
+
+    context 'with regular expressions' do
+      let(:object) { /[a-z]/i }
+
+      it 'returns the range delimiters' do
+        expect(result).to eq('o' => 1, 's' => '[a-z]')
+      end
+    end
+
+    context 'with structs' do
+      let(:object) { Struct::Customer.new('bob') }
+
+      before { Struct.new('Customer', :name) }
+
+      it 'returns the object values' do
+        expect(result).to eq('v' => ['bob'])
+      end
+    end
+
+    context 'with exceptions' do
+      let(:object) { StandardError.new('oops') }
+
+      it 'returns the error message and the backtrace' do
+        expect(result).to eq('m' => 'oops', 'b' => nil)
+      end
+    end
+
     context 'with other objects' do
       let(:object) { SerializeMe.new }
 
@@ -150,6 +208,79 @@ RSpec.describe Zenaton::Services::Properties do
       end
     end
 
+    context 'with big decimals' do
+      let(:object_name) { 'BigDecimal' }
+      let(:props) { { 'b' => '27:0.1e1' } }
+
+      it 'parses the dump' do
+        expect(setup_object).to eq(BigDecimal(1, 1))
+      end
+    end
+
+    context 'with open structs' do
+      let(:object_name) { 'OpenStruct' }
+      let(:props) { { 't' => { 'a' => 1 } } }
+
+      it 'returns an open struct' do
+        expect(setup_object).to be_an(OpenStruct)
+      end
+
+      it 'has the expected methods' do
+        expect(setup_object.a).to eq(1)
+      end
+    end
+
+    context 'with symbols' do
+      let(:object_name) { 'Symbol' }
+      let(:props) { { 's' => 'hello' } }
+
+      it 'returns a symbol version of the string' do
+        expect(setup_object).to eq(:hello)
+      end
+    end
+
+    context 'with ranges' do
+      let(:object_name) { 'Range' }
+      let(:props) { { 'a' => [1, 5, false] } }
+
+      it 'returns the range' do
+        expect(setup_object).to eq(1..5)
+      end
+    end
+
+    context 'with regular expressions' do
+      let(:object_name) { 'Regexp' }
+      let(:props) { { 'o' => 1, 's' => '[a-z]' } }
+
+      it 'returns correct regular expression' do
+        expect(setup_object).to eq(/[a-z]/i)
+      end
+    end
+
+    context 'with structs' do
+      let(:object_name) { 'Struct::Customer' }
+      let(:props) { { 'v' => ['bob'] } }
+
+      before { Struct.new('Customer', :name) }
+
+      it 'rebuilds the struct' do
+        expect(setup_object.name).to eq('bob')
+      end
+    end
+
+    context 'with exceptions' do
+      let(:object_name) { 'StandardError' }
+      let(:props) { { 'm' => 'oops', 'b' => nil } }
+
+      it 'preserves the exception message' do
+        expect(setup_object.message).to eq('oops')
+      end
+
+      it 'preserves the exception backtrace' do
+        expect(setup_object.backtrace).to be_nil
+      end
+    end
+
     context 'with other objects' do
       let(:object_name) { 'SerializeMe' }
       let(:props) { { :@initialized => true } }
@@ -197,8 +328,7 @@ RSpec.describe Zenaton::Services::Properties do
     end
 
     it 'sets the given instance variables on the object' do
-      expect(valid_object.instance_variable_get(:@initialized)).to \
-        eq(true)
+      expect(valid_object.instance_variable_get(:@initialized)).to eq(true)
     end
   end
 end

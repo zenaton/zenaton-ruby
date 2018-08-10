@@ -465,6 +465,31 @@ RSpec.describe Zenaton::Services::Serializer do
       end
     end
 
+    context 'with a empty circular arrays' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => ['@zenaton#1']
+          }, {
+            'a' => ['@zenaton#0']
+          }]
+        }.to_json
+      end
+
+      it 'returns an array' do
+        expect(decoded).to be_a(Array)
+      end
+
+      it 'has correct circular structure' do
+        expect(decoded[-1][-1]).to be(decoded)
+      end
+
+      it 'distinguishes between children' do
+        expect(decoded[-1]).not_to be(decoded)
+      end
+    end
+
     context 'with a new hash format' do
       let(:json) do
         {
@@ -489,6 +514,35 @@ RSpec.describe Zenaton::Services::Serializer do
 
       it 'has correct circular structure' do
         expect(decoded['child']['parent']).to eq(decoded)
+      end
+    end
+
+    context 'with empty circular hashes' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'a' => {
+              'foo' => '@zenaton#1'
+            }
+          }, {
+            'a' => {
+              'foo' => '@zenaton#0'
+            }
+          }]
+        }.to_json
+      end
+
+      it 'returns a hash' do
+        expect(decoded).to be_a(Hash)
+      end
+
+      it 'has correct circular structure' do
+        expect(decoded['foo']['foo']).to be(decoded)
+      end
+
+      it 'distinguishes between the children' do
+        expect(decoded['foo']).not_to be(decoded)
       end
     end
 

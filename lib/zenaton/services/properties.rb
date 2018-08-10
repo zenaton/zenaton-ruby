@@ -26,6 +26,7 @@ module Zenaton
         defined?(::BigDecimal) ? ::BigDecimal : nil
       ].compact.freeze
 
+      # Handle blank object instantiation differently for these classes
       NUMERIC_INITIALIATION = [
         ::Rational,
         ::Complex,

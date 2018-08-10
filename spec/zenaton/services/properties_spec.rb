@@ -87,7 +87,7 @@ RSpec.describe Zenaton::Services::Properties do
       let(:object) { BigDecimal(1, 1) }
 
       it 'returns the decimal dump' do
-        expect(result).to eq('b' => '27:0.1e1')
+        expect(result['b'].downcase).to eq('27:0.1e1')
       end
     end
 

@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require 'singleton'
+require 'json/add/core'
+require 'json/add/rational'
+require 'json/add/complex'
+require 'json/add/bigdecimal'
+require 'json/add/ostruct'
 
 module Zenaton
   module Services
@@ -8,15 +13,36 @@ module Zenaton
     # to create new objects with a given set of instance variables.
     class Properties
       # Handle (de)serializaton separately for these classes.
-      SPECIAL_CASES = [Time, Date, DateTime].freeze
+      SPECIAL_CASES = [
+        ::Complex,
+        ::Date,
+        ::DateTime,
+        ::Range,
+        ::Rational,
+        ::Regexp,
+        ::Symbol,
+        ::Time,
+        defined?(::OpenStruct) ? ::OpenStruct : nil,
+        defined?(::BigDecimal) ? ::BigDecimal : nil
+      ].compact.freeze
+
+      NUMERIC_INITIALIATION = [
+        ::Rational,
+        ::Complex,
+        defined?(::BigDecimal) ? ::BigDecimal : nil
+      ].compact.freeze
 
       # Returns an allocated instance of the given class name
       # @param class_name [String] the name of the class to allocate
       # @return [Object]
       def blank_instance(class_name)
         klass = Object.const_get(class_name)
-        if klass < Singleton
+        if klass < ::Singleton
           klass.instance
+        elsif NUMERIC_INITIALIATION.include?(klass)
+          Kernel.send(klass.to_s, 1, 1)
+        elsif klass == Symbol
+          :place_holder
         else
           klass.allocate
         end
@@ -70,72 +96,20 @@ module Zenaton
       end
 
       def from_complex_type(object)
-        case object.class.name
-        when 'Time'
-          from_time(object)
-        when 'Date'
-          from_date(object)
-        when 'DateTime'
-          from_date_time(object)
+        JSON.parse(object.to_json).tap do |attributes|
+          attributes.delete('json_class')
         end
-      end
-
-      def from_time(object)
-        nanoseconds = [object.tv_usec * 1_000]
-        object.respond_to?(:tv_nsec) && nanoseconds << object.tv_nsec
-        { 's' => object.tv_sec, 'n' => nanoseconds.max }
-      end
-
-      def from_date(object)
-        { 'y' => object.year, 'm' => object.month,
-          'd' => object.day, 'sg' => object.start }
-      end
-
-      def from_date_time(object)
-        {
-          'y' => object.year, 'm' => object.month, 'd' => object.day,
-          'H' => object.hour, 'M' => object.minute, 'S' => object.sec,
-          'of' => object.offset.to_s, 'sg' => object.start
-        }
       end
 
       def set_complex_type(object, props)
-        case object.class.name
-        when 'Time'
-          return_time(object, props)
-        when 'Date'
-          return_date(props)
-        when 'DateTime'
-          return_date_time(props)
-        end
-      end
-
-      def return_time(object, props)
-        if object.respond_to?(:tv_usec)
-          Time.at(props['s'], Rational(props['n'], 1000))
-        else
-          Time.at(props['s'], props['n'] / 1000)
-        end
-      end
-
-      def return_date(props)
-        Date.civil(*props.values_at('y', 'm', 'd', 'sg'))
-      end
-
-      def return_date_time(props)
-        args = props.values_at('y', 'm', 'd', 'H', 'M', 'S')
-        of_a, of_b = props['of'].split('/')
-        args << if of_b && of_b != 0
-                  Rational(of_a.to_i, of_b.to_i)
-                else
-                  of_a
-                end
-        args << props['sg']
-        DateTime.civil(*args) # rubocop:disable Style/DateTime
+        props['json_class'] = object.class.name
+        JSON(props.to_json)
       end
 
       def special_case?(object)
-        SPECIAL_CASES.include?(object.class)
+        SPECIAL_CASES.include?(object.class) \
+          || object.is_a?(Struct) \
+          || object.is_a?(Exception)
       end
     end
   end

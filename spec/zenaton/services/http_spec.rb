@@ -48,7 +48,7 @@ RSpec.describe Zenaton::Services::Http do
       let(:url) { 'https://jsonplaceholder.typicode.com/posts/1' }
 
       before do
-        allow(HTTParty).to receive(:get).and_raise(HTTParty::Error)
+        allow(Net::HTTP).to receive(:start).and_raise(Errno::ECONNRESET)
       end
 
       it 'raises a connection error' do
@@ -106,7 +106,7 @@ RSpec.describe Zenaton::Services::Http do
       let(:body) { {} }
 
       before do
-        allow(HTTParty).to receive(:post).and_raise(HTTParty::Error)
+        allow(Net::HTTP).to receive(:start).and_raise(Timeout::Error)
       end
 
       it 'raises a connection error' do
@@ -165,7 +165,7 @@ RSpec.describe Zenaton::Services::Http do
       let(:body) { {} }
 
       before do
-        allow(HTTParty).to receive(:put).and_raise(HTTParty::Error)
+        allow(Net::HTTP).to receive(:start).and_raise(Net::HTTPBadResponse)
       end
 
       it 'raises a connection error' do

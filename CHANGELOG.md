@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Introduce this changelog file.
 
+### Removed
+- Dependency on httparty
+
 ## [0.2.2] - 2018-08-10
 ### Fixed
 - [Serialization]: Distinct objects, even if equal to one another, now map to

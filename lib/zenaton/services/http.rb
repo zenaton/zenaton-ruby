@@ -94,7 +94,8 @@ module Zenaton
       end
 
       def format_error(response)
-        "#{response.code}: #{response.message}"
+        message = JSON.parse(response.read_body)['error']
+        "#{response.code}: #{message}"
       end
 
       def default_options

@@ -38,9 +38,8 @@ RSpec.describe Zenaton::Services::Http do
         VCR.use_cassette('get_request_404') { example.run }
       end
 
-      it 'raises an internal error' do
-        expect { request }.to \
-          raise_error Zenaton::InternalError, '404: Not Found'
+      it 'raises an internal error with parsed body as message' do
+        expect { request }.to raise_error Zenaton::InternalError, '404: '
       end
     end
 
@@ -95,9 +94,8 @@ RSpec.describe Zenaton::Services::Http do
         VCR.use_cassette('post_request_404') { example.run }
       end
 
-      it 'raises an internal error' do
-        expect { request }.to \
-          raise_error Zenaton::InternalError, '404: Not Found'
+      it 'raises an internal error with parsed body as message' do
+        expect { request }.to raise_error Zenaton::InternalError, '404: '
       end
     end
 
@@ -154,9 +152,8 @@ RSpec.describe Zenaton::Services::Http do
         VCR.use_cassette('put_request_404') { example.run }
       end
 
-      it 'raises an internal error' do
-        expect { request }.to \
-          raise_error Zenaton::InternalError, '404: Not Found'
+      it 'raises an internal error with parsed body as message' do
+        expect { request }.to raise_error Zenaton::InternalError, '404: '
       end
     end
 

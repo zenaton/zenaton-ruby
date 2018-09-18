@@ -37,7 +37,7 @@ module Zenaton
       end
 
       %i[
-        timestamp at on_day monday tuesday wednesday thursday
+        timestamp at day_of_month monday tuesday wednesday thursday
         friday saturday sunday
       ]. each do |method_name|
         define_method method_name do |value = 1|
@@ -56,8 +56,8 @@ module Zenaton
           _timestamp(value)
         elsif method == :at
           _at(value, now, now_dup)
-        elsif method == :on_day
-          _on_day(value, now, now_dup)
+        elsif method == :day_of_month
+          _day_of_month(value, now, now_dup)
         else
           _apply_duration(method, value, now_dup)
         end
@@ -96,7 +96,7 @@ module Zenaton
         end
       end
 
-      def _on_day(day, now, now_dup)
+      def _day_of_month(day, now, now_dup)
         _set_mode(MODE_MONTH_DAY)
         now_dup = now_dup.change(day: day)
         now_dup += 1.month if now > now_dup

@@ -74,7 +74,7 @@ RSpec.shared_examples 'WithTimestamp' do |*initial_args|
     context 'when specifying a day of the month' do
       let(:expected_time) { Time.utc(2018, 8, 12, 12, 2, 0) }
 
-      before { with_timestamp.on_day(12) }
+      before { with_timestamp.day_of_month(12) }
 
       it { is_expected.to eq([expected_time.to_i, nil]) }
     end
@@ -146,7 +146,7 @@ RSpec.shared_examples 'WithTimestamp' do |*initial_args|
     context 'when specifying next 12th at 6PM' do
       let(:expected_time) { Time.utc(2018, 8, 12, 18, 0, 0) }
 
-      before { with_timestamp.on_day(12).at('18') }
+      before { with_timestamp.day_of_month(12).at('18') }
 
       it { is_expected.to eq([expected_time.to_i, nil]) }
     end
@@ -224,7 +224,7 @@ RSpec.shared_examples 'WithTimestamp' do |*initial_args|
 
       before do
         expected_time
-        with_timestamp.on_day(12)
+        with_timestamp.day_of_month(12)
       end
 
       it { is_expected.to eq([expected_time.to_i, nil]) }
@@ -323,7 +323,7 @@ RSpec.shared_examples 'WithTimestamp' do |*initial_args|
 
       before do
         expected_time
-        with_timestamp.on_day(12).at('18')
+        with_timestamp.day_of_month(12).at('18')
       end
 
       it { is_expected.to eq [expected_time.to_i, nil] }

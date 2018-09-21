@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 - Rename `on_day` method to `day_of_month`
-- Improve error messages by using the message containerd in the API response when
+- Improve error messages by using the message contained in the API response when
 available.
+- Rescue from new engine error when finding non existing workflow
 
 ## [0.2.3] - 2018-08-13
 ### Added

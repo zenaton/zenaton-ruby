@@ -283,15 +283,14 @@ RSpec.describe Zenaton::Client do
       client.find_workflow('FakeWorkflow1', 'MyCustomId')
     end
 
-    before do
-      described_class.init(nil, 'ApiToken', nil)
-      allow(http).to receive(:get)
-        .with(expected_url)
-        .and_return(sample_response)
-      result
-    end
-
     context 'when there is a matching workflow' do
+      before do
+        described_class.init(nil, 'ApiToken', nil)
+        allow(http).to receive(:get)
+          .with(expected_url)
+          .and_return(sample_response)
+      end
+
       let(:sample_response) do
         {
           'data' => {
@@ -315,12 +314,29 @@ RSpec.describe Zenaton::Client do
     end
 
     context 'when there is no matching workflow' do
-      let(:sample_response) do
-        { 'error' => 'No workflow instance found with the id : 2' }
+      before do
+        described_class.init(nil, 'ApiToken', nil)
+        allow(http).to receive(:get)
+          .with(expected_url)
+          .and_raise(Zenaton::InternalError,
+                     '404: No workflow instance found with the id : MyCustomId')
       end
 
-      it 'returns nil ' do
+      it 'returns nil' do
         expect(result).to be_nil
+      end
+    end
+
+    context 'when another exception is raised' do
+      before do
+        described_class.init(nil, 'ApiToken', nil)
+        allow(http).to receive(:get)
+          .with(expected_url)
+          .and_raise(Zenaton::InternalError, 'Oopsies')
+      end
+
+      it 'raises the exception' do
+        expect { result }.to raise_error Zenaton::InternalError, 'Oopsies'
       end
     end
   end

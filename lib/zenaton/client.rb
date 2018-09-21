@@ -120,17 +120,18 @@ module Zenaton
 
     # Finds a workflow
     # @param workflow_name [String] the class name of the workflow
-    # @param custom_id [String] the custom ID of the workflow (if any)
-    # @return [Zenaton::Interfaces::Workflow]
+    # @param custom_id [String] the custom ID of the workflow
+    # @return [Zenaton::Interfaces::Workflow, nil]
     def find_workflow(workflow_name, custom_id)
-      # rubocop:disable Metrics/LineLength
-      params = "#{ATTR_ID}=#{custom_id}&#{ATTR_NAME}=#{workflow_name}&#{ATTR_PROG}=#{PROG}"
-      # rubocop:enable Metrics/LineLength
+      params = "#{ATTR_ID}=#{custom_id}&#{ATTR_NAME}=#{workflow_name}&#{ATTR_PROG}=#{PROG}" # rubocop:disable Metrics/LineLength
       data = @http.get(instance_website_url(params))['data']
       data && @properties.object_from(
         data['name'],
         @serializer.decode(data['properties'])
       )
+    rescue Zenaton::InternalError => exception
+      return nil if exception.message =~ /No workflow instance found/
+      raise exception
     end
 
     # Sends an event to a workflow

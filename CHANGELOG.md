@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.3.0] - 2018-09-24
 ### Changed
 - Rename `on_day` method to `day_of_month`
 - Improve error messages by using the message contained in the API response when
@@ -52,7 +54,8 @@ serializing.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/zenaton/zenaton-ruby/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/zenaton/zenaton-ruby/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/zenaton/zenaton-ruby/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/zenaton/zenaton-ruby/compare/v0.2.0...v0.2.1

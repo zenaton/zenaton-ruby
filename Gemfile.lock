@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    zenaton (0.2.3)
+    zenaton (0.3.0)
       activesupport
       tzinfo-data
 

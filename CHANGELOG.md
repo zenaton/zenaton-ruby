@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- [Serialization]: Serializing ActiveModel object should no longer raise an
+  error
 
 ## [0.3.0] - 2018-09-24
 ### Changed
@@ -23,7 +26,7 @@ available.
 ## [0.2.2] - 2018-08-10
 ### Fixed
 - [Serialization]: Distinct objects, even if equal to one another, now map to
-distinct entries in the data store.
+  distinct entries in the data store.
 
 ## [0.2.1] - 2018-08-10
 ### Added
@@ -36,11 +39,11 @@ distinct entries in the data store.
 ## [0.2.0] - 2018-08-08
 ### Added
 - New serialization format for array and hashes. Currently running workflows
-should still be able to deserialize data in the old format.
+  should still be able to deserialize data in the old format.
 
 ### Fixed
 - Arrays and hashes with circular structures no longer cause infinite loops when
-serializing.
+  serializing.
 
 ## [0.1.1] - 2018-08-03
 ### Added

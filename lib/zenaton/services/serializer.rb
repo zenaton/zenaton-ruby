@@ -60,8 +60,8 @@ module Zenaton
         data.is_a?(String) \
           || data.is_a?(Integer) \
           || data.is_a?(Float) \
-          || data == true \
-          || data == false \
+          || data.is_a?(TrueClass) \
+          || data.is_a?(FalseClass) \
           || data.nil?
       end
 

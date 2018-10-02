@@ -2,5 +2,5 @@
 
 module Zenaton
   # This gem's current version
-  VERSION = '0.3.0'
+  VERSION = '0.3.1'
 end

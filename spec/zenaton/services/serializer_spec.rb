@@ -2,6 +2,7 @@
 
 require 'zenaton/services/serializer'
 require 'fixtures/serialize_me'
+require 'fixtures/fake_active_model'
 
 RSpec.describe Zenaton::Services::Serializer do
   let(:serializer) { described_class.new }
@@ -300,6 +301,15 @@ RSpec.describe Zenaton::Services::Serializer do
 
       it 'represents the object as an object' do
         expect(parsed_json).to eq(expected_representation)
+      end
+    end
+
+    context 'with an object that overrides ==' do
+      let(:data) { FakeActiveModel.new(name: 'Bob') }
+
+      it 'does not raise error' do
+        expect { parsed_json }.not_to \
+          raise_error NoMethodError
       end
     end
   end

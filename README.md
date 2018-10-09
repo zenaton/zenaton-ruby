@@ -1,6 +1,8 @@
 # Zenaton library for Ruby
-[![Gem Version](https://badge.fury.io/rb/zenaton.svg)](https://badge.fury.io/rb/zenaton)
-[![CircleCI](https://circleci.com/gh/zenaton/zenaton-ruby/tree/master.svg?style=shield&circle-token=99da357820821f49236b1e2f20657100fb382bd8)](https://circleci.com/gh/zenaton/zenaton-ruby/tree/master)
+[![Gem Version](https://img.shields.io/gem/v/zenaton.svg)](https://rubygems.org/gems/zenaton)
+[![Gem Downloads](https://img.shields.io/gem/dt/zenaton.svg)](https://rubygems.org/gems/zenaton)
+[![CircleCI](https://img.shields.io/circleci/project/github/zenaton/zenaton-ruby/master.svg)](https://circleci.com/gh/zenaton/zenaton-ruby/tree/master)
+[![License](https://img.shields.io/github/license/zenaton/zenaton-ruby.svg)](LICENSE.txt)
 
 This Zenaton library for Ruby lets you code and launch workflows using Zenaton platform. You can sign up for an account at [https://zenaton/com](http://zenaton.com)
 

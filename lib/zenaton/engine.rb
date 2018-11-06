@@ -53,7 +53,7 @@ module Zenaton
       if job.is_a? Interfaces::Workflow
         @client.start_workflow(job)
       else
-        job.handle
+        @client.start_task(job)
       end
     end
 

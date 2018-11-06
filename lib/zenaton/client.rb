@@ -81,6 +81,17 @@ module Zenaton
       add_app_env(url, params)
     end
 
+    # Start a single task
+    # @param task [Zenaton::Interfaces::Task]
+    def start_task(task)
+      @http.post(
+        worker_url('tasks'),
+        ATTR_PROG => PROG,
+        ATTR_NAME => class_name(task),
+        ATTR_DATA => @serializer.encode(@properties.from(task))
+      )
+    end
+
     # Start the specified workflow
     # @param flow [Zenaton::Interfaces::Workflow]
     def start_workflow(flow)

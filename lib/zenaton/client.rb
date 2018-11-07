@@ -28,6 +28,8 @@ module Zenaton
     ATTR_DATA = 'data' # Parameter name for json payload
     ATTR_PROG = 'programming_language' # Parameter name for the language
     ATTR_MODE = 'mode' # Parameter name for the worker update mode
+    # Parameter name for task maximum processing time
+    ATTR_MAX_PROCESSING_TIME = 'maxProcessingTime'
 
     PROG = 'Ruby' # The current programming language
 
@@ -84,11 +86,15 @@ module Zenaton
     # Start a single task
     # @param task [Zenaton::Interfaces::Task]
     def start_task(task)
+      max_processing_time = if task.respond_to?(:max_processing_time)
+                              task.max_processing_time
+                            end
       @http.post(
         worker_url('tasks'),
         ATTR_PROG => PROG,
         ATTR_NAME => class_name(task),
-        ATTR_DATA => @serializer.encode(@properties.from(task))
+        ATTR_DATA => @serializer.encode(@properties.from(task)),
+        ATTR_MAX_PROCESSING_TIME => max_processing_time
       )
     end
 

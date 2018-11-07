@@ -149,6 +149,7 @@ RSpec.describe Zenaton::Client do
       {
         'programming_language' => 'Ruby',
         'name' => 'FakeTask3',
+        'maxProcessingTime' => nil,
         'data' => {
           'o' => '@zenaton#0',
           's' => [{ 'a' => { :@arg1 => 1, :@arg2 => 2 } }]

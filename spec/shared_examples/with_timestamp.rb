@@ -329,4 +329,73 @@ RSpec.shared_examples 'WithTimestamp' do |*initial_args|
       it { is_expected.to eq [expected_time.to_i, nil] }
     end
   end
+
+  context 'when today is Monday the 3rd of December 2012, at 11am' do
+    let(:today) { Time.utc(2018, 12, 3, 11, 0, 0) }
+    let(:timestamp) { with_timestamp._get_timestamp_or_duration.first }
+
+    before { Timecop.freeze(today) }
+
+    after { Timecop.return }
+
+    context 'when waiting for next Monday' do
+      let(:expected_time) { Time.utc(2018, 12, 10, 11, 0, 0) }
+
+      before { with_timestamp.monday(1) }
+
+      it 'waits until next week' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when waiting for next Monday at 1pm' do
+      let(:expected_time) { Time.utc(2018, 12, 3, 13, 0, 0) }
+
+      before { with_timestamp.monday(1).at('13') }
+
+      it 'waits until later today' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when waiting for the next Monday at 9am' do
+      let(:expected_time) { Time.utc(2018, 12, 10, 9, 0, 0) }
+
+      before { with_timestamp.monday(1).at('9') }
+
+      it 'waits until next week' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when waiting for next 3rd of the month' do
+      let(:expected_time) { Time.utc(2019, 1, 3, 11, 0, 0) }
+
+      before { with_timestamp.day_of_month(3) }
+
+      it 'waits until next month' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when waiting for next 3rd of the month at 1pm' do
+      let(:expected_time) { Time.utc(2018, 12, 3, 13, 0, 0) }
+
+      before { with_timestamp.day_of_month(3).at('13') }
+
+      it 'waits until later today' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when waiting for next 3rd of the month at 9am' do
+      let(:expected_time) { Time.utc(2019, 1, 3, 9, 0, 0) }
+
+      before { with_timestamp.day_of_month(3).at('9') }
+
+      it 'waits until next month' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+  end
 end

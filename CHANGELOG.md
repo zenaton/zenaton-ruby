@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changes
 - Update Zenaton engine URL to point to the new subdomain.
 
+### Fixed
+- When creating a `Wait` task which uses both `#at` (to specify time) and either
+  `#day_of_month` or `#monday` et al (to set day), it was surprising that the
+  wait task only waited for next week/month when it would make sense to wait for
+  later the same day. For example, on a Monday at 1 p.m, it waits for a couple
+  of hours if you create a wait task with `.monday(1).at("15")`. Otherwise the
+  previous behaviour of waiting for next week is preserved.
+
 ## [0.3.1] - 2018-10-02
 ### Fixed
 - [Serialization]: Serializing ActiveModel object should no longer raise an

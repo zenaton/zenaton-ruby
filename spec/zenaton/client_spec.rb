@@ -137,7 +137,7 @@ RSpec.describe Zenaton::Client do
       it 'returns the default website url with params and api token' do
         url = client.website_url('my_resource', 'myParam=1')
         expect(url).to \
-          eq('https://zenaton.com/api/v1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId&myParam=1')
+          eq('https://api.zenaton.com/api/v1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId&myParam=1')
       end
     end
   end
@@ -301,7 +301,7 @@ RSpec.describe Zenaton::Client do
 
   describe '#find_workflow' do
     let(:expected_url) do
-      'https://zenaton.com/api/v1/instances?api_token=ApiToken&custom_id=MyCustomId&name=FakeWorkflow1&programming_language=Ruby'
+      'https://api.zenaton.com/api/v1/instances?api_token=ApiToken&custom_id=MyCustomId&name=FakeWorkflow1&programming_language=Ruby'
     end
     let(:result) do
       client.find_workflow('FakeWorkflow1', 'MyCustomId')

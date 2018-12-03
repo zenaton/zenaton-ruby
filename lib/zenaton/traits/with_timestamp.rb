@@ -27,12 +27,14 @@ module Zenaton
       # @return Array<Integer, NilClass>
       def _get_timestamp_or_duration
         return [nil, nil] unless @buffer
+
         now, now_dup = _init_now_then
         @_mode = nil
         @buffer.each do |time_unit, time_value|
           now_dup = _apply(time_unit, time_value, now, now_dup)
         end
         return [nil, diff_in_seconds(now, now_dup)] if @_mode.nil?
+
         [now_dup.to_i, nil]
       end
 
@@ -51,7 +53,7 @@ module Zenaton
       # rubocop:disable Metrics/MethodLength
       def _apply(method, value, now, now_dup)
         if WEEKDAYS.include?(method)
-          _weekday(value, method, now_dup)
+          _weekday(value, method, now, now_dup)
         elsif method == :timestamp
           _timestamp(value)
         elsif method == :at
@@ -64,8 +66,9 @@ module Zenaton
       end
       # rubocop:enable Metrics/MethodLength
 
-      def _weekday(value, day, now_dup)
+      def _weekday(value, day, now, now_dup)
         _set_mode(MODE_WEEK_DAY)
+        value -= 1 if later_today?(now, day)
         value.times { |_n| now_dup = now_dup.next_occurring(day) }
         now_dup
       end
@@ -77,8 +80,7 @@ module Zenaton
 
       def _at(time, now, now_dup)
         _set_mode(MODE_AT)
-        hour, min, sec = time.split(':').map(&:to_i)
-        now_dup = now_dup.change(hour: hour, min: min, sec: sec || 0)
+        now_dup = set_time_from_string(now_dup, time)
         now_dup += delay if now > now_dup
         now_dup
       end
@@ -99,7 +101,7 @@ module Zenaton
       def _day_of_month(day, now, now_dup)
         _set_mode(MODE_MONTH_DAY)
         now_dup = now_dup.change(day: day)
-        now_dup += 1.month if now > now_dup
+        now_dup += 1.month if now >= now_dup && !later_today?(now, day)
         now_dup
       end
 
@@ -107,6 +109,7 @@ module Zenaton
         error = 'Incompatible definition in Wait methods'
         raise ExternalError,  error if mode == @_mode
         raise ExternalError, error if timestamp_mode_set?(mode)
+
         @_mode = mode if @_mode.nil? || @_mode == MODE_AT
       end
 
@@ -114,10 +117,32 @@ module Zenaton
         (!@_mode.nil? && MODE_TIMESTAMP == mode) || (@_mode == MODE_TIMESTAMP)
       end
 
+      def later_today?(now, day)
+        today?(now, day) && later?(now)
+      end
+
+      def today?(now, day)
+        wday = WEEKDAYS[now.wday - 1]
+        now.mday == day || wday == day
+      end
+
+      def later?(now)
+        time = @buffer[:at]
+        return false unless time
+
+        now < set_time_from_string(now.dup, time)
+      end
+
+      def set_time_from_string(now, string_time)
+        hour, min, sec = string_time.split(':').map(&:to_i)
+        now.change(hour: hour, min: min, sec: sec || 0)
+      end
+
       class_methods do
         def timezone=(timezone)
           error = 'Unknown timezone'
           raise ExternalError, error unless valid_timezone?(timezone)
+
           @@_timezone = timezone
         end
 

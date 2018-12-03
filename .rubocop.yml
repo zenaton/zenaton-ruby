@@ -16,5 +16,10 @@ Metrics/ClassLength:
     - 'lib/zenaton/client.rb'
     - 'lib/zenaton/services/serializer.rb'
 
+Metrics/ModuleLength:
+  Enabled: true
+  Exclude:
+    - 'lib/zenaton/traits/with_timestamp.rb'
+
 Style/NumericLiterals:
   Enabled: false

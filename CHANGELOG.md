@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Calling `#dispatch` on tasks now allows to process tasks asynchronously
 
+### Changes
+- Update Zenaton engine URL to point to the new subdomain.
+
 ## [0.3.1] - 2018-10-02
 ### Fixed
 - [Serialization]: Serializing ActiveModel object should no longer raise an

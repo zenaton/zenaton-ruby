@@ -10,7 +10,7 @@ RSpec.describe Zenaton::Engine do
     instance_double(Zenaton::Processor, process: nil)
   end
   let(:client) do
-    instance_double(Zenaton::Client, start_workflow: nil)
+    instance_double(Zenaton::Client, start_workflow: nil, start_task: nil)
   end
   let(:task) { FakeTask1.new }
   let(:workflow) { FakeWorkflow1.new(1, 2) }
@@ -169,6 +169,10 @@ RSpec.describe Zenaton::Engine do
         expect(results).to be_nil
       end
 
+      it 'sends tasks to the client' do
+        expect(client).to have_received(:start_task).with(task)
+      end
+
       it 'sends workflows to the client' do
         expect(client).to have_received(:start_workflow).with(workflow)
       end
@@ -184,6 +188,10 @@ RSpec.describe Zenaton::Engine do
 
       it 'returns nothing' do
         expect(results).to be_nil
+      end
+
+      it 'does not send tasks to the client' do
+        expect(client).not_to have_received(:start_task).with(task)
       end
 
       it 'does not send workflows to the client' do

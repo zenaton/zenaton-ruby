@@ -15,6 +15,7 @@ RSpec.describe Zenaton::Client do
     )
   end
   let(:workflow) { FakeWorkflow1.new(1, 2) }
+  let(:task) { FakeTask3.new(1, 2) }
   let(:event) { FakeEvent.new }
   let(:version) { FakeVersion.new(1, 2) }
   let(:workflow_data) { { 'name' => 'Zenaton::Interfaces::Workflow' } }
@@ -138,6 +139,29 @@ RSpec.describe Zenaton::Client do
         expect(url).to \
           eq('https://zenaton.com/api/v1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId&myParam=1')
       end
+    end
+  end
+
+  describe '#start_task' do
+    let(:start_task) { client.start_task(task) }
+    let(:expected_url) { 'http://localhost:4001/api/v_newton/tasks?' }
+    let(:expected_hash) do
+      {
+        'programming_language' => 'Ruby',
+        'name' => 'FakeTask3',
+        'maxProcessingTime' => nil,
+        'data' => {
+          'o' => '@zenaton#0',
+          's' => [{ 'a' => { :@arg1 => 1, :@arg2 => 2 } }]
+        }.to_json
+      }
+    end
+
+    before { start_task }
+
+    it 'sends the serialized task to the worker' do
+      expect(http).to have_received(:post)
+        .with(expected_url, expected_hash)
     end
   end
 

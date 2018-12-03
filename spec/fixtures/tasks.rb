@@ -13,3 +13,14 @@ class FakeTask2 < Zenaton::Interfaces::Task
     'result2'
   end
 end
+
+class FakeTask3 < Zenaton::Interfaces::Task
+  def initialize(arg1, arg2)
+    @arg1 = arg1
+    @arg2 = arg2
+  end
+
+  def handle
+    'result3'
+  end
+end

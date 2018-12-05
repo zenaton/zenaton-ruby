@@ -73,7 +73,7 @@ RSpec.describe Zenaton::Client do
       end
 
       it 'returns the worker url with params' do
-        url = client.worker_url('my_resource', 'myParam=1')
+        url = client.worker_url('my_resource', 'myParam' => 1)
         expect(url).to \
           eq('http://192.168.1.1:42/api/v_newton/my_resource?myParam=1')
       end
@@ -90,28 +90,43 @@ RSpec.describe Zenaton::Client do
         ENV.delete('ZENATON_WORKER_PORT')
       end
 
-      it 'returns the worker url with params and app env' do
-        url = client.worker_url('my_resource', 'myParam=1')
+      it 'returns the worker url with app env' do
+        url = client.worker_url('my_resource')
         expect(url).to \
-          eq('http://192.168.1.1:42/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId&myParam=1')
+          eq('http://192.168.1.1:42/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId')
+      end
+
+      it 'encodes query params' do
+        url = client.worker_url('my_resource', 'this+that' => '@')
+        expect(url).to match(/this%2Bthat=%40/)
       end
     end
 
     context 'with instances variables but no environment variables set' do
       before { described_class.init('AppId', 'ApiToken', 'AppEnv') }
 
-      it 'returns the default worker url with params and app env' do
-        url = client.worker_url('my_resource', 'myParam=1')
+      it 'returns the default worker url with app env' do
+        url = client.worker_url('my_resource')
         expect(url).to \
-          eq('http://localhost:4001/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId&myParam=1')
+          eq('http://localhost:4001/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId')
+      end
+
+      it 'encodes query params' do
+        url = client.worker_url('my_resource', 'this+that' => '@')
+        expect(url).to match(/this%2Bthat=%40/)
       end
     end
 
     context 'with no environment nor instances variables set' do
-      it 'returns the default worker url with params' do
-        url = client.worker_url('my_resource', 'myParam=1')
+      it 'returns the default worker url' do
+        url = client.worker_url('my_resource')
         expect(url).to \
-          eq('http://localhost:4001/api/v_newton/my_resource?myParam=1')
+          eq('http://localhost:4001/api/v_newton/my_resource?')
+      end
+
+      it 'encodes query params' do
+        url = client.worker_url('my_resource', 'this+that' => '@')
+        expect(url).to match(/this%2Bthat=%40/)
       end
     end
   end
@@ -126,18 +141,28 @@ RSpec.describe Zenaton::Client do
         ENV.delete('ZENATON_API_URL')
       end
 
-      it 'returns the website url with params and api token' do
-        url = client.website_url('my_resource', 'myParam=1')
+      it 'returns the website url with api token' do
+        url = client.website_url('my_resource')
         expect(url).to \
-          eq('http://192.168.1.1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId&myParam=1')
+          eq('http://192.168.1.1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId')
+      end
+
+      it 'encodes query params' do
+        url = client.website_url('my_resource', 'this+that' => '@')
+        expect(url).to match(/this%2Bthat=%40/)
       end
     end
 
     context 'with no environment variables set' do
-      it 'returns the default website url with params and api token' do
-        url = client.website_url('my_resource', 'myParam=1')
+      it 'returns the default website url api token' do
+        url = client.website_url('my_resource')
         expect(url).to \
-          eq('https://api.zenaton.com/api/v1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId&myParam=1')
+          eq('https://api.zenaton.com/api/v1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId')
+      end
+
+      it 'encodes query params' do
+        url = client.website_url('my_resource', 'this+that' => '@')
+        expect(url).to match(/this%2Bthat=%40/)
       end
     end
   end
@@ -301,7 +326,7 @@ RSpec.describe Zenaton::Client do
 
   describe '#find_workflow' do
     let(:expected_url) do
-      'https://api.zenaton.com/api/v1/instances?api_token=ApiToken&custom_id=MyCustomId&name=FakeWorkflow1&programming_language=Ruby'
+      'https://api.zenaton.com/api/v1/instances?custom_id=MyCustomId&name=FakeWorkflow1&programming_language=Ruby&api_token=ApiToken'
     end
     let(:result) do
       client.find_workflow('FakeWorkflow1', 'MyCustomId')

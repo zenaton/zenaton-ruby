@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   later the same day. For example, on a Monday at 1 p.m, it waits for a couple
   of hours if you create a wait task with `.monday(1).at("15")`. Otherwise the
   previous behaviour of waiting for next week is preserved.
+- Fix encoding of query parameters when searching for existing workflows
 
 ## [0.3.1] - 2018-10-02
 ### Fixed

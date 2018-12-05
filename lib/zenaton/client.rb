@@ -64,23 +64,24 @@ module Zenaton
 
     # Gets the url for the workers
     # @param resource [String] the endpoint for the worker
-    # @param params [String] url encoded parameters to include in request
+    # @param params [Hash] query params to be url encoded
     # @return [String] the workers url with parameters
-    def worker_url(resource = '', params = '')
+    def worker_url(resource = '', params = {})
       base_url = ENV['ZENATON_WORKER_URL'] || ZENATON_WORKER_URL
       port = ENV['ZENATON_WORKER_PORT'] || DEFAULT_WORKER_PORT
-      url = "#{base_url}:#{port}/api/#{WORKER_API_VERSION}/#{resource}?"
-      add_app_env(url, params)
+      url = "#{base_url}:#{port}/api/#{WORKER_API_VERSION}/#{resource}"
+      append_params_to_url(url, params)
     end
 
     # Gets the url for zenaton api
     # @param resource [String] the endpoint for the api
-    # @param params [String] url encoded parameters to include in request
+    # @param params [Hash] query params to be url encoded
     # @return [String] the api url with parameters
-    def website_url(resource = '', params = '')
+    def website_url(resource = '', params = {})
       api_url = ENV['ZENATON_API_URL'] || ZENATON_API_URL
-      url = "#{api_url}/#{resource}?#{API_TOKEN}=#{@api_token}&"
-      add_app_env(url, params)
+      url = "#{api_url}/#{resource}"
+      params[API_TOKEN] = @api_token
+      append_params_to_url(url, params)
     end
 
     # Start a single task
@@ -140,7 +141,7 @@ module Zenaton
     # @param custom_id [String] the custom ID of the workflow
     # @return [Zenaton::Interfaces::Workflow, nil]
     def find_workflow(workflow_name, custom_id)
-      params = "#{ATTR_ID}=#{custom_id}&#{ATTR_NAME}=#{workflow_name}&#{ATTR_PROG}=#{PROG}" # rubocop:disable Metrics/LineLength
+      params = { ATTR_ID => custom_id, ATTR_NAME => workflow_name, ATTR_PROG => PROG }
       data = @http.get(instance_website_url(params))['data']
       data && @properties.object_from(
         data['name'],
@@ -169,18 +170,18 @@ module Zenaton
 
     private
 
-    def add_app_env(url, params)
-      app_env = @app_env ? "#{APP_ENV}=#{@app_env}&" : ''
-      app_id = @app_id ? "#{APP_ID}=#{@app_id}&" : ''
+    def append_params_to_url(url, params)
+      params[APP_ENV] = @app_env if @app_env
+      params[APP_ID] = @app_id if @app_id
 
-      "#{url}#{app_env}#{app_id}#{params}"
+      "#{url}?#{URI.encode_www_form(params)}"
     end
 
     def instance_website_url(params)
       website_url('instances', params)
     end
 
-    def instance_worker_url(params = '')
+    def instance_worker_url(params = {})
       worker_url('instances', params)
     end
 
@@ -216,7 +217,7 @@ module Zenaton
     end
 
     def update_instance(workflow_name, custom_id, mode)
-      params = "#{ATTR_ID}=#{custom_id}"
+      params = { ATTR_ID => custom_id }
       url = instance_worker_url(params)
       options = {
         ATTR_PROG => PROG,

@@ -141,7 +141,8 @@ module Zenaton
     # @param custom_id [String] the custom ID of the workflow
     # @return [Zenaton::Interfaces::Workflow, nil]
     def find_workflow(workflow_name, custom_id)
-      params = { ATTR_ID => custom_id, ATTR_NAME => workflow_name, ATTR_PROG => PROG }
+      params = { ATTR_ID => custom_id, ATTR_NAME => workflow_name }
+      params[ATTR_PROG] = PROG
       data = @http.get(instance_website_url(params))['data']
       data && @properties.object_from(
         data['name'],

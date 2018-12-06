@@ -72,11 +72,20 @@ RSpec.describe Zenaton::Client do
         ENV.delete('ZENATON_WORKER_PORT')
       end
 
-      it 'returns the worker url with params' do
+      it 'returns the worker url with hash params' do
         url = client.worker_url('my_resource', 'myParam' => 1)
         expect(url).to \
           eq('http://192.168.1.1:42/api/v_newton/my_resource?myParam=1')
       end
+
+      # rubocop:disable RSpec/MultipleExpectations
+      it 'returns the worker url with string params' do
+        expect do
+          url = client.worker_url('my_resource', 'myParam=1')
+          expect(url).to match(/myParam=1/)
+        end.to output(/WARNING/).to_stderr
+      end
+      # rubocop:enable RSpec/MultipleExpectations
     end
 
     context 'with environment and instances variables set' do
@@ -147,7 +156,16 @@ RSpec.describe Zenaton::Client do
           eq('http://192.168.1.1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId')
       end
 
-      it 'encodes query params' do
+      # rubocop:disable RSpec/MultipleExpectations
+      it 'returns the worker url with string params' do
+        expect do
+          url = client.website_url('my_resource', 'param=1')
+          expect(url).to match(/param=1/)
+        end.to output(/WARNING/).to_stderr
+      end
+      # rubocop:enable RSpec/MultipleExpectations
+
+      it 'urlencodes hash params' do
         url = client.website_url('my_resource', 'this+that' => '@')
         expect(url).to match(/this%2Bthat=%40/)
       end

@@ -64,24 +64,34 @@ module Zenaton
 
     # Gets the url for the workers
     # @param resource [String] the endpoint for the worker
-    # @param params [Hash] query params to be url encoded
+    # @param params [Hash|String] query params to be url encoded
     # @return [String] the workers url with parameters
     def worker_url(resource = '', params = {})
       base_url = ENV['ZENATON_WORKER_URL'] || ZENATON_WORKER_URL
       port = ENV['ZENATON_WORKER_PORT'] || DEFAULT_WORKER_PORT
       url = "#{base_url}:#{port}/api/#{WORKER_API_VERSION}/#{resource}"
-      append_params_to_url(url, params)
+
+      if params.is_a?(Hash)
+        append_params_to_url(url, params)
+      else
+        add_app_env("#{url}?", params)
+      end
     end
 
     # Gets the url for zenaton api
     # @param resource [String] the endpoint for the api
-    # @param params [Hash] query params to be url encoded
+    # @param params [Hash|String] query params to be url encoded
     # @return [String] the api url with parameters
     def website_url(resource = '', params = {})
       api_url = ENV['ZENATON_API_URL'] || ZENATON_API_URL
       url = "#{api_url}/#{resource}"
-      params[API_TOKEN] = @api_token
-      append_params_to_url(url, params)
+
+      if params.is_a?(Hash)
+        params[API_TOKEN] = @api_token
+        append_params_to_url(url, params)
+      else
+        add_app_env("#{url}?#{API_TOKEN}=#{@api_token}&", params)
+      end
     end
 
     # Start a single task
@@ -170,6 +180,22 @@ module Zenaton
     end
 
     private
+
+    # DEPRECATED: This implementation does not safely encode the parameters to
+    # be passed as query params in a get request. This method gets called by
+    # agents up to version 0.4.5
+    def add_app_env(url, params)
+      deprecation_warning = <<~WARN
+        [WARNING] You are running a Zenaton agent with a version <= 0.4.5
+                  Please consider upgrading to a more recent version.
+      WARN
+      warn(deprecation_warning)
+
+      app_env = @app_env ? "#{APP_ENV}=#{@app_env}&" : ''
+      app_id = @app_id ? "#{APP_ID}=#{@app_id}&" : ''
+
+      "#{url}#{app_env}#{app_id}#{params}"
+    end
 
     def append_params_to_url(url, params)
       params[APP_ENV] = @app_env if @app_env

@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   of hours if you create a wait task with `.monday(1).at("15")`. Otherwise the
   previous behaviour of waiting for next week is preserved.
 - Fix encoding of query parameters when searching for existing workflows
+- Now waiting for the 31st should wait for the next occurrence of the 31st even
+  if the current month does not have 31 days.
 
 ## [0.3.1] - 2018-10-02
 ### Fixed

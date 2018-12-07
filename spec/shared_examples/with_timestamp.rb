@@ -330,7 +330,7 @@ RSpec.shared_examples 'WithTimestamp' do |*initial_args|
     end
   end
 
-  context 'when today is Monday the 3rd of December 2012, at 11am' do
+  context 'when today is Monday the 3rd of December 2018, at 11am' do
     let(:today) { Time.utc(2018, 12, 3, 11, 0, 0) }
     let(:timestamp) { with_timestamp._get_timestamp_or_duration.first }
 
@@ -394,6 +394,82 @@ RSpec.shared_examples 'WithTimestamp' do |*initial_args|
       before { with_timestamp.day_of_month(3).at('9') }
 
       it 'waits until next month' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+  end
+
+  describe '#day_of_month(31)' do
+    let(:timestamp) { with_timestamp._get_timestamp_or_duration.first }
+
+    before do
+      Timecop.freeze(today)
+      with_timestamp.day_of_month(31)
+    end
+
+    after { Timecop.return }
+
+    context 'when today is 03/02/19' do
+      let(:today) { Time.utc(2019, 2, 3, 11, 0, 0) }
+      let(:expected_time) { Time.utc(2019, 3, 31, 11, 0, 0) }
+
+      it 'waits until the 31st of March' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when today is 03/03/19' do
+      let(:today) { Time.utc(2019, 3, 3, 11, 0, 0) }
+      let(:expected_time) { Time.utc(2019, 3, 31, 11, 0, 0) }
+
+      it 'waits until the 31st of March' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when today is 03/04/19' do
+      let(:today) { Time.utc(2019, 4, 3, 11, 0, 0) }
+      let(:expected_time) { Time.utc(2019, 5, 31, 11, 0, 0) }
+
+      it 'waits until the 31st of May' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+  end
+
+  describe '#day_of_month(30)' do
+    let(:timestamp) { with_timestamp._get_timestamp_or_duration.first }
+
+    before do
+      Timecop.freeze(today)
+      with_timestamp.day_of_month(30)
+    end
+
+    after { Timecop.return }
+
+    context 'when today is 03/02/19' do
+      let(:today) { Time.utc(2019, 2, 3, 11, 0, 0) }
+      let(:expected_time) { Time.utc(2019, 3, 30, 11, 0, 0) }
+
+      it 'waits until the 30th of March' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when today is 03/03/19' do
+      let(:today) { Time.utc(2019, 3, 3, 11, 0, 0) }
+      let(:expected_time) { Time.utc(2019, 3, 30, 11, 0, 0) }
+
+      it 'waits until the 30th of March' do
+        expect(timestamp).to eq(expected_time.to_i)
+      end
+    end
+
+    context 'when today is 03/04/19' do
+      let(:today) { Time.utc(2019, 4, 3, 11, 0, 0) }
+      let(:expected_time) { Time.utc(2019, 4, 30, 11, 0, 0) }
+
+      it 'waits until the 30th of April' do
         expect(timestamp).to eq(expected_time.to_i)
       end
     end

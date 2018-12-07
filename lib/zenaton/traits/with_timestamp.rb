@@ -100,7 +100,7 @@ module Zenaton
 
       def _day_of_month(day, now, now_dup)
         _set_mode(MODE_MONTH_DAY)
-        now_dup = now_dup.change(day: day)
+        now_dup += 1.day until now_dup.mday == day
         now_dup += 1.month if now >= now_dup && !later_today?(now, day)
         now_dup
       end

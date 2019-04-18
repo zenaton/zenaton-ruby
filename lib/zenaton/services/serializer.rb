@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'zenaton/services/properties'
+require 'active_support/core_ext/hash/indifferent_access'
 
 module Zenaton
   module Services
@@ -158,7 +159,7 @@ module Zenaton
       end
 
       def decode_legacy_hash(hash)
-        transform_values(hash, &method(:decode_element))
+        transform_values(hash, &method(:decode_element)).with_indifferent_access
       end
 
       def decode_array(id, array)

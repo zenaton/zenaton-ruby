@@ -430,6 +430,9 @@ RSpec.describe Zenaton::Services::Serializer do
 
       it 'returns the hash' do
         expect(decoded).to eq('key' => 'value')
+        # string and symbol keys are encoded in the same format
+        expect(decoded['key']).to eq('value')
+        expect(decoded[:key]).to eq('value')
       end
     end
 

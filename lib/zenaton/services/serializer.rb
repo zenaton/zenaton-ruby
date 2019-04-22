@@ -16,6 +16,17 @@ module Zenaton
       KEY_DATA = 'd' # JSON key for json compatibles types
       KEY_STORE = 's' # JSON key for deserialized complex object
 
+      # Classes of basic objects that can be converted directly into JSON
+      BASIC_TYPES = [
+        String,
+        Symbol,
+        Integer,
+        Float,
+        TrueClass,
+        FalseClass,
+        NilClass
+      ].freeze
+
       def initialize
         @properties = Properties.new
       end
@@ -57,12 +68,7 @@ module Zenaton
       private
 
       def basic_type?(data)
-        data.is_a?(String) \
-          || data.is_a?(Integer) \
-          || data.is_a?(Float) \
-          || data.is_a?(TrueClass) \
-          || data.is_a?(FalseClass) \
-          || data.nil?
+        data.class.ancestors.any? { |klass| BASIC_TYPES.include?(klass) }
       end
 
       def encode_value(value)

@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 require 'singleton'
-require 'json/add/core'
+require 'json/add/date'
+require 'json/add/date_time'
+require 'json/add/exception'
+require 'json/add/range'
+require 'json/add/regexp'
+require 'json/add/struct'
+require 'json/add/time'
 require 'json/add/rational'
 require 'json/add/complex'
 require 'json/add/bigdecimal'
@@ -42,8 +48,6 @@ module Zenaton
           klass.instance
         elsif NUMERIC_INITIALIATION.include?(klass)
           Kernel.send(klass.to_s, 1, 1)
-        elsif klass == Symbol
-          :place_holder
         else
           klass.allocate
         end

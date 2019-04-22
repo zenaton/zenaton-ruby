@@ -19,6 +19,14 @@ RSpec.describe Zenaton::Services::Serializer do
       end
     end
 
+    context 'with a symbol' do
+      let(:data) { :foobar }
+
+      it 'represents the atom as a data' do
+        expect(parsed_json).to eq('d' => 'foobar', 's' => [])
+      end
+    end
+
     context 'with an integer' do
       let(:data) { 1 }
 

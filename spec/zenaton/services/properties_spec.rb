@@ -103,7 +103,7 @@ RSpec.describe Zenaton::Services::Properties do
       let(:object) { :hello }
 
       it 'returns the symbols as a string' do
-        expect(result).to eq('s' => 'hello')
+        expect(result).to eq('hello')
       end
     end
 
@@ -227,15 +227,6 @@ RSpec.describe Zenaton::Services::Properties do
 
       it 'has the expected methods' do
         expect(setup_object.a).to eq(1)
-      end
-    end
-
-    context 'with symbols' do
-      let(:object_name) { 'Symbol' }
-      let(:props) { { 's' => 'hello' } }
-
-      it 'returns a symbol version of the string' do
-        expect(setup_object).to eq(:hello)
       end
     end
 

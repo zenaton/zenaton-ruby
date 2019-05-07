@@ -4,7 +4,7 @@
 [![CircleCI](https://img.shields.io/circleci/project/github/zenaton/zenaton-ruby/master.svg)](https://circleci.com/gh/zenaton/zenaton-ruby/tree/master)
 [![License](https://img.shields.io/github/license/zenaton/zenaton-ruby.svg)](LICENSE.txt)
 
-This Zenaton library for Ruby lets you code and launch workflows using Zenaton platform. You can sign up for an account at [https://zenaton/com](http://zenaton.com)
+This Zenaton library for Ruby lets you code and launch workflows using Zenaton platform. You can sign up for an account at [https://zenaton.com](http://zenaton.com)
 
 **DISCLAIMER** The ruby library is currently in public beta. Please open an
 issue if you find any bugs.
@@ -35,7 +35,7 @@ For more detailed examples, please check [Zenaton Ruby examples](https://github.
 
 ### Client Initialization
 
-You will need to export three environment variables: `ZENATON_APP_ID`, `ZENATON_API_TOKEN`, `ZENATON_APP_ENV`. You'll find them [here](https://zenaton/app/api).
+You will need to export three environment variables: `ZENATON_APP_ID`, `ZENATON_API_TOKEN`, `ZENATON_APP_ENV`. You'll find them [here](https://app.zenaton.com/api).
 
 Then you can initialize your Zenaton client:
 ```ruby
@@ -54,8 +54,8 @@ Zenaton::Client.init(app_id, api_token, app_env)
 Writing a workflow is as simple as:
 
 ```ruby
-class MyWorkflow < Zenaton::Interfaces::Worflow
-  include Zenatonable
+class MyWorkflow < Zenaton::Interfaces::Workflow
+  include Zenaton::Traits::Zenatonable
 
   def handle
     # Your workflow implementation
@@ -67,7 +67,7 @@ Note that your workflow implementation should be idempotent. See [documentation]
 Writing a task is as simple as:
 ```ruby
 class MyTask < Zenaton::Interfaces::Task
-  include Zenatonable
+  include Zenaton::Traits::Zenatonable
 
   def handle
     # Your task implementation
@@ -123,8 +123,8 @@ Zenaton::Client.init(
 We can create a workflow in `app/workflows/my_workflow.rb`.
 
 ```ruby
-class MyWorkflow < Zenaton::Interfaces::Worflow
-  include Zenatonable
+class MyWorkflow < Zenaton::Interfaces::Workflow
+  include Zenaton::Traits::Zenatonable
 
   def handle
     # Your workflow implementation
@@ -136,7 +136,7 @@ Note that your workflow implementation should be idempotent. See [documentation]
 And we can create a task in `app/tasks/my_task.rb`.
 ```ruby
 class MyTask < Zenaton::Interfaces::Task
-  include Zenatonable
+  include Zenaton::Traits::Zenatonable
 
   def handle
     # Your task implementation

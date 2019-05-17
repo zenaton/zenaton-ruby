@@ -6,9 +6,6 @@
 
 This Zenaton library for Ruby lets you code and launch workflows using Zenaton platform. You can sign up for an account at [https://zenaton.com](http://zenaton.com)
 
-**DISCLAIMER** The ruby library is currently in public beta. Please open an
-issue if you find any bugs.
-
 ## Requirements
 
 This gem has been tested with Ruby 2.3 and later.
@@ -42,11 +39,11 @@ Then you can initialize your Zenaton client:
 require 'dotenv/load' # We are using dotenv to load the variables from a .env file
 require 'zenaton'
 
-app_id = ENV['ZENATON_APP_ID']
-api_token = ENV['ZENATON_API_TOKEN']
-app_env = ENV['ZENATON_APP_ENV']
-
-Zenaton::Client.init(app_id, api_token, app_env)
+Zenaton::Client.init(
+  ENV['ZENATON_APP_ID'], 
+  ENV['ZENATON_API_TOKEN'], 
+  ENV['ZENATON_APP_ENV']
+)
 ```
 
 ### Writing Workflows and Tasks
@@ -98,25 +95,30 @@ where `.env` is the env file containing your credentials, and `boot.rb` is a fil
 ## Usage inside a Ruby on Rails application
 
 ### Client initialization
-
-Edit your application secrets with `rails credentials:edit` and add your Zenaton
-credentials to it (you'll find them [here](https://app.zenaton.com/api)). For
-example:
-```yml
-zenaton:
-  app_id: 123456
-  api_token: abcdefgh
-```
-
-Then create an initializer in `config/initializers/zenaton.rb` with the
-following:
+1) Create an initializer in `config/initializers/zenaton.rb` with the following:
 ```ruby
 Zenaton::Client.init(
-  Rails.application.credentials.zenaton[:app_id],
-  Rails.application.credentials.zenaton[:api_token],
-  Rails.env.production? ? 'production' : 'dev'
+  ENV['ZENATON_APP_ID'], 
+  ENV['ZENATON_API_TOKEN'], 
+  ENV['ZENATON_APP_ENV']
 )
 ```
+
+2) Add a `.env` file at the root of your project with [your credentials](https://app.zenaton.com/api):
+```
+ZENATON_API_URL=...
+ZENATON_APP_ID=...
+ZENATON_API_TOKEN=...
+```
+Don't forget to add it to your `.gitignore`:
+```
+.env
+```
+
+3) Add the [dotenv gem](https://github.com/bkeepers/dotenv) to your `Gemfile` to load these variables in developement:
+```ruby
+gem 'dotenv-rails', groups: [:development, :test]
+``` 
 
 ### Writing Workflows and Tasks
 
@@ -161,7 +163,7 @@ that you can start and configure from your application directory with
 
     $ zenaton start && zenaton listen --env=.env --rails
 
-where `.env` is the env file containing your credentials.
+where `.env` is the env file containing [your credentials](https://app.zenaton.com/api).
 
 **Note** In this example we created our workflows and tasks in the `/app`
 folder since Rails will autoload ruby files in that path. If you create your

@@ -35,7 +35,8 @@ For more detailed examples, please check [Zenaton Ruby examples](https://github.
 
 ### Client Initialization
 
-You will need to export three environment variables: `ZENATON_APP_ID`, `ZENATON_API_TOKEN`, `ZENATON_APP_ENV`. You'll find them [here](https://app.zenaton.com/api).
+You will need to export three environment variables: `ZENATON_APP_ID`, `ZENATON_API_TOKEN`, `ZENATON_APP_ENV`. You'll find them [here](https://app.zenaton.com
+).
 
 Then you can initialize your Zenaton client:
 ```ruby
@@ -100,7 +101,7 @@ where `.env` is the env file containing your credentials, and `boot.rb` is a fil
 ### Client initialization
 
 Edit your application secrets with `rails credentials:edit` and add your Zenaton
-credentials to it (you'll find them [here](https://zenaton/app/api)). For
+credentials to it (you'll find them [here](https://app.zenaton.com/api)). For
 example:
 ```yml
 zenaton:

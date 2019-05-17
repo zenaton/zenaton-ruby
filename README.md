@@ -100,7 +100,7 @@ where `.env` is the env file containing your credentials, and `boot.rb` is a fil
 ### Client initialization
 
 Edit your application secrets with `rails credentials:edit` and add your Zenaton
-credentials to it (you'll find them [here](https://zenaton/app/api)). For
+credentials to it (you'll find them [here](https://app.zenaton.com/api)). For
 example:
 ```yml
 zenaton:

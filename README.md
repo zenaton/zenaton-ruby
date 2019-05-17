@@ -59,7 +59,7 @@ class MyWorkflow < Zenaton::Interfaces::Workflow
   end
 end
 ```
-Note that your workflow implementation should be idempotent. See [documentation](https://zenaton.com/app/documentation#workflow-basics-implementation).
+Note that your workflow implementation should be idempotent. See [documentation](https://zenaton.com/documentation/ruby/workflow-basics#implementation).
 
 Writing a task is as simple as:
 ```ruby
@@ -90,7 +90,7 @@ that you can start and configure with
 
     $ zenaton start && zenaton listen --env=.env --boot=boot.rb
 
-where `.env` is the env file containing your credentials, and `boot.rb` is a file that will be included before each task execution - this file should load all workflow classes.
+where `.env` is the env file containing [your credentials](https://app.zenaton.com/api), and `boot.rb` is a file that will be included before each task execution - this file should load all workflow classes.
 
 ## Usage inside a Ruby on Rails application
 
@@ -115,7 +115,7 @@ Don't forget to add it to your `.gitignore`:
 .env
 ```
 
-3) Add the [dotenv gem](https://github.com/bkeepers/dotenv) to your `Gemfile` to load these variables in developement:
+3) Add the [dotenv gem](https://github.com/bkeepers/dotenv) to your `Gemfile` to load these variables in development:
 ```ruby
 gem 'dotenv-rails', groups: [:development, :test]
 ``` 
@@ -145,6 +145,7 @@ class MyTask < Zenaton::Interfaces::Task
   end
 end
 ```
+Note that you may need to run `$ spring stop` to force Spring to load your app fresh.
 
 ### Lauching a workflow
 

@@ -167,6 +167,8 @@ class MyTask < Zenaton::Interfaces::Task
 end
 ```
 
+[Check the documentation for more details.](https://zenaton.com/documentation/ruby/tasks)
+
 ### Writing a workflow
 
 ```ruby
@@ -179,9 +181,11 @@ class MyWorkflow < Zenaton::Interfaces::Workflow
 end
 ```
 
-Note that your workflow implementation should be idempotent. See [documentation](https://zenaton.com/app/documentation#workflow-basics-implementation).
+Note that your workflow implementation should be idempotent.
 
 With Ruby on Rails, you may need to run `$ spring stop` to force Spring to load your app fresh.
+
+[Check the documentation for more details.](https://zenaton.com/documentation/ruby/workflow-basics)
 
 ### Lauching a workflow
 

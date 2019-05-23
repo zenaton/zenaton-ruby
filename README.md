@@ -1,8 +1,3 @@
-[![Gem Version](https://img.shields.io/gem/v/zenaton.svg)](https://rubygems.org/gems/zenaton)
-[![Gem Downloads](https://img.shields.io/gem/dt/zenaton.svg)](https://rubygems.org/gems/zenaton)
-[![CircleCI](https://img.shields.io/circleci/project/github/zenaton/zenaton-ruby/master.svg)](https://circleci.com/gh/zenaton/zenaton-ruby/tree/master)
-[![License](https://img.shields.io/github/license/zenaton/zenaton-ruby.svg)](LICENSE.txt)
-
 <p align="center">
 <img src="https://user-images.githubusercontent.com/36400935/58254828-e5176880-7d6b-11e9-9094-3f46d91faeee.png" /><br>
   Easy Asynchronous Jobs Manager for Developers <br>
@@ -13,7 +8,13 @@
      ·
   <a href="https://github.com/zenaton/examples-ruby"> Examples in Ruby </a>
    ·
-  <a href="https://app.zenaton.com/tutorial/ruby"> Tutorial in Ruby </a> <br>
+  <a href="https://app.zenaton.com/tutorial/ruby"> Tutorial in Ruby </a>
+
+  <p align="center">
+  <a href="https://rubygems.org/gems/zenaton"><img src="https://img.shields.io/gem/v/zenaton.svg" alt="Gem Version"></a>
+  <a href="https://circleci.com/gh/zenaton/zenaton-ruby/tree/master" rel="nofollow" target="_blank"><img src="https://img.shields.io/circleci/project/github/zenaton/zenaton-ruby/master.svg" alt="CircleCI" style="max-width:100%;"></a>
+  <a href="/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/zenaton/zenaton-ruby.svg" alt="License" style="max-width:100%;"></a>
+</p>
 </p>
 
 <details>
@@ -189,6 +190,10 @@ We can start a workflow from anywhere in our application code with:
 ```ruby
 MyWorkflow.new.dispatch
 ```
+
+## Documentation
+
+Please see https://zenaton.com/documentation/ruby/getting-started for complete documentation.
 
 ## Development
 

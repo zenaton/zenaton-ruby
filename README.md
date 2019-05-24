@@ -32,15 +32,15 @@
 - [Setup with plain Ruby](#setup-with-plain-ruby)
   - [Client Initialization](#client-initialization)
   - [Worker Installation](#worker-installation-1)
-- [Tasks and Workflows](#tasks-and-workflows)
+- [Usage](#usage)
   - [Writing a task](#writing-a-task)
   - [Writing a workflow](#writing-a-workflow)
   - [Lauching a workflow](#lauching-a-workflow)
+- [Documentation](#documentation)
 - [Development](#development)
 - [Contributing](#contributing)
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
-- [Contact](#contact)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -151,7 +151,7 @@ that you can start and configure with
 
 where `.env` is the env file containing [your credentials](https://app.zenaton.com/api), and `boot.rb` is a file that will be included before each task execution - this file should load all workflow classes.
 
-## Tasks and Workflows
+## Usage
 
 For more detailed examples, please check [Zenaton Ruby examples](https://github.com/zenaton/examples-ruby).
 

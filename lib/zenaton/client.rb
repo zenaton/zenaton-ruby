@@ -33,8 +33,9 @@ module Zenaton
 
     PROG = 'Ruby' # The current programming language
 
-    EVENT_INPUT = 'event_input' # Parameter name for event data
+    EVENT_INPUT = 'event_input' # Parameter name for event input
     EVENT_NAME = 'event_name' # Parameter name for event name
+    EVENT_DATA = 'event_data' # Parameter name for event data
 
     WORKFLOW_KILL = 'kill' # Worker update mode to stop a worker
     WORKFLOW_PAUSE = 'pause' # Worker udpate mode to pause a worker
@@ -174,7 +175,8 @@ module Zenaton
         ATTR_NAME => workflow_name,
         ATTR_ID => custom_id,
         EVENT_NAME => event.class.name,
-        EVENT_INPUT => @serializer.encode(@properties.from(event))
+        EVENT_INPUT => @serializer.encode(@properties.from(event)),
+        EVENT_DATA => @serializer.encode(event)
       }
       @http.post(send_event_url, body)
     end

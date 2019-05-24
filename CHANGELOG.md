@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  ### Changes
 - Fix symbol json encoding breaking compatibility with some gems
 
+### Added
+- Added `event_data` property when sending event
+
 ## [0.4.0] - 2019-03-25
 ### Added
 - Calling `#dispatch` on tasks now allows to process tasks asynchronously

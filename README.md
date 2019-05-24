@@ -118,7 +118,7 @@ where `.env` is the env file containing [your credentials](https://app.zenaton.c
 folder since Rails will autoload ruby files in that path. If you create your
 workflows and tasks somewhere else, ensure Rails loads them at boot time.
 
-Your are now ready to [write tasks and workflows](#writing-tasks-and-worflows) !
+Your are now ready to [write tasks and workflows](#usage) !
 
 ## Setup with plain Ruby
 

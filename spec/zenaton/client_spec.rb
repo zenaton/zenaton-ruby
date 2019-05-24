@@ -418,7 +418,14 @@ RSpec.describe Zenaton::Client do
         'name' => 'MyWorkflow',
         'custom_id' => 'MyCustomId',
         'event_name' => 'FakeEvent',
-        'event_input' => { 'o' => '@zenaton#0', 's' => [{ 'a' => {} }] }.to_json
+        'event_input' => {
+          'o' => '@zenaton#0',
+          's' => [{ 'a' => {} }]
+        }.to_json,
+        'event_data' => {
+          'o' => '@zenaton#0',
+          's' => [{ 'n' => 'FakeEvent', 'p' => {} }]
+        }.to_json
       }
     end
 

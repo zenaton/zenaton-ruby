@@ -19,6 +19,17 @@ RSpec.describe Zenaton::Services::Serializer do
       end
     end
 
+    context 'with a symbol' do
+      let(:data) { :foobar }
+
+      it 'represents the symbol as a data' do
+        expect(parsed_json).to eq(
+          'o' => '@zenaton#0',
+          's' => [{ 'n' => 'Symbol', 'p' => { 's' => 'foobar' } }]
+        )
+      end
+    end
+
     context 'with an integer' do
       let(:data) { 1 }
 
@@ -322,6 +333,19 @@ RSpec.describe Zenaton::Services::Serializer do
 
       it 'returns the string' do
         expect(decoded).to eq('e')
+      end
+    end
+
+    context 'with a symbol do' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{ 'n' => 'Symbol', 'p' => { 's' => 'foobar' } }]
+        }.to_json
+      end
+
+      it 'returns the symbol' do
+        expect(decoded).to eq(:foobar)
       end
     end
 

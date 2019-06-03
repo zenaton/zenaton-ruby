@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 require 'singleton'
-require 'json/add/core'
+require 'json/add/date'
+require 'json/add/date_time'
+require 'json/add/exception'
+require 'json/add/range'
+require 'json/add/regexp'
+require 'json/add/struct'
+require 'json/add/time'
 require 'json/add/rational'
 require 'json/add/complex'
 require 'json/add/bigdecimal'
@@ -97,14 +103,22 @@ module Zenaton
       end
 
       def from_complex_type(object)
-        JSON.parse(object.to_json).tap do |attributes|
-          attributes.delete('json_class')
+        if object.is_a?(Symbol)
+          { 's' => object.to_s }
+        else
+          JSON.parse(object.to_json).tap do |attributes|
+            attributes.delete('json_class')
+          end
         end
       end
 
       def set_complex_type(object, props)
-        props['json_class'] = object.class.name
-        JSON(props.to_json)
+        if object.is_a?(Symbol)
+          props['s'].to_sym
+        else
+          props['json_class'] = object.class.name
+          JSON(props.to_json)
+        end
       end
 
       def special_case?(object)

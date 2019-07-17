@@ -3,6 +3,7 @@ PATH
   specs:
     zenaton (0.4.1)
       activesupport
+      fugit
       tzinfo-data
 
 GEM
@@ -22,6 +23,11 @@ GEM
       safe_yaml (~> 1.0.0)
     diff-lcs (1.3)
     docile (1.3.1)
+    et-orbi (1.2.1)
+      tzinfo
+    fugit (1.2.3)
+      et-orbi (~> 1.1, >= 1.1.8)
+      raabro (~> 1.1)
     hashdiff (0.3.7)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
@@ -37,6 +43,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     public_suffix (3.0.2)
+    raabro (1.1.6)
     rainbow (3.0.0)
     rake (10.5.0)
     rspec (3.7.0)
@@ -73,7 +80,7 @@ GEM
     timecop (0.9.1)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    tzinfo-data (1.2019.1)
+    tzinfo-data (1.2019.2)
       tzinfo (>= 1.0.0)
     unicode-display_width (1.4.0)
     vcr (4.0.0)
@@ -99,4 +106,4 @@ DEPENDENCIES
   zenaton!
 
 BUNDLED WITH
-   1.17.2
+   1.17.3

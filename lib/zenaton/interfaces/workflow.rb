@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require 'zenaton/interfaces/job'
+require 'zenaton/traits/repeatable'
 
 module Zenaton
   module Interfaces
     # @abstract Subclass and override {#handle} to implement a custom Workflow
     class Workflow < Job
+      include Traits::Repeatable
+
       # Method called to run the workflow
       def handle
         raise NotImplemented,

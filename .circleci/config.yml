@@ -54,6 +54,10 @@ jobs:
     <<: *shared
     docker:
        - image: circleci/ruby:2.5
+  "ruby-2.6":
+    <<: *shared
+    docker:
+       - image: circleci/ruby:2.6
 
 workflows:
   version: 2
@@ -62,3 +66,4 @@ workflows:
       - "ruby-2.3"
       - "ruby-2.4"
       - "ruby-2.5"
+      - "ruby-2.6"

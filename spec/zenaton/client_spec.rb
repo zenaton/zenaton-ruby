@@ -18,6 +18,7 @@ RSpec.describe Zenaton::Client do
   let(:task) { FakeTask3.new(1, 2) }
   let(:event) { FakeEvent.new }
   let(:version) { FakeVersion.new(1, 2) }
+  let(:repeatable_workflow) { workflow.repeat('@hourly') }
   let(:workflow_data) { { 'name' => 'Zenaton::Interfaces::Workflow' } }
 
   before do
@@ -186,25 +187,64 @@ RSpec.describe Zenaton::Client do
   end
 
   describe '#start_task' do
-    let(:start_task) { client.start_task(task) }
-    let(:expected_url) { 'http://localhost:4001/api/v_newton/tasks?' }
-    let(:expected_hash) do
-      {
-        'programming_language' => 'Ruby',
-        'name' => 'FakeTask3',
-        'maxProcessingTime' => nil,
-        'data' => {
-          'o' => '@zenaton#0',
-          's' => [{ 'a' => { :@arg1 => 1, :@arg2 => 2 } }]
-        }.to_json
-      }
+    context 'with a regular task' do
+      before { client.start_task(task) }
+
+      let(:expected_url) { 'http://localhost:4001/api/v_newton/tasks?' }
+      let(:expected_json) do
+        {
+          'programming_language' => 'Ruby',
+          'name' => 'FakeTask3',
+          'maxProcessingTime' => nil,
+          'data' => {
+            'o' => '@zenaton#0',
+            's' => [{ 'a' => { :@arg1 => 1, :@arg2 => 2 } }]
+          }.to_json
+        }
+      end
+
+      it 'sends the serialized task to the worker' do
+        expect(http).to have_received(:post)
+          .with(expected_url, expected_json)
+      end
     end
 
-    before { start_task }
+    context 'with a repeatable task' do
+      before { client.start_task(task.repeat('@hourly')) }
 
-    it 'sends the serialized task to the worker' do
-      expect(http).to have_received(:post)
-        .with(expected_url, expected_hash)
+      let(:expected_url) do
+        'http://localhost:4001/api/v_newton/scheduling/tasks?'
+      end
+
+      let(:expected_json) do
+        {
+          'programming_language' => 'Ruby',
+          'name' => 'FakeTask3',
+          'scheduling_cron' => '@hourly',
+          'data' => {
+            'o' => '@zenaton#0',
+            's' => [
+              {
+                'a' => {
+                  :@arg1 => 1,
+                  :@arg2 => 2,
+                  :@scheduling => '@zenaton#1'
+                }
+              }, {
+                'a' => {
+                  'cron' => '@hourly'
+                }
+              }
+            ]
+          }.to_json,
+          'maxProcessingTime' => nil
+        }
+      end
+
+      it 'sends to the task to the scheduling url' do
+        expect(http).to have_received(:post)
+          .with(expected_url, expected_json)
+      end
     end
   end
 
@@ -271,16 +311,51 @@ RSpec.describe Zenaton::Client do
     end
 
     context 'with a version workflow' do
+      before { start_version_workflow }
+
       it 'sends the version class name as the canonical name' do
-        start_version_workflow
         expect(http).to have_received(:post)
           .with(expected_url, hash_including('canonical_name' => 'FakeVersion'))
       end
 
       it 'sends the workflow name as the name' do
-        start_version_workflow
         expect(http).to have_received(:post)
           .with(expected_url, hash_including('name' => 'FakeWorkflow2'))
+      end
+    end
+
+    context 'with a repeatable workflow' do
+      before { client.start_workflow(repeatable_workflow) }
+
+      let(:expected_url) do
+        'http://localhost:4001/api/v_newton/scheduling/instances?'
+      end
+
+      let(:expected_params) do
+        {
+          'programming_language' => 'Ruby',
+          'scheduling_cron' => '@hourly',
+          'canonical_name' => nil,
+          'name' => 'FakeWorkflow1',
+          'data' => {
+            'o' => '@zenaton#0',
+            's' => [
+              { 'a' => {
+                '@first' => 1,
+                '@second' => 2,
+                '@scheduling' =>
+                '@zenaton#1'
+              } },
+              { 'a' => { 'cron' => '@hourly' } }
+            ]
+          }.to_json,
+          'custom_id' => nil
+        }
+      end
+
+      it 'posts to the scheduling url' do
+        expect(http).to have_received(:post)
+          .with(expected_url, expected_params)
       end
     end
   end

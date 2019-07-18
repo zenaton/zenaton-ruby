@@ -30,6 +30,7 @@ module Zenaton
     ATTR_MODE = 'mode' # Parameter name for the worker update mode
     # Parameter name for task maximum processing time
     ATTR_MAX_PROCESSING_TIME = 'maxProcessingTime'
+    ATTR_SCHEDULING_CRON = 'scheduling_cron' # Parameter name for the schedule
 
     PROG = 'Ruby' # The current programming language
 
@@ -98,29 +99,35 @@ module Zenaton
     # Start a single task
     # @param task [Zenaton::Interfaces::Task]
     def start_task(task)
-      max_processing_time = if task.respond_to?(:max_processing_time)
-                              task.max_processing_time
-                            end
-      @http.post(
-        worker_url('tasks'),
+      max_processing_time = task.try(:max_processing_time)
+      path = 'tasks'
+      params = {
         ATTR_PROG => PROG,
         ATTR_NAME => class_name(task),
         ATTR_DATA => @serializer.encode(@properties.from(task)),
         ATTR_MAX_PROCESSING_TIME => max_processing_time
-      )
+      }
+
+      path, params = add_scheduling_options(task, path, params)
+
+      @http.post(worker_url(path), params)
     end
 
     # Start the specified workflow
     # @param flow [Zenaton::Interfaces::Workflow]
     def start_workflow(flow)
-      @http.post(
-        instance_worker_url,
+      path = 'instances'
+      params = {
         ATTR_PROG => PROG,
         ATTR_CANONICAL => canonical_name(flow),
         ATTR_NAME => class_name(flow),
         ATTR_DATA => @serializer.encode(@properties.from(flow)),
         ATTR_ID => parse_custom_id_from(flow)
-      )
+      }
+
+      path, params = add_scheduling_options(flow, path, params)
+
+      @http.post(instance_worker_url(path), params)
     end
 
     # Stops a workflow
@@ -206,12 +213,21 @@ module Zenaton
       "#{url}?#{URI.encode_www_form(params)}"
     end
 
+    def add_scheduling_options(job, path, params)
+      if job.repeatable?
+        path = "scheduling/#{path}"
+        params[ATTR_SCHEDULING_CRON] = job.cron
+      end
+
+      [path, params]
+    end
+
     def instance_website_url(params)
       website_url('instances', params)
     end
 
-    def instance_worker_url(params = {})
-      worker_url('instances', params)
+    def instance_worker_url(path, params = {})
+      worker_url(path, params)
     end
 
     def send_event_url
@@ -247,7 +263,7 @@ module Zenaton
 
     def update_instance(workflow_name, custom_id, mode)
       params = { ATTR_ID => custom_id }
-      url = instance_worker_url(params)
+      url = instance_worker_url('instances', params)
       options = {
         ATTR_PROG => PROG,
         ATTR_NAME => workflow_name,

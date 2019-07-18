@@ -13,21 +13,26 @@ module Zenaton
       # Sets a repeatable frequency using cron notation
       # @param cron_expression [String]
       def repeat(cron_expression)
-        tap do
-          Fugit::Cron.do_parse(cron_expression)
-          @scheduling = { cron: cron_expression }
-        end
+        Fugit::Cron.do_parse(cron_expression)
+        @scheduling = { cron: cron_expression }
+        self
       rescue ArgumentError
         message = <<~TXT
           Could not parse `#{cron_expression}'.
           Make sure it is a valid cron string.
         TXT
+        @scheduling = { cron: nil }
         raise InvalidArgumentError, message
       end
 
       # Checks if a repeatable schedule has been set.
       def repeatable?
-        @scheduling
+        cron
+      end
+
+      # Returns the cron expression if any.
+      def cron
+        @scheduling && @scheduling[:cron]
       end
     end
   end

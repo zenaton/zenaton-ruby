@@ -15,6 +15,11 @@ RSpec.shared_examples 'Repeatable' do
         repeatable.repeat(cron)
         expect(repeatable).to be_repeatable
       end
+
+      it 'has a scheduling' do
+        repeatable.repeat(cron)
+        expect(repeatable.cron).to eq(cron)
+      end
     end
 
     context 'with second precision' do
@@ -27,6 +32,11 @@ RSpec.shared_examples 'Repeatable' do
       it 'becomes repeatable' do
         repeatable.repeat(cron)
         expect(repeatable).to be_repeatable
+      end
+
+      it 'has a scheduling' do
+        repeatable.repeat(cron)
+        expect(repeatable.cron).to eq(cron)
       end
     end
 
@@ -44,6 +54,24 @@ RSpec.shared_examples 'Repeatable' do
         rescue Zenaton::InvalidArgumentError
           expect(repeatable).not_to be_repeatable
         end
+      end
+
+      it 'does not have a scheduling' do
+        begin
+          repeatable.repeat(cron)
+        rescue Zenaton::InvalidArgumentError
+          expect(repeatable.cron).to be_nil
+        end
+      end
+    end
+
+    context 'without any cron' do
+      it 'is not repeatble' do
+        expect(repeatable).not_to be_repeatable
+      end
+
+      it 'has no scheduling' do
+        expect(repeatable.cron).to be_nil
       end
     end
   end

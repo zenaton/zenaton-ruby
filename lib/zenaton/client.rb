@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'securerandom'
 require 'singleton'
 require 'zenaton/services/http'
 require 'zenaton/services/properties'
@@ -22,6 +23,7 @@ module Zenaton
     APP_ID = 'app_id' # Parameter name for the application ID
     API_TOKEN = 'api_token' # Parameter name for the API token
 
+    ATTR_INTENT_ID = 'intent_id' # Internal parameter for retries
     ATTR_ID = 'custom_id' # Parameter name for custom ids
     ATTR_NAME = 'name' # Parameter name for workflow names
     ATTR_CANONICAL = 'canonical_name' # Parameter name for version name
@@ -98,11 +100,10 @@ module Zenaton
     # Start a single task
     # @param task [Zenaton::Interfaces::Task]
     def start_task(task)
-      max_processing_time = if task.respond_to?(:max_processing_time)
-                              task.max_processing_time
-                            end
+      max_processing_time = task.try(:max_processing_time)
       @http.post(
         worker_url('tasks'),
+        ATTR_INTENT_ID => SecureRandom.uuid,
         ATTR_PROG => PROG,
         ATTR_NAME => class_name(task),
         ATTR_DATA => @serializer.encode(@properties.from(task)),
@@ -115,6 +116,7 @@ module Zenaton
     def start_workflow(flow)
       @http.post(
         instance_worker_url,
+        ATTR_INTENT_ID => SecureRandom.uuid,
         ATTR_PROG => PROG,
         ATTR_CANONICAL => canonical_name(flow),
         ATTR_NAME => class_name(flow),
@@ -171,6 +173,7 @@ module Zenaton
     # @return [NilClass]
     def send_event(workflow_name, custom_id, event)
       body = {
+        ATTR_INTENT_ID => SecureRandom.uuid,
         ATTR_PROG => PROG,
         ATTR_NAME => workflow_name,
         ATTR_ID => custom_id,
@@ -249,6 +252,7 @@ module Zenaton
       params = { ATTR_ID => custom_id }
       url = instance_worker_url(params)
       options = {
+        ATTR_INTENT_ID => SecureRandom.uuid,
         ATTR_PROG => PROG,
         ATTR_NAME => workflow_name,
         ATTR_MODE => mode

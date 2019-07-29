@@ -19,6 +19,7 @@ RSpec.describe Zenaton::Client do
   let(:event) { FakeEvent.new }
   let(:version) { FakeVersion.new(1, 2) }
   let(:workflow_data) { { 'name' => 'Zenaton::Interfaces::Workflow' } }
+  let(:uuid) { 'some-very-valid-uuid4' }
 
   before do
     setup_client
@@ -190,6 +191,7 @@ RSpec.describe Zenaton::Client do
     let(:expected_url) { 'http://localhost:4001/api/v_newton/tasks?' }
     let(:expected_hash) do
       {
+        'intent_id' => uuid,
         'programming_language' => 'Ruby',
         'name' => 'FakeTask3',
         'maxProcessingTime' => nil,
@@ -214,6 +216,7 @@ RSpec.describe Zenaton::Client do
     let(:expected_url) { 'http://localhost:4001/api/v_newton/instances?' }
     let(:expected_hash) do
       {
+        'intent_id' => uuid,
         'programming_language' => 'Ruby',
         'canonical_name' => nil,
         'name' => 'FakeWorkflow1',
@@ -291,6 +294,7 @@ RSpec.describe Zenaton::Client do
     end
     let(:expected_options) do
       {
+        'intent_id' => uuid,
         'programming_language' => 'Ruby',
         'name' => 'MyWorkflow',
         'mode' => 'kill'
@@ -310,6 +314,7 @@ RSpec.describe Zenaton::Client do
     end
     let(:expected_options) do
       {
+        'intent_id' => uuid,
         'programming_language' => 'Ruby',
         'name' => 'MyWorkflow',
         'mode' => 'pause'
@@ -329,6 +334,7 @@ RSpec.describe Zenaton::Client do
     end
     let(:expected_options) do
       {
+        'intent_id' => uuid,
         'programming_language' => 'Ruby',
         'name' => 'MyWorkflow',
         'mode' => 'run'
@@ -414,6 +420,7 @@ RSpec.describe Zenaton::Client do
     end
     let(:expected_options) do
       {
+        'intent_id' => uuid,
         'programming_language' => 'Ruby',
         'name' => 'MyWorkflow',
         'custom_id' => 'MyCustomId',
@@ -439,5 +446,6 @@ RSpec.describe Zenaton::Client do
   def setup_client
     Singleton.__init__(described_class)
     allow(Zenaton::Services::Http).to receive(:new).and_return(http)
+    allow(SecureRandom).to receive(:uuid).and_return(uuid)
   end
 end

@@ -54,7 +54,7 @@ RSpec.describe Zenaton::Query::Builder do
       before do
         builder.where_id('MyId')
         allow(client).to receive(:find_workflow)
-          .with(FakeWorkflow1, 'MyId')
+          .with('FakeWorkflow1', 'MyId')
           .and_return(workflow)
       end
 
@@ -66,7 +66,7 @@ RSpec.describe Zenaton::Query::Builder do
     context 'without an id set' do
       before do
         allow(client).to receive(:find_workflow)
-          .with(FakeWorkflow1, nil)
+          .with('FakeWorkflow1', nil)
           .and_return(workflow)
       end
 
@@ -80,7 +80,7 @@ RSpec.describe Zenaton::Query::Builder do
     before do
       builder.where_id('MyId')
       allow(client).to receive(:send_event)
-        .with(FakeWorkflow1, 'MyId', event)
+        .with('FakeWorkflow1', 'MyId', event)
         .and_return(nil)
     end
 
@@ -98,7 +98,7 @@ RSpec.describe Zenaton::Query::Builder do
     before do
       builder.where_id('MyId')
       allow(client).to receive(:kill_workflow)
-        .with(FakeWorkflow1, 'MyId')
+        .with('FakeWorkflow1', 'MyId')
         .and_return(nil)
     end
 
@@ -116,7 +116,7 @@ RSpec.describe Zenaton::Query::Builder do
     before do
       builder.where_id('MyId')
       allow(client).to receive(:pause_workflow)
-        .with(FakeWorkflow1, 'MyId')
+        .with('FakeWorkflow1', 'MyId')
         .and_return(nil)
     end
 
@@ -134,7 +134,7 @@ RSpec.describe Zenaton::Query::Builder do
     before do
       builder.where_id('MyId')
       allow(client).to receive(:resume_workflow)
-        .with(FakeWorkflow1, 'MyId')
+        .with('FakeWorkflow1', 'MyId')
         .and_return(nil)
     end
 

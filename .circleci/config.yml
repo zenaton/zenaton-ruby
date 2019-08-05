@@ -62,8 +62,10 @@ jobs:
     docker:
       - image: "circleci/ruby:<<parameters.ruby>>"
     parameters:
-      ruby: The ruby version to use
-      type: string
+      ruby:
+        description: The ruby version to use
+        type: enum
+        enum: ["2.3", "2.4", "2.5", "2.6"]
     steps:
       - test
 
@@ -72,10 +74,10 @@ workflows:
   build:
     jobs:
       - run_tests:
-          ruby: 2.3
+          ruby: "2.3"
       - run_tests:
-          ruby: 2.4
+          ruby: "2.4"
       - run_tests:
-          ruby: 2.5
+          ruby: "2.5"
       - run_tests:
-          ruby: 2.6
+          ruby: "2.6"

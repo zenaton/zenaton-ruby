@@ -9,11 +9,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+### Fixed
+
+## [0.4.2] - 2019-08-05
+### Added
+
 - Added `intent_id` when dispatching workflows and tasks, sending events and
   pausing/resuming/stoping workflows.
 
 ### Fixed
-- Fixed an error caused by a bad class name encoding when `as_json` is overrided (in rails for example).
+- Fixed an error caused by a bad class name serialization when `as_json` is overrided (in rails for example).
 
 ## [0.4.1] - 2019-06-04
  ### Changes
@@ -91,7 +96,8 @@ available.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/zenaton/zenaton-ruby/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/zenaton/zenaton-ruby/compare/v0.3.0...v0.3.1

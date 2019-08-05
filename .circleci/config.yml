@@ -64,8 +64,7 @@ jobs:
     parameters:
       ruby:
         description: The ruby version to use
-        type: enum
-        enum: ["2.3", "2.4", "2.5", "2.6"]
+        type: string
     steps:
       - test
 

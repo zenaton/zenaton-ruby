@@ -13,3 +13,6 @@
 
 # appraisal lock files
 /gemfiles/*.lock
+
+# asdf ruby version file
+.tool-versions

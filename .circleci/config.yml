@@ -57,24 +57,15 @@ commands:
           destination: coverage
 
 jobs:
-  ruby_2_3:
+  run_tests:
+    description: Run the tests
     docker:
-      - image: circleci/ruby:2.3
-    steps:
-      - test
-  ruby_2_4:
-    docker:
-      - image: circleci/ruby:2.4
-    steps:
-      - test
-  ruby_2_5:
-    docker:
-      - image: circleci/ruby:2.5
-    steps:
-      - test
-  ruby_2_6:
-    docker:
-      - image: circleci/ruby:2.6
+      - image: "circleci/ruby:<<parameters.ruby>>"
+    parameters:
+      ruby:
+        description: The ruby version to use
+        type: enum
+        enum: ["2.3", "2.4", "2.5", "2.6"]
     steps:
       - test
 
@@ -82,7 +73,11 @@ workflows:
   version: 2
   build:
     jobs:
-      - ruby_2_3
-      - ruby_2_4
-      - ruby_2_5
-      - ruby_2_6
+      - run_tests:
+          ruby: "2.3"
+      - run_tests:
+          ruby: "2.4"
+      - run_tests:
+          ruby: "2.5"
+      - run_tests:
+          ruby: "2.6"

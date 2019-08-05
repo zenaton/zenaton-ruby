@@ -29,7 +29,7 @@ commands:
       - run:
           name: run code linter
           command: |
-            bundle exec rubocop
+            bundle exec rubocop --config .rubocop.yml
 
       - run:
           name: run tests

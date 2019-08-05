@@ -1,69 +1,81 @@
-version: 2
+version: 2.1
 
-shared: &shared
-  working_directory: ~/repo
+commands:
+  test:
+    description: Run automated tests
 
-  steps:
-    - checkout
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "Gemfile.lock" }}
+          - v1-dependencies-
 
-    - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "Gemfile.lock" }}
-        - v1-dependencies-
+      - run:
+          name: install dependencies
+          command: |
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
 
-    - run:
-        name: install dependencies
-        command: |
-          bundle install --jobs=4 --retry=3 --path vendor/bundle
+      - run:
+          name: Install Rails gemfiles
+          command: |
+            bundle exec appraisal install
 
-    - save_cache:
-        paths:
-          - ./vendor/bundle
-        key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+      - save_cache:
+          paths:
+            - ./vendor/bundle
+          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
 
-    - run:
-        name: run code linter
-        command: |
-          bundle exec rubocop
+      - run:
+          name: run code linter
+          command: |
+            bundle exec rubocop
 
-    - run:
-        name: run tests
-        command: |
-          bundle exec rake
+      - run:
+          name: run tests
+          command: |
+            bundle exec rake
 
-    - run:
-        name: audit dependencies for known CVEs
-        command: |
-          gem install bundler-audit
-          bundle audit check --update
+      - run:
+          name: audit dependencies for known CVEs
+          command: |
+            gem install bundler-audit
+            bundle audit check --update
 
-    - store_artifacts:
-        path: ./coverage
-        destination: coverage
+      - run:
+          name: Run tests against rails versions
+          command: |
+            bundle exec appraisal rspec
+
+      - run:
+          name: Install Rails gemfiles
+          command: |
+            bundle exec appraisal install
+
+      - store_artifacts:
+          path: ./coverage
+          destination: coverage
 
 jobs:
-  "ruby-2.3":
-    <<: *shared
+  run_tests:
+    description: Run the tests
     docker:
-       - image: circleci/ruby:2.3
-  "ruby-2.4":
-    <<: *shared
-    docker:
-       - image: circleci/ruby:2.4
-  "ruby-2.5":
-    <<: *shared
-    docker:
-       - image: circleci/ruby:2.5
-  "ruby-2.6":
-    <<: *shared
-    docker:
-       - image: circleci/ruby:2.6
+      - image: "circleci/ruby:<<parameters.ruby>>"
+    parameters:
+      ruby: The ruby version to use
+      type: string
+    steps:
+      - test
 
 workflows:
   version: 2
   build:
     jobs:
-      - "ruby-2.3"
-      - "ruby-2.4"
-      - "ruby-2.5"
-      - "ruby-2.6"
+      - run_tests:
+          ruby: 2.3
+      - run_tests:
+          ruby: 2.4
+      - run_tests:
+          ruby: 2.5
+      - run_tests:
+          ruby: 2.6

@@ -1,17 +1,7 @@
 # frozen_string_literal: true
 
 require 'singleton'
-require 'json/add/date'
-require 'json/add/date_time'
-require 'json/add/exception'
-require 'json/add/range'
-require 'json/add/regexp'
-require 'json/add/struct'
-require 'json/add/time'
-require 'json/add/rational'
-require 'json/add/complex'
-require 'json/add/bigdecimal'
-require 'json/add/ostruct'
+require 'bigdecimal'
 
 module Zenaton
   module Services
@@ -20,6 +10,7 @@ module Zenaton
     class Properties
       # Handle (de)serializaton separately for these classes.
       SPECIAL_CASES = [
+        ::Class,
         ::Complex,
         ::Date,
         ::DateTime,
@@ -103,8 +94,33 @@ module Zenaton
       end
 
       def from_complex_type(object)
-        if object.is_a?(Symbol)
-          { 's' => object.to_s }
+        case object
+        when Symbol
+          from_symbol(object)
+        when Struct
+          from_struct(object)
+        when OpenStruct
+          from_open_struct(object)
+        when Range
+          from_range(object)
+        when Regexp
+          from_regexp(object)
+        when DateTime
+          from_date_time(object)
+        when Date
+          from_date(object)
+        when Time
+          from_time(object)
+        when Rational
+          from_rational(object)
+        when Complex
+          from_complex(object)
+        when BigDecimal
+          from_big_decimal(object)
+        when Exception
+          from_exception(object)
+        when Class
+          from_class(object)
         else
           JSON.parse(object.to_json).tap do |attributes|
             attributes.delete('json_class')
@@ -113,8 +129,33 @@ module Zenaton
       end
 
       def set_complex_type(object, props)
-        if object.is_a?(Symbol)
-          props['s'].to_sym
+        case object
+        when Symbol
+          set_symbol(object, props)
+        when Struct
+          set_struct(object, props)
+        when OpenStruct
+          set_open_struct(object, props)
+        when Range
+          set_range(object, props)
+        when Regexp
+          set_regexp(object, props)
+        when DateTime
+          set_date_time(object, props)
+        when Date
+          set_date(object, props)
+        when Time
+          set_time(object, props)
+        when Rational
+          set_rational(object, props)
+        when Complex
+          set_complex(object, props)
+        when BigDecimal
+          set_big_decimal(object, props)
+        when Exception
+          set_exception(object, props)
+        when Class
+          set_class(object, props)
         else
           props['json_class'] = object.class.name
           JSON(props.to_json)
@@ -125,6 +166,175 @@ module Zenaton
         SPECIAL_CASES.include?(object.class) \
           || object.is_a?(Struct) \
           || object.is_a?(Exception)
+      end
+
+      # Symbol
+      def from_symbol(symbol)
+        { 's' => symbol.to_s }
+      end
+
+      def set_symbol(_object, props)
+        props['s'].to_sym
+      end
+
+      # Class
+      def from_class(klass)
+        { 'n' => klass.name }
+      end
+
+      def set_class(_object, props)
+        Object.const_get(props['n'])
+      end
+
+      # Struct
+      def from_struct(struct)
+        { 'v' => struct.values }
+      end
+
+      def set_struct(object, props)
+        object.class.new(*props['v'])
+      end
+
+      # OpenStruct
+      def from_open_struct(open_struct)
+        klass = open_struct.class.name
+        klass.to_s.empty? and raise JSON::JSONError, "Only named structs are supported!"
+        {
+          't' => open_struct.to_h.inject({}){|memo,(k,v)| memo[k.to_s] = v; memo},
+        }
+      end
+
+      def set_open_struct(_object, props)
+        OpenStruct.new(props['t'] || props[:t])
+      end
+
+      # Range
+      def from_range(range)
+        { 'a' => [range.first, range.last, range.exclude_end?] }
+      end
+
+      def set_range(_object, props)
+        Range.new(*props['a'])
+      end
+
+      # Regexp
+      def from_regexp(regexp)
+        { 'o' => regexp.options, 's' => regexp.source }
+      end
+
+      def set_regexp(_object, props)
+        Regexp.new(props['s'], props['o'])
+      end
+
+      # Rational
+      def from_rational(rational)
+        {
+          'n' => rational.numerator,
+          'd' => rational.denominator,
+        }
+      end
+
+      def set_rational(_object, props)
+        Rational(props['n'], props['d'])
+      end
+
+      # Complex
+      def from_complex(complex)
+        {
+          'r' => complex.real,
+          'i' => complex.imag,
+        }
+      end
+
+      def set_complex(_object, props)
+        Complex(props['r'], props['i'])
+      end
+
+      # BigDecimal
+      def from_big_decimal(big_decimal)
+        {
+          'b' => big_decimal._dump,
+        }
+      end
+
+      def set_big_decimal(_object, props)
+        BigDecimal._load(props['b'])
+      end
+
+      # Exception
+      def from_exception(exception)
+        {
+          'm' => exception.message,
+          'b' => exception.backtrace,
+        }
+      end
+
+      def set_exception(_object, props)
+        result = Exception.new(props['m'])
+        result.set_backtrace(props['b'])
+        result
+      end
+
+      # Date
+      def from_date(date)
+        {
+          'y' => date.year,
+          'm' => date.month,
+          'd' => date.day,
+          'sg' => date.start
+        }
+      end
+
+      def set_date(_object, props)
+        Date.civil(*props.values_at('y', 'm', 'd', 'sg'))
+      end
+
+      # Time
+      def from_time(time)
+        nanoseconds = [time.tv_usec * 1000]
+        time.respond_to?(:tv_nsec) and nanoseconds << time.tv_nsec
+        nanoseconds = nanoseconds.max
+        {
+          's' => time.tv_sec,
+          'n' => nanoseconds,
+        }
+      end
+
+      def set_time(_object, props)
+        if usec = props.delete('u') # used to be tv_usec -> tv_nsec
+          props['n'] = usec * 1000
+        end
+        if Time.method_defined?(:tv_nsec)
+          Time.at(props['s'], Rational(props['n'], 1000))
+        else
+          Time.at(props['s'], props['n'] / 1000)
+        end
+      end
+
+      # DateTime
+      def from_date_time(date_time)
+        {
+          'y' => date_time.year,
+          'm' => date_time.month,
+          'd' => date_time.day,
+          'H' => date_time.hour,
+          'M' => date_time.min,
+          'S' => date_time.sec,
+          'of' => date_time.offset.to_s,
+          'sg' => date_time.start,
+        }
+      end
+
+      def set_date_time(_object, props)
+        args = props.values_at('y', 'm', 'd', 'H', 'M', 'S')
+        of_a, of_b = props['of'].split('/')
+        if of_b and of_b != '0'
+          args << Rational(of_a.to_i, of_b.to_i)
+        else
+          args << of_a
+        end
+        args << props['sg']
+        DateTime.civil(*args)
       end
     end
   end

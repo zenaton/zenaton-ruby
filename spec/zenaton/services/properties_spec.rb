@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require 'zenaton/services/properties'
+require 'zenaton/services/my_event'
 require 'fixtures/serialize_me'
+require 'rails/all'
 
 RSpec.describe Zenaton::Services::Properties do
   let(:properties) { described_class.new }
@@ -104,6 +106,14 @@ RSpec.describe Zenaton::Services::Properties do
 
       it 'returns the symbols as a string' do
         expect(result).to eq('s' => 'hello')
+      end
+    end
+
+    context 'with classes' do
+      let(:object) { MyEvent }
+
+      it 'returns the class name as a string' do
+        expect(result).to eq('n' => 'MyEvent')
       end
     end
 
@@ -236,6 +246,15 @@ RSpec.describe Zenaton::Services::Properties do
 
       it 'returns a symbol version of the string' do
         expect(setup_object).to eq(:hello)
+      end
+    end
+
+    context 'with classes' do
+      let(:object_name) { 'Class' }
+      let(:props) { { 'n' => 'MyEvent' } }
+
+      it 'returns the class' do
+        expect(setup_object).to eq(MyEvent)
       end
     end
 

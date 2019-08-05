@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added `intent_id` when dispatching workflows and tasks, sending events and
   pausing/resuming/stoping workflows.
 
+### Fixed
+- Fixed serialization when `as_json` is overrided (in rails for example).
+
 ## [0.4.1] - 2019-06-04
  ### Changes
 - Fix symbol json encoding breaking compatibility with some gems

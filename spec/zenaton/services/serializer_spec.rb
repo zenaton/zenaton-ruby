@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require 'zenaton/services/serializer'
+require 'zenaton/services/my_event'
 require 'fixtures/serialize_me'
 require 'fixtures/fake_active_model'
+require 'rails/all'
 
 RSpec.describe Zenaton::Services::Serializer do
   let(:serializer) { described_class.new }
@@ -26,6 +28,17 @@ RSpec.describe Zenaton::Services::Serializer do
         expect(parsed_json).to eq(
           'o' => '@zenaton#0',
           's' => [{ 'n' => 'Symbol', 'p' => { 's' => 'foobar' } }]
+        )
+      end
+    end
+
+    context 'with a class' do
+      let(:data) { MyEvent }
+
+      it 'returns the class name' do
+        expect(parsed_json).to eq(
+          'o' => '@zenaton#0',
+          's' => [{ 'n' => 'Class', 'p' => { 'n' => 'MyEvent' } }]
         )
       end
     end
@@ -346,6 +359,19 @@ RSpec.describe Zenaton::Services::Serializer do
 
       it 'returns the symbol' do
         expect(decoded).to eq(:foobar)
+      end
+    end
+
+    context 'with a class do' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{ 'n' => 'Class', 'p' => { 'n' => 'MyEvent' } }]
+        }.to_json
+      end
+
+      it 'returns the class' do
+        expect(decoded).to eq(MyEvent)
       end
     end
 

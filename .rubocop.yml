@@ -3,6 +3,10 @@ require: rubocop-rspec
 AllCops:
   TargetRubyVersion: 2.3
 
+  Exclude:
+    - 'gemfiles/*'
+    - 'vendor/bundle/**/*'
+
 Metrics/BlockLength:
   Enabled: true
   Exclude:

@@ -71,8 +71,8 @@ module Zenaton
         value -= 1 if later_today?(now, day)
         current_day_number = now.wday != 0 ? now.wday - 1 : 6
         from_now =  WEEKDAYS.index(day) - current_day_number
-        from_now += 7 * value unless from_now > 0
-        now_dup = now_dup.advance(days: from_now)
+        from_now += 7 * value unless from_now.positive?
+        now_dup.advance(days: from_now)
       end
 
       def _timestamp(timestamp)

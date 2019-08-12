@@ -69,8 +69,10 @@ module Zenaton
       def _weekday(value, day, now, now_dup)
         _set_mode(MODE_WEEK_DAY)
         value -= 1 if later_today?(now, day)
-        value.times { |_n| now_dup = now_dup.next_occurring(day) }
-        now_dup
+        current_day_number = now.wday != 0 ? now.wday - 1 : 6
+        from_now =  WEEKDAYS.index(day) - current_day_number
+        from_now += 7 * value unless from_now.positive?
+        now_dup.advance(days: from_now)
       end
 
       def _timestamp(timestamp)

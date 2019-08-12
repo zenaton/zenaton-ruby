@@ -8,8 +8,8 @@ commands:
       - checkout
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "Gemfile.lock" }}
-          - v2-dependencies-
+          - v3-dependencies-{{ checksum "Gemfile.lock" }}
+          - v3-dependencies-
 
       - run:
           name: install dependencies
@@ -24,7 +24,7 @@ commands:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+          key: v3-dependencies-{{ checksum "Gemfile.lock" }}
 
       - run:
           name: run code linter

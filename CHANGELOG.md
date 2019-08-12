@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 ### Fixed
+- Backport of ActiveSupport's `next_occurring` for older versions.
 
 ## [0.4.2] - 2019-08-05
 ### Added

@@ -45,13 +45,13 @@ commands:
       - run:
           name: Run tests against rails versions
           command: |
-            bundle exec appraisal rspec
+            bundle exec appraisal rspec \
+              --format RspecJunitFormatter \
+              --out /tmp/test-results/rspec/results.xml \
+              --format progress
 
-      - run:
-          name: Install Rails gemfiles
-          command: |
-            bundle exec appraisal install
-
+      - store_test_results:
+          path: /tmp/test-results
       - store_artifacts:
           path: ./coverage
           destination: coverage

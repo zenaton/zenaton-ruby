@@ -74,10 +74,14 @@ workflows:
   build:
     jobs:
       - run_tests:
+          name: "Ruby 2.3"
           ruby: "2.3"
       - run_tests:
+          name: "Ruby 2.4"
           ruby: "2.4"
       - run_tests:
+          name: "Ruby 2.5"
           ruby: "2.5"
       - run_tests:
+          name: "Ruby 2.6"
           ruby: "2.6"

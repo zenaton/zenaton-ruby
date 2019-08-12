@@ -43,12 +43,21 @@ commands:
             bundle audit check --update
 
       - run:
-          name: Run tests against rails versions
+          name: Run tests without Rails
           command: |
             bundle exec appraisal rspec \
               --format RspecJunitFormatter \
               --out /tmp/test-results/rspec/results.xml \
               --format progress
+
+      - run:
+          name: Run tests with Rails
+          command: |
+            bundle exec appraisal rspec \
+              --format RspecJunitFormatter \
+              --out /tmp/test-results/rspec/results.xml \
+              --format progress \
+              -r rails_helper.rb
 
       - store_test_results:
           path: /tmp/test-results

@@ -95,7 +95,7 @@ RSpec.describe Zenaton::Services::Properties do
       let(:object) { OpenStruct.new(a: 1) }
 
       it 'returns the struct instance variables table' do
-        expect(result).to eq('t' => { 'a' => 1 })
+        expect(result).to eq('t' => { a: 1 })
       end
     end
 

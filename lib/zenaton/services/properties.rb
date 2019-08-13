@@ -1,23 +1,26 @@
 # frozen_string_literal: true
 
 require 'singleton'
+require 'zenaton/refinements'
+require 'json/add/bigdecimal'
+require 'json/add/complex'
 require 'json/add/date'
 require 'json/add/date_time'
 require 'json/add/exception'
+require 'json/add/ostruct'
 require 'json/add/range'
+require 'json/add/rational'
 require 'json/add/regexp'
 require 'json/add/struct'
 require 'json/add/time'
-require 'json/add/rational'
-require 'json/add/complex'
-require 'json/add/bigdecimal'
-require 'json/add/ostruct'
 
 module Zenaton
   module Services
     # Wrapper class to read instance variables from an object and
     # to create new objects with a given set of instance variables.
+
     class Properties
+      using ::Zenaton::Refinements
       # Handle (de)serializaton separately for these classes.
       SPECIAL_CASES = [
         ::Complex,
@@ -59,7 +62,8 @@ module Zenaton
       # @param object [Object] the object to be read
       # @return [Hash]
       def from(object)
-        return from_complex_type(object) if special_case?(object)
+        return object.zenaton_properties if object.respond_to?(:zenaton_properties)
+
         object.instance_variables.map do |ivar|
           value = object.instance_variable_get(ivar)
           [ivar, value]

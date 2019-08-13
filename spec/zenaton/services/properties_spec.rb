@@ -2,6 +2,7 @@
 
 require 'zenaton/services/properties'
 require 'fixtures/serialize_me'
+require 'fixtures/event'
 
 RSpec.describe Zenaton::Services::Properties do
   let(:properties) { described_class.new }
@@ -138,6 +139,14 @@ RSpec.describe Zenaton::Services::Properties do
 
       it 'returns the error message and the backtrace' do
         expect(result).to eq('m' => 'oops', 'b' => nil)
+      end
+    end
+
+    context 'with a class object' do
+      let(:object) { FakeEvent }
+
+      it 'returns a representation of the class name' do
+        expect(result).to eq('n' => 'FakeEvent')
       end
     end
 
@@ -278,6 +287,15 @@ RSpec.describe Zenaton::Services::Properties do
 
       it 'preserves the exception backtrace' do
         expect(setup_object.backtrace).to be_nil
+      end
+    end
+
+    context 'with classes' do
+      let(:object_name) { 'Class' }
+      let(:props) { { 'n' => 'FakeEvent' } }
+
+      it 'returns the class instance' do
+        expect(setup_object).to eq(FakeEvent)
       end
     end
 

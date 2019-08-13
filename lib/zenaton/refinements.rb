@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'zenaton/refinements/big_decimal'
+require 'zenaton/refinements/class'
 require 'zenaton/refinements/complex'
 require 'zenaton/refinements/date'
 require 'zenaton/refinements/date_time'

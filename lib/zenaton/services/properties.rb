@@ -61,12 +61,7 @@ module Zenaton
       # @param object [Object] the object to be read
       # @return [Hash]
       def from(object)
-        return object.zenaton_props if defined?(object.zenaton_props)
-
-        object.instance_variables.map do |ivar|
-          value = object.instance_variable_get(ivar)
-          [ivar, value]
-        end.to_h
+        object.zenaton_props
       end
 
       # Returns the given object with the properties as instance variables
@@ -103,16 +98,6 @@ module Zenaton
 
       def valid_object(object, super_class)
         super_class.nil? || object.is_a?(super_class)
-      end
-
-      def from_complex_type(object)
-        if object.is_a?(Symbol)
-          { 's' => object.to_s }
-        else
-          JSON.parse(object.to_json).tap do |attributes|
-            attributes.delete('json_class')
-          end
-        end
       end
 
       def set_complex_type(object, props)

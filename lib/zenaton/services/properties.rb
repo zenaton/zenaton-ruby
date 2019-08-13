@@ -8,7 +8,7 @@ module Zenaton
     # Wrapper class to read instance variables from an object and
     # to create new objects with a given set of instance variables.
     class Properties
-      using ::Zenaton::Refinements
+      using Zenaton::Refinements
       # Handle (de)serializaton separately for these classes.
       SPECIAL_CASES = [
         ::Complex,

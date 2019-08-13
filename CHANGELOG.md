@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changes
+- No longer load JSON core extensions. Use our own refinments to avoid clashes
+  with frameworks and user code.
 
 ### Added
 

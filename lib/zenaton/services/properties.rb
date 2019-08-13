@@ -61,7 +61,7 @@ module Zenaton
       # @param object [Object] the object to be read
       # @return [Hash]
       def from(object)
-        return object.zenaton_props if object.respond_to?(:zenaton_props)
+        return object.zenaton_props if defined?(object.zenaton_props)
 
         object.instance_variables.map do |ivar|
           value = object.instance_variable_get(ivar)

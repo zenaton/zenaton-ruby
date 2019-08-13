@@ -9,20 +9,6 @@ module Zenaton
     # to create new objects with a given set of instance variables.
     class Properties
       using Zenaton::Refinements
-      # Handle (de)serializaton separately for these classes.
-      SPECIAL_CASES = [
-        ::Complex,
-        ::Date,
-        ::DateTime,
-        ::Range,
-        ::Rational,
-        ::Regexp,
-        ::Symbol,
-        ::Time,
-        defined?(::OpenStruct) ? ::OpenStruct : nil,
-        defined?(::BigDecimal) ? ::BigDecimal : nil
-      ].compact.freeze
-
       # Handle blank object instantiation differently for these classes
       NUMERIC_INITIALIATION = [
         ::Rational,

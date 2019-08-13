@@ -8,9 +8,19 @@ RSpec.describe Struct do
   before { described_class.new('Customer', :name) }
 
   describe '#to_zenaton' do
-    subject { Struct::Customer.new('alice').to_zenaton }
+    context 'with a named struct' do
+      subject { Struct::Customer.new('alice').to_zenaton }
 
-    it { is_expected.to eq('v' => ['alice']) }
+      it { is_expected.to eq('v' => ['alice']) }
+    end
+
+    context 'with an anonymous struct' do
+      subject(:struct) { described_class.new(:name).new('alice') }
+
+      it 'raises an error' do
+        expect { struct.to_zenaton }.to raise_error ArgumentError
+      end
+    end
   end
 
   describe '.from_zenaton' do

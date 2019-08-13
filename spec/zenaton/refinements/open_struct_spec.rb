@@ -6,9 +6,19 @@ RSpec.describe OpenStruct do
   using Zenaton::Refinements
 
   describe '#to_zenaton' do
-    subject { described_class.new(a: 1).to_zenaton }
+    context 'with a named struct' do
+      subject { described_class.new(a: 1).to_zenaton }
 
-    it { is_expected.to eq('t' => { a: 1 }) }
+      it { is_expected.to eq('t' => { a: 1 }) }
+    end
+
+    context 'with an anonymous struct' do
+      subject(:struct) { Class.new(described_class).new(a: 1) }
+
+      it 'raises an error' do
+        expect { struct.to_zenaton }.to raise_error ArgumentError
+      end
+    end
   end
 
   describe '.from_zenaton' do

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   with frameworks and user code.
 
 ### Added
+- (De)Serialization support for instances of Class.
 
 ### Fixed
 - Backport of ActiveSupport's `next_occurring` for older versions.

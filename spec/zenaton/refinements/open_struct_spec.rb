@@ -14,9 +14,17 @@ RSpec.describe OpenStruct do
   describe '.from_zenaton' do
     subject { described_class.from_zenaton(props) }
 
-    let(:props) { { 't' => { a: 1 } } }
+    context 'with a symbol-keyed hash' do
+      let(:props) { { 't' => { a: 1 } } }
 
-    it { is_expected.to eq(described_class.new(a: 1)) }
+      it { is_expected.to eq(described_class.new(a: 1)) }
+    end
+
+    context 'with a string-keyed hash' do
+      let(:props) { { 't' => { 'a' => 1 } } }
+
+      it { is_expected.to eq(described_class.new(a: 1)) }
+    end
   end
 
   describe 'json serialization' do

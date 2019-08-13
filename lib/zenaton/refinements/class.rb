@@ -6,7 +6,7 @@ module Zenaton
     refine Class do
       def to_zenaton
         {
-          'n' => to_s
+          'n' => name
         }
       end
     end

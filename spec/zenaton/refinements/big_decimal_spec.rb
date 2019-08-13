@@ -20,4 +20,16 @@ RSpec.describe BigDecimal do
 
     it { is_expected.to eq(BigDecimal(1, 1)) }
   end
+
+  describe 'json serialization' do
+    let(:object) { BigDecimal(1, 1) }
+    let(:props) { object.to_zenaton }
+    let(:json) { props.to_json }
+    let(:decoded_props) { JSON.parse(json) }
+    let(:new_object) { described_class.from_zenaton(decoded_props) }
+
+    it 'is bijective' do
+      expect(new_object).to eq(object)
+    end
+  end
 end

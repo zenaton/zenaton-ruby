@@ -18,4 +18,16 @@ RSpec.describe Exception do
 
     it { is_expected.to eq(StandardError.new('oops')) }
   end
+
+  describe 'json serialization' do
+    let(:object) { StandardError.new('oops') }
+    let(:props) { object.to_zenaton }
+    let(:json) { props.to_json }
+    let(:decoded_props) { JSON.parse(json) }
+    let(:new_object) { StandardError.from_zenaton(decoded_props) }
+
+    it 'is bijective' do
+      expect(new_object).to eq(object)
+    end
+  end
 end

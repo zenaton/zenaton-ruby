@@ -43,4 +43,16 @@ RSpec.describe DateTime do
 
     it { is_expected.to eq(expected) }
   end
+
+  describe 'json serialization' do
+    let(:object) { described_class.parse('2018-08-01T08:21:31+02:00') }
+    let(:props) { object.to_zenaton }
+    let(:json) { props.to_json }
+    let(:decoded_props) { JSON.parse(json) }
+    let(:new_object) { described_class.from_zenaton(decoded_props) }
+
+    it 'is bijective' do
+      expect(new_object).to eq(object)
+    end
+  end
 end

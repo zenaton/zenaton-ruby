@@ -6,8 +6,10 @@ RSpec.describe BigDecimal do
   using Zenaton::Refinements
 
   describe '#zenaton_props' do
-    subject { BigDecimal(1, 1).zenaton_props }
+    subject(:props) { BigDecimal(1, 1).zenaton_props }
 
-    it { is_expected.to eq('b' => '27:0.1e1') }
+    it 'returns the internal dump' do
+      expect(props['b'].downcase).to eq('27:0.1e1')
+    end
   end
 end

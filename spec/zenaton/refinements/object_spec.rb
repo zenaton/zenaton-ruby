@@ -7,10 +7,10 @@ RSpec.describe Object do
 
   subject(:object) { described_class.new }
 
-  describe '#zenaton_props' do
+  describe '#to_zenaton' do
     context 'without any instance variables' do
       it 'returns an empty hash' do
-        expect(object.zenaton_props).to eq({})
+        expect(object.to_zenaton).to eq({})
       end
     end
 
@@ -21,7 +21,7 @@ RSpec.describe Object do
       end
 
       it 'returns a hash of the instance variables' do
-        expect(object.zenaton_props).to \
+        expect(object.to_zenaton).to \
           eq(:@foo => 'bar', :@foo2 => 'bar2')
       end
     end

@@ -4,12 +4,19 @@ module Zenaton
   # :nodoc
   module Refinements
     refine Complex do
-      def zenaton_props
+      def to_zenaton
         {
           'r' => real,
           'i' => imag
         }
       end
     end
+  end
+end
+
+# Reimplements `json/add/complex`
+class Complex
+  def self.from_zenaton(props)
+    Complex(props['r'], props['i'])
   end
 end

@@ -4,7 +4,7 @@ module Zenaton
   # :nodoc
   module Refinements
     refine Object do
-      def zenaton_props
+      def to_zenaton
         instance_variables.map do |ivar|
           value = instance_variable_get(ivar)
           [ivar, value]

@@ -6,7 +6,7 @@ module Zenaton
   # :nodoc
   module Refinements
     refine DateTime do
-      def zenaton_props
+      def to_zenaton
         {
           'y' => year,
           'm' => month,
@@ -19,5 +19,22 @@ module Zenaton
         }
       end
     end
+  end
+end
+
+# Reimplements `json/add/date_time`
+class DateTime
+  def self.from_zenaton(props)
+    args = props.values_at('y', 'm', 'd', 'H', 'M', 'S')
+    of_a, of_b = props['of'].split('/')
+    # rubocop:disable Style/ConditionalAssignment
+    if of_b && of_b != '0'
+      args << Rational(of_a.to_i, of_b.to_i)
+    else
+      args << of_a
+    end
+    # rubocop:enable Style/ConditionalAssignment
+    args << props['sg']
+    civil(*args)
   end
 end

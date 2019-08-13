@@ -4,11 +4,18 @@ module Zenaton
   # :nodoc
   module Refinements
     refine Range do
-      def zenaton_props
+      def to_zenaton
         {
           'a' => [first, last, exclude_end?]
         }
       end
     end
+  end
+end
+
+# Reimplements `json/add/range`
+class Range
+  def self.from_zenaton(props)
+    new(*props['a'])
   end
 end

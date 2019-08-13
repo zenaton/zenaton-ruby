@@ -6,7 +6,7 @@ module Zenaton
   # :nodoc
   module Refinements
     refine Date do
-      def zenaton_props
+      def to_zenaton
         {
           'y' => year,
           'm' => month,
@@ -15,5 +15,12 @@ module Zenaton
         }
       end
     end
+  end
+end
+
+# Reimplements `json/add/date`
+class Date
+  def self.from_zenaton(props)
+    civil(*props.values_at('y', 'm', 'd', 'sg'))
   end
 end

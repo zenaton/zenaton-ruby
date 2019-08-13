@@ -1,13 +1,13 @@
 # frozen_string_literal: true
-defined?(::Complex) or require 'complex'
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine Complex do
-      def zenaton_properties
+      def zenaton_props
         {
           'r' => real,
-          'i' => imag 
+          'i' => imag
         }
       end
     end

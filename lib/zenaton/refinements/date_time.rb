@@ -3,9 +3,10 @@
 require 'date'
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine DateTime do
-      def zenaton_properties
+      def zenaton_props
         {
           'y' => year,
           'm' => month,

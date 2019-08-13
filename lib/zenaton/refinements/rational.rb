@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-defined?(::Rational) or require 'rational'
-
 module Zenaton
+  # :nodoc
   module Refinements
     refine Rational do
-      def zenaton_properties
+      def zenaton_props
         {
           'n' => numerator,
           'd' => denominator

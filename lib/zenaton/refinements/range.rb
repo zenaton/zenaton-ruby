@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine Range do
-      def zenaton_properties
+      def zenaton_props
         {
           'a' => [first, last, exclude_end?]
         }

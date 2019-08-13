@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine Exception do
-      def zenaton_properties
+      def zenaton_props
         {
           'm' => message,
           'b' => backtrace

@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine Regexp do
-      def zenaton_properties
+      def zenaton_props
         {
           'o' => options,
           's' => source

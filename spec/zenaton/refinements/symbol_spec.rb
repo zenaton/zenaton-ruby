@@ -5,11 +5,9 @@ require 'zenaton/refinements/symbol'
 RSpec.describe Symbol do
   using Zenaton::Refinements
 
-  describe "#zenaton_properties" do
-    subject { :foobar.zenaton_properties }
+  describe '#zenaton_props' do
+    subject { :foobar.zenaton_props }
 
-    it { is_expected.to eq(
-      's' => 'foobar'
-    ) }
+    it { is_expected.to eq('s' => 'foobar') }
   end
 end

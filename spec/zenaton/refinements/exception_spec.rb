@@ -5,12 +5,9 @@ require 'zenaton/refinements/exception'
 RSpec.describe Exception do
   using Zenaton::Refinements
 
-  describe "#zenaton_properties" do
-    subject { StandardError.new('oops').zenaton_properties }
+  describe '#zenaton_props' do
+    subject { StandardError.new('oops').zenaton_props }
 
-    it { is_expected.to eq(
-      'm' => 'oops',
-      'b' => nil
-    ) }
+    it { is_expected.to eq('m' => 'oops', 'b' => nil) }
   end
 end

@@ -3,9 +3,10 @@
 require 'ostruct'
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine OpenStruct do
-      def zenaton_properties
+      def zenaton_props
         {
           't' => table
         }

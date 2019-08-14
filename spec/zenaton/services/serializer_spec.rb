@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'zenaton/services/serializer'
+require 'fixtures/event'
 require 'fixtures/serialize_me'
 require 'fixtures/fake_active_model'
 
@@ -126,6 +127,25 @@ RSpec.describe Zenaton::Services::Serializer do
         expect(parsed_json).to eq(expected_serialization)
       end
       # rubocop:enable Style/DateTime
+    end
+
+    context 'with a class' do
+      let(:data) { FakeEvent }
+      let(:expected_representation) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'n' => 'Class',
+            'p' => {
+              'n' => 'FakeEvent'
+            }
+          }]
+        }
+      end
+
+      it 'represents an instance of class as an object' do
+        expect(parsed_json).to eq(expected_representation)
+      end
     end
 
     context 'with an array' do
@@ -319,8 +339,7 @@ RSpec.describe Zenaton::Services::Serializer do
       let(:data) { FakeActiveModel.new(name: 'Bob') }
 
       it 'does not raise error' do
-        expect { parsed_json }.not_to \
-          raise_error NoMethodError
+        expect { parsed_json }.not_to raise_error
       end
     end
   end
@@ -439,6 +458,24 @@ RSpec.describe Zenaton::Services::Serializer do
         expect(decoded).to eq(date_time)
       end
       # rubocop:enable Style/DateTime
+    end
+
+    context 'with a class' do
+      let(:json) do
+        {
+          'o' => '@zenaton#0',
+          's' => [{
+            'n' => 'Class',
+            'p' => {
+              'n' => 'FakeEvent'
+            }
+          }]
+        }.to_json
+      end
+
+      it 'returns the class instance' do
+        expect(decoded).to eq(FakeEvent)
+      end
     end
 
     context 'with an old array format' do

@@ -8,8 +8,8 @@ commands:
       - checkout
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "Gemfile.lock" }}
-          - v2-dependencies-
+          - v3-dependencies-{{ checksum "Gemfile.lock" }}
+          - v3-dependencies-
 
       - run:
           name: install dependencies
@@ -24,7 +24,7 @@ commands:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+          key: v3-dependencies-{{ checksum "Gemfile.lock" }}
 
       - run:
           name: run code linter
@@ -43,12 +43,21 @@ commands:
             bundle audit check --update
 
       - run:
-          name: Run tests against rails versions
+          name: Run tests without Rails
           command: |
             bundle exec appraisal rspec \
               --format RspecJunitFormatter \
               --out /tmp/test-results/rspec/results.xml \
               --format progress
+
+      - run:
+          name: Run tests with Rails
+          command: |
+            bundle exec appraisal rspec \
+              --format RspecJunitFormatter \
+              --out /tmp/test-results/rspec/results.xml \
+              --format progress \
+              -r rails_helper.rb
 
       - store_test_results:
           path: /tmp/test-results

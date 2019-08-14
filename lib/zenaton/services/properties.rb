@@ -1,37 +1,14 @@
 # frozen_string_literal: true
 
 require 'singleton'
-require 'json/add/date'
-require 'json/add/date_time'
-require 'json/add/exception'
-require 'json/add/range'
-require 'json/add/regexp'
-require 'json/add/struct'
-require 'json/add/time'
-require 'json/add/rational'
-require 'json/add/complex'
-require 'json/add/bigdecimal'
-require 'json/add/ostruct'
+require 'zenaton/refinements'
 
 module Zenaton
   module Services
     # Wrapper class to read instance variables from an object and
     # to create new objects with a given set of instance variables.
     class Properties
-      # Handle (de)serializaton separately for these classes.
-      SPECIAL_CASES = [
-        ::Complex,
-        ::Date,
-        ::DateTime,
-        ::Range,
-        ::Rational,
-        ::Regexp,
-        ::Symbol,
-        ::Time,
-        defined?(::OpenStruct) ? ::OpenStruct : nil,
-        defined?(::BigDecimal) ? ::BigDecimal : nil
-      ].compact.freeze
-
+      using Zenaton::Refinements
       # Handle blank object instantiation differently for these classes
       NUMERIC_INITIALIATION = [
         ::Rational,
@@ -59,11 +36,7 @@ module Zenaton
       # @param object [Object] the object to be read
       # @return [Hash]
       def from(object)
-        return from_complex_type(object) if special_case?(object)
-        object.instance_variables.map do |ivar|
-          value = object.instance_variable_get(ivar)
-          [ivar, value]
-        end.to_h
+        object.to_zenaton
       end
 
       # Returns the given object with the properties as instance variables
@@ -71,11 +44,10 @@ module Zenaton
       # @param properties [Hash] the properties to be written
       # @return [Object]
       def set(object, properties)
-        return set_complex_type(object, properties) if special_case?(object)
-        properties.each do |ivar, value|
-          object.instance_variable_set(ivar, value)
-        end
-        object
+        klass = object.class
+        return klass.from_zenaton(properties) if defined?(klass.from_zenaton)
+
+        fallback_set(object, properties)
       end
 
       # Given a class name and a set of properties, return a new instance of the
@@ -102,29 +74,11 @@ module Zenaton
         super_class.nil? || object.is_a?(super_class)
       end
 
-      def from_complex_type(object)
-        if object.is_a?(Symbol)
-          { 's' => object.to_s }
-        else
-          JSON.parse(object.to_json).tap do |attributes|
-            attributes.delete('json_class')
-          end
+      def fallback_set(object, properties)
+        properties.each do |ivar, value|
+          object.instance_variable_set(ivar, value)
         end
-      end
-
-      def set_complex_type(object, props)
-        if object.is_a?(Symbol)
-          props['s'].to_sym
-        else
-          props['json_class'] = object.class.name
-          JSON(props.to_json)
-        end
-      end
-
-      def special_case?(object)
-        SPECIAL_CASES.include?(object.class) \
-          || object.is_a?(Struct) \
-          || object.is_a?(Exception)
+        object
       end
     end
   end

@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changes
+- No longer load JSON core extensions. Use our own refinements to avoid clashes
+  with frameworks and user code.
 
 ### Added
+- (De)Serialization support for instances of Class.
 
 ### Fixed
 - Backport of ActiveSupport's `next_occurring` for older versions.

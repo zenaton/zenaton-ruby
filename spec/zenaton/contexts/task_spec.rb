@@ -14,19 +14,19 @@ RSpec.describe Zenaton::Contexts::Task do
       end
 
       it 'has no attempt index' do
-        expect(task_context.attempt_index).to be_nil
+        expect(task_context.retry_index).to be_nil
       end
     end
 
     context 'when id and attempt index are provided' do
-      let(:args) { { id: 'some-uuid', attempt_index: 10 } }
+      let(:args) { { id: 'some-uuid', retry_index: 10 } }
 
       it 'sets the id' do
         expect(task_context.id).to eq('some-uuid')
       end
 
       it 'sets the attempt index' do
-        expect(task_context.attempt_index).to eq(10)
+        expect(task_context.retry_index).to eq(10)
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe Zenaton::Contexts::Task do
       end
 
       it 'has no attempt index' do
-        expect(task_context.attempt_index).to be_nil
+        expect(task_context.retry_index).to be_nil
       end
 
       it 'does not set getter methods' do
@@ -46,7 +46,7 @@ RSpec.describe Zenaton::Contexts::Task do
       end
 
       it 'does not set the extra attributes' do
-        expect(task_context.instance_variables).to eq(%i[@id @attempt_index])
+        expect(task_context.instance_variables).to eq(%i[@id @retry_index])
       end
     end
   end

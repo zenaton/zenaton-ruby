@@ -21,12 +21,12 @@ module Zenaton
       # @return [Integer] The number of times this task has been automatically
       #   retried. This counter is reset if you issue a manual retry from your
       #   dashboard
-      attr_reader :attempt_index
+      attr_reader :retry_index
 
       # @return [Zenaton::Contexts::Task] a new execution context for a task
       def initialize(**kwargs)
         @id = kwargs[:id]
-        @attempt_index = kwargs[:attempt_index]
+        @retry_index = kwargs[:retry_index]
       end
     end
   end

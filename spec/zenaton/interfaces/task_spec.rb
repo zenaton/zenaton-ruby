@@ -22,7 +22,7 @@ RSpec.describe Zenaton::Interfaces::Task do
       end
 
       it 'has no attempt index' do
-        expect(task_context.attempt_index).to be_nil
+        expect(task_context.retry_index).to be_nil
       end
 
       it 'can be set' do
@@ -35,8 +35,8 @@ RSpec.describe Zenaton::Interfaces::Task do
       end
 
       it 'can update the context attempt index' do
-        task.add_context(attempt_index: 10)
-        expect(task_context.attempt_index).to eq(10)
+        task.add_context(retry_index: 10)
+        expect(task_context.retry_index).to eq(10)
       end
     end
 
@@ -47,7 +47,7 @@ RSpec.describe Zenaton::Interfaces::Task do
         e
       end
 
-      before { task.add_context(id: 'some-uuid', attempt_index: 10) }
+      before { task.add_context(id: 'some-uuid', retry_index: 10) }
 
       it { is_expected.to be_a(Zenaton::Contexts::Task) }
 
@@ -56,7 +56,7 @@ RSpec.describe Zenaton::Interfaces::Task do
       end
 
       it 'has an attempt index' do
-        expect(task_context.attempt_index).to eq(10)
+        expect(task_context.retry_index).to eq(10)
       end
 
       it 'cannot be set' do
@@ -70,7 +70,7 @@ RSpec.describe Zenaton::Interfaces::Task do
       end
 
       it 'cannot update the context attempt index' do
-        expect { safely_set(task, attempt_index: -1) }.not_to \
+        expect { safely_set(task, retry_index: -1) }.not_to \
           change(task, :context)
       end
     end

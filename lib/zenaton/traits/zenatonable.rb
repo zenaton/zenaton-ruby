@@ -22,6 +22,15 @@ module Zenaton
         Engine.instance.dispatch([self])
       end
 
+      def schedule(cron)
+        if cron == '' || !cron.is_a?(String)
+          raise InvalidArgumentError,
+                "The cron passed to 'schedule' must be a non empty string"
+        end
+
+        Engine.instance.schedule([self], cron)[0]
+      end
+
       class_methods do
         # Search for workflows to interact with.
         # For available methods, see {Zenaton::Query::Builder}

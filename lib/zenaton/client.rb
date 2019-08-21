@@ -2,6 +2,7 @@
 
 require 'securerandom'
 require 'singleton'
+require 'zenaton/services/graphql'
 require 'zenaton/services/http'
 require 'zenaton/services/properties'
 require 'zenaton/services/serializer'
@@ -13,6 +14,7 @@ module Zenaton
     include Singleton
 
     ZENATON_API_URL = 'https://api.zenaton.com/v1' # Zenaton api url
+    ZENATON_ALFRED_URL = 'https://alfred.zenaton.com/api' # Alfred url
     ZENATON_WORKER_URL = 'http://localhost' # Default worker url
     DEFAULT_WORKER_PORT = 4001 # Default worker port
     WORKER_API_VERSION = 'v_newton' # Default worker api version
@@ -60,6 +62,7 @@ module Zenaton
 
     # @private
     def initialize
+      @graphql = Services::GraphQL.new
       @http = Services::Http.new
       @serializer = Services::Serializer.new
       @properties = Services::Properties.new
@@ -79,6 +82,17 @@ module Zenaton
       else
         add_app_env("#{url}?", params)
       end
+    end
+
+    def alfred_url
+      ENV['ZENATON_ALFRED_URL'] || ZENATON_ALFRED_URL
+    end
+
+    def alfred_headers
+      {
+        'app-id' => @app_id,
+        'api-token' => @api_token
+      }
     end
 
     # Gets the url for zenaton api
@@ -123,6 +137,53 @@ module Zenaton
         ATTR_DATA => @serializer.encode(@properties.from(flow)),
         ATTR_ID => parse_custom_id_from(flow)
       )
+    end
+
+    def start_scheduled_task(task, cron)
+      @graphql.request(
+        alfred_url,
+        Services::GraphQL::CREATE_TASK_SCHEDULE,
+        create_task_schedule_input(task, cron),
+        alfred_headers
+      )['createTaskSchedule']
+    end
+
+    def start_scheduled_workflow(flow, cron)
+      @graphql.request(
+        alfred_url,
+        Services::GraphQL::CREATE_WORKFLOW_SCHEDULE,
+        create_workflow_schedule_input(flow, cron),
+        alfred_headers
+      )['createWorkflowSchedule']
+    end
+
+    # rubocop:disable Metrics/MethodLength
+    def create_workflow_schedule_input(flow, cron)
+      {
+        'createWorkflowScheduleInput' => {
+          'intentId' => SecureRandom.uuid,
+          'environmentName' => @app_env,
+          'cron' => cron,
+          'workflowName' => class_name(flow),
+          'canonicalName' => canonical_name(flow) || class_name(flow),
+          'programmingLanguage' => PROG.upcase,
+          'properties' => @serializer.encode(@properties.from(flow))
+        }
+      }
+    end
+    # rubocop:enable Metrics/MethodLength
+
+    def create_task_schedule_input(task, cron)
+      {
+        'createTaskScheduleInput' => {
+          'intentId' => SecureRandom.uuid,
+          'environmentName' => @app_env,
+          'cron' => cron,
+          'taskName' => class_name(task),
+          'programmingLanguage' => PROG.upcase,
+          'properties' => @serializer.encode(@properties.from(task))
+        }
+      }
     end
 
     # Stops a workflow

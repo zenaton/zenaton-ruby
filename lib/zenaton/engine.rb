@@ -24,6 +24,21 @@ module Zenaton
       @processor = nil
     end
 
+    # Executes scheduling jobs synchronously
+    # @param jobs [Array<Zenaton::Interfaces::Job>]
+    # @param cron String
+    # @return [Array<String>, nil] the results if executed locally, or nil
+    def schedule(jobs, cron)
+      jobs.map(&method(:check_argument))
+      jobs.map do |job|
+        if job.is_a? Interfaces::Workflow
+          puts @client.start_scheduled_workflow(job, cron)
+        else
+          @client.start_scheduled_task(job, cron)
+        end
+      end
+    end
+
     # Executes jobs synchronously
     # @param jobs [Array<Zenaton::Interfaces::Job>]
     # @return [Array<String>, nil] the results if executed locally, or nil

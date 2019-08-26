@@ -28,7 +28,7 @@ module Zenaton
                 "The cron passed to 'schedule' must be a non empty string"
         end
 
-        Engine.instance.schedule([self], cron)[0]
+        Engine.instance.schedule([self], cron)
       end
 
       class_methods do

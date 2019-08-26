@@ -76,7 +76,6 @@ module Zenaton
       private
 
       def handle_response_body(response_body)
-        puts response_body
         if external_error?(response_body)
           raise Zenaton::ExternalError, format_external_error(response_body)
         end

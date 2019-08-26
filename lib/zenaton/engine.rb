@@ -37,6 +37,7 @@ module Zenaton
           @client.start_scheduled_task(job, cron)
         end
       end
+      nil
     end
 
     # Executes jobs synchronously

@@ -15,19 +15,6 @@ module Zenaton
           createWorkflowSchedule(input: $createWorkflowScheduleInput) {
             schedule {
               id
-              name
-              cron
-              insertedAt
-              updatedAt
-              target {
-                ... on WorkflowTarget {
-                  type
-                  name
-                  canonicalName
-                  programmingLanguage
-                  properties
-                }
-              }
             }
           }
         }
@@ -38,19 +25,6 @@ module Zenaton
           createTaskSchedule(input: $createTaskScheduleInput) {
             schedule {
               id
-              name
-              cron
-              insertedAt
-              updatedAt
-              target {
-                ... on TaskTarget {
-                  type
-                  name
-                  type
-                  programmingLanguage
-                  properties
-                }
-              }
             }
           }
         }

@@ -14,7 +14,7 @@ module Zenaton
     include Singleton
 
     ZENATON_API_URL = 'https://api.zenaton.com/v1' # Zenaton api url
-    ZENATON_ALFRED_URL = 'https://alfred.zenaton.com/api' # Alfred url
+    ZENATON_GATEWAY_URL = 'https://gateway.zenaton.com/api' # Gateway url
     ZENATON_WORKER_URL = 'http://localhost' # Default worker url
     DEFAULT_WORKER_PORT = 4001 # Default worker port
     WORKER_API_VERSION = 'v_newton' # Default worker api version
@@ -84,11 +84,11 @@ module Zenaton
       end
     end
 
-    def alfred_url
-      ENV['ZENATON_ALFRED_URL'] || ZENATON_ALFRED_URL
+    def gateway_url
+      ENV['ZENATON_GATEWAY_URL'] || ZENATON_GATEWAY_URL
     end
 
-    def alfred_headers
+    def gateway_headers
       {
         'app-id' => @app_id,
         'api-token' => @api_token
@@ -141,19 +141,19 @@ module Zenaton
 
     def start_scheduled_task(task, cron)
       @graphql.request(
-        alfred_url,
+        gateway_url,
         Services::GraphQL::CREATE_TASK_SCHEDULE,
         create_task_schedule_input(task, cron),
-        alfred_headers
+        gateway_headers
       )['createTaskSchedule']
     end
 
     def start_scheduled_workflow(flow, cron)
       @graphql.request(
-        alfred_url,
+        gateway_url,
         Services::GraphQL::CREATE_WORKFLOW_SCHEDULE,
         create_workflow_schedule_input(flow, cron),
-        alfred_headers
+        gateway_headers
       )['createWorkflowSchedule']
     end
 

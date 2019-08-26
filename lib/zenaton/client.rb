@@ -62,8 +62,8 @@ module Zenaton
 
     # @private
     def initialize
-      @graphql = Services::GraphQL.new
       @http = Services::Http.new
+      @graphql = Services::GraphQL.new(http: @http)
       @serializer = Services::Serializer.new
       @properties = Services::Properties.new
     end

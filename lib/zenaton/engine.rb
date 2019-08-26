@@ -32,7 +32,7 @@ module Zenaton
       jobs.map(&method(:check_argument))
       jobs.map do |job|
         if job.is_a? Interfaces::Workflow
-          puts @client.start_scheduled_workflow(job, cron)
+          @client.start_scheduled_workflow(job, cron)
         else
           @client.start_scheduled_task(job, cron)
         end

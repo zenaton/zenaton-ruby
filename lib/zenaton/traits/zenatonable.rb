@@ -23,7 +23,7 @@ module Zenaton
       end
 
       def schedule(cron)
-        if cron == '' || !cron.is_a?(String)
+        if cron.blank? || !cron.is_a?(String)
           raise InvalidArgumentError,
                 "The cron passed to 'schedule' must be a non empty string"
         end

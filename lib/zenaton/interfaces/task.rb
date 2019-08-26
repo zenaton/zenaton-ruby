@@ -16,10 +16,9 @@ module Zenaton
       # (Optional) Implement this method for automatic retrial of task in
       # case of failures.
       # @param _exception [Exception] the reason for the task failure.
-      # @raise [TypeError] when the return type is not falsy or is not positive.
-      # @return [#positive?, FalseClass, NilClass] the amount of seconds to wait
-      #   before automatically retrying this task. Falsy values will avoid
-      #   retrial. Other values will raise.
+      # @return [#negative?, FalseClass, NilClass] the non-negative amount of
+      #   seconds to wait before automatically retrying this task. Falsy values
+      #   will avoid retrial. Other values will cause the retrial to fail.
       def on_error_retry_delay(_exception)
         nil
       end
@@ -38,6 +37,7 @@ module Zenaton
           Context has already been set and cannot be mutated.
         ERROR
         raise ArgumentError, message if @context
+
         @context = Contexts::Task.new(attributes)
       end
     end

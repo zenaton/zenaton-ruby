@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - (De)Serialization support for instances of Class.
+- Execution context for tasks and workflows
+- Optional `on_error_retry_delay` method handling task failures and specifying
+  how many seconds to wait before retrying.
 
 ### Fixed
 - Backport of ActiveSupport's `next_occurring` for older versions.

@@ -2,6 +2,7 @@
 
 require 'json'
 require 'zenaton/services/properties'
+require 'json'
 
 module Zenaton
   module Services

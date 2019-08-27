@@ -3,6 +3,7 @@
 require 'json'
 require 'net/http'
 require 'zenaton/exceptions'
+require 'json'
 
 module Zenaton
   # Collection of utility classes for the Zenaton library

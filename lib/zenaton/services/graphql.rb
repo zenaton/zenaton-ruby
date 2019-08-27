@@ -53,11 +53,11 @@ module Zenaton
           raise Zenaton::ExternalError, format_external_error(response_body)
         end
 
-        response_body['data']
+        response_body && response_body['data']
       end
 
       def external_error?(response_body)
-        response_body.key?('errors')
+        response_body&.key?('errors')
       end
 
       def format_external_error(response_body)

@@ -140,21 +140,23 @@ module Zenaton
     end
 
     def start_scheduled_task(task, cron)
-      @graphql.request(
+      res = @graphql.request(
         gateway_url,
         Services::GraphQL::CREATE_TASK_SCHEDULE,
         create_task_schedule_input(task, cron),
         gateway_headers
-      )['createTaskSchedule']
+      )
+      res && res['createTaskSchedule']
     end
 
     def start_scheduled_workflow(flow, cron)
-      @graphql.request(
+      res = @graphql.request(
         gateway_url,
         Services::GraphQL::CREATE_WORKFLOW_SCHEDULE,
         create_workflow_schedule_input(flow, cron),
         gateway_headers
-      )['createWorkflowSchedule']
+      )
+      res && res['createWorkflowSchedule']
     end
 
     # rubocop:disable Metrics/MethodLength

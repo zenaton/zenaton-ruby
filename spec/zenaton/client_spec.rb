@@ -14,12 +14,19 @@ RSpec.describe Zenaton::Client do
       get: workflow_data
     )
   end
+  let(:graphql) do
+    instance_double(
+      Zenaton::Services::GraphQL,
+      request: nil
+    )
+  end
   let(:workflow) { FakeWorkflow1.new(1, 2) }
   let(:task) { FakeTask3.new(1, 2) }
   let(:event) { FakeEvent.new }
   let(:version) { FakeVersion.new(1, 2) }
   let(:workflow_data) { { 'name' => 'Zenaton::Interfaces::Workflow' } }
   let(:uuid) { 'some-very-valid-uuid4' }
+  let(:cron) { '* * * * * *' }
 
   before do
     setup_client
@@ -60,6 +67,10 @@ RSpec.describe Zenaton::Client do
 
     it 'stores an instance of the http service as an instance variable' do
       expect(client.instance_variable_get(:@http)).to eq(http)
+    end
+
+    it 'stores an instance of the graphql service as an instance variable' do
+      expect(client.instance_variable_get(:@graphql)).to eq(graphql)
     end
   end
 
@@ -288,6 +299,95 @@ RSpec.describe Zenaton::Client do
     end
   end
 
+  # rubocop:disable Metrics/LineLength
+  describe '#start_scheduled_workflow' do
+    let(:start_scheduled_workflow) { client.start_scheduled_workflow(workflow, cron) }
+    let(:start_scheduled_version_workflow) { client.start_scheduled_workflow(version, cron) }
+    let(:expected_url) { 'https://gateway.zenaton.com/api' }
+    let(:expected_query) { Zenaton::Services::GraphQL::CREATE_WORKFLOW_SCHEDULE }
+    let(:expected_headers) { { 'app-id' => nil, 'api-token' => nil } }
+    let(:expected_variables) do
+      {
+        'createWorkflowScheduleInput' => {
+          'intentId' => uuid,
+          'environmentName' => nil,
+          'cron' => cron,
+          'workflowName' => 'FakeWorkflow1',
+          'canonicalName' => 'FakeWorkflow1',
+          'programmingLanguage' => 'RUBY',
+          'properties' => {
+            'o' => '@zenaton#0',
+            's' => [{ 'a' => { :@first => 1, :@second => 2 } }]
+          }.to_json
+        }
+      }
+    end
+
+    let(:expected_variables_version_workflow) do
+      {
+        'createWorkflowScheduleInput' => {
+          'intentId' => uuid,
+          'environmentName' => nil,
+          'cron' => cron,
+          'workflowName' => 'FakeWorkflow2',
+          'canonicalName' => 'FakeVersion',
+          'programmingLanguage' => 'RUBY',
+          'properties' => {
+            'o' => '@zenaton#0',
+            's' => [{ 'a' => { :@args => '@zenaton#1' } }, { 'a' => [1, 2] }]
+          }.to_json
+        }
+      }
+    end
+
+    context 'with a valid workflow' do
+      it 'calls the graphQL request' do
+        e = [expected_url, expected_query, expected_variables, expected_headers]
+        start_scheduled_workflow
+        expect(graphql).to have_received(:request).with(*e)
+      end
+    end
+
+    context 'with a valid version workflow' do
+      it 'calls the graphQL request' do
+        e = [expected_url, expected_query, expected_variables_version_workflow, expected_headers]
+        start_scheduled_version_workflow
+        expect(graphql).to have_received(:request).with(*e)
+      end
+    end
+  end
+  # rubocop:enable Metrics/LineLength
+
+  describe '#start_scheduled_task' do
+    let(:start_scheduled_task) { client.start_scheduled_task(task, cron) }
+    let(:expected_url) { 'https://gateway.zenaton.com/api' }
+    let(:expected_query) { Zenaton::Services::GraphQL::CREATE_TASK_SCHEDULE }
+    let(:expected_headers) { { 'app-id' => nil, 'api-token' => nil } }
+    let(:expected_variables) do
+      {
+        'createTaskScheduleInput' => {
+          'intentId' => uuid,
+          'environmentName' => nil,
+          'cron' => cron,
+          'taskName' => 'FakeTask3',
+          'programmingLanguage' => 'RUBY',
+          'properties' => {
+            'o' => '@zenaton#0',
+            's' => [{ 'a' => { :@arg1 => 1, :@arg2 => 2 } }]
+          }.to_json
+        }
+      }
+    end
+
+    context 'with a valid workflow' do
+      it 'calls the graphQL request' do
+        e = [expected_url, expected_query, expected_variables, expected_headers]
+        start_scheduled_task
+        expect(graphql).to have_received(:request).with(*e)
+      end
+    end
+  end
+
   describe '#kill_workflow' do
     let(:expected_url) do
       'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId'
@@ -443,9 +543,12 @@ RSpec.describe Zenaton::Client do
     end
   end
 
+  # rubocop:disable Metrics/AbcSize
   def setup_client
     Singleton.__init__(described_class)
     allow(Zenaton::Services::Http).to receive(:new).and_return(http)
+    allow(Zenaton::Services::GraphQL).to receive(:new).and_return(graphql)
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
   end
+  # rubocop:enable Metrics/AbcSize
 end

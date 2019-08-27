@@ -16,7 +16,7 @@ module Zenaton
       # (Optional) Implement this method for automatic retrial of task in
       # case of failures.
       # @param _exception [Exception] the reason for the task failure.
-      # @return [#negative?, FalseClass, NilClass] the non-negative amount of
+      # @return [Integer, FalseClass, NilClass] the non-negative amount of
       #   seconds to wait before automatically retrying this task. Falsy values
       #   will avoid retrial. Other values will cause the retrial to fail.
       def on_error_retry_delay(_exception)

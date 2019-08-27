@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changes
+
+### Added
+
+### Fixed
+
+## [0.5.0] - 2019-08-27
+### Changes
 - No longer load JSON core extensions. Use our own refinements to avoid clashes
   with frameworks and user code.
 
@@ -14,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Execution context for tasks and workflows
 - Optional `on_error_retry_delay` method handling task failures and specifying
   how many seconds to wait before retrying.
+- Added scheduling tasks and workflows feature.
 
 ### Fixed
 - Backport of ActiveSupport's `next_occurring` for older versions.
@@ -103,7 +111,8 @@ available.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/zenaton/zenaton-ruby/compare/v0.3.1...v0.4.0

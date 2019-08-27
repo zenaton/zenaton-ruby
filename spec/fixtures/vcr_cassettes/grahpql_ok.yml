@@ -1,0 +1,49 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://localhost:2000/api
+    body:
+      encoding: UTF-8
+      string: '{"query":"        mutation ($createWorkflowScheduleInput: CreateWorkflowScheduleInput!)
+        {\n          createWorkflowSchedule(input: $createWorkflowScheduleInput) {\n            schedule
+        {\n              id\n            }\n          }\n        }\n","variables":{"createWorkflowScheduleInput":{"intentId":"589a3bf8-638e-4786-a475-d3dd1a976d7b","environmentName":"dev","cron":"*
+        * * * * *","workflowName":"RecurrentWorkflow","canonicalName":"RecurrentWorkflow","programmingLanguage":"RUBY","properties":"{}"}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - localhost:2000
+      Content-Type:
+      - application/json
+      App-Id:
+      - JGZREMHIQL
+      Api-Token:
+      - MWWkPuaE2HTJWHI3f0VIlIZE4hhLlafs44wIhzRCR0I6tmQ2x2y9EQ0tumsR
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Length:
+      - '94'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 27 Aug 2019 14:02:36 GMT
+      Server:
+      - Cowboy
+      X-Request-Id:
+      - Fb7MfLivFC6-Dh0AABAB
+    body:
+      encoding: UTF-8
+      string: '{"data":{"createWorkflowSchedule":{"schedule":{"id":"589a3bf8-638e-4786-a475-d3dd1a976d7b"}}}}'
+    http_version: 
+  recorded_at: Tue, 27 Aug 2019 14:02:36 GMT
+recorded_with: VCR 4.0.0

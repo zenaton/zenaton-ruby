@@ -39,11 +39,12 @@ module Zenaton
       #
       # @param url [String] the url for the request
       # @param body [Hash] the payload to send with the request
+      # @param headers [Hash] additional headers to send with the request
       # @return [Hash] the parsed json response
-      def post(url, body)
+      def post(url, body, headers = {})
         parsed_url = parse_url(url)
         request = Net::HTTP::Post.new(parsed_url[:uri])
-        set_body_and_headers(request, post_options(body))
+        set_body_and_headers(request, post_options(body, headers))
         make_request(request, parsed_url)
       end
 
@@ -51,11 +52,12 @@ module Zenaton
       #
       # @param url [String] the url for the request
       # @param body [Hash] the payload to send with the request
+      # @param headers [Hash] additional headers to send with the request
       # @return [Hash] the parsed json response
-      def put(url, body)
+      def put(url, body, headers = {})
         parsed_url = parse_url(url)
         request = Net::HTTP::Put.new(parsed_url[:uri])
-        set_body_and_headers(request, put_options(body))
+        set_body_and_headers(request, put_options(body, headers))
         make_request(request, parsed_url)
       end
 
@@ -106,13 +108,14 @@ module Zenaton
         }
       end
 
-      def post_options(body)
+      def post_options(body, headers)
+        default_post_headers = {
+          'Accept' => 'application/json',
+          'Content-Type' => 'application/json'
+        }
         {
           body: body,
-          headers: {
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
-          }
+          headers: default_post_headers.merge(headers)
         }
       end
       alias put_options post_options

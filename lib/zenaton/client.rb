@@ -181,16 +181,7 @@ module Zenaton
     # @param event [Zenaton::Interfaces::Event] the event to send
     # @return [NilClass]
     def send_event(workflow_name, custom_id, event)
-      body = {
-        ATTR_INTENT_ID => SecureRandom.uuid,
-        ATTR_PROG => PROG,
-        ATTR_NAME => workflow_name,
-        ATTR_ID => custom_id,
-        EVENT_NAME => event.class.name,
-        EVENT_INPUT => @serializer.encode(@properties.from(event)),
-        EVENT_DATA => @serializer.encode(event)
-      }
-      @http.post(send_event_url, body)
+      @graphql.send_event(workflow_name, custom_id, event, credentials)
     end
 
     private

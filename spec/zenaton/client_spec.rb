@@ -23,7 +23,8 @@ RSpec.describe Zenaton::Client do
       start_workflow: nil,
       kill_workflow: nil,
       pause_workflow: nil,
-      resume_workflow: nil
+      resume_workflow: nil,
+      send_event: nil
     )
   end
   let(:workflow) { FakeWorkflow1.new(1, 2) }
@@ -419,31 +420,12 @@ RSpec.describe Zenaton::Client do
   end
 
   describe '#send_event' do
-    let(:expected_url) do
-      'http://localhost:4001/api/v_newton/events?app_env=AppEnv&app_id=AppId'
-    end
-    let(:expected_options) do
-      {
-        'intent_id' => uuid,
-        'programming_language' => 'Ruby',
-        'name' => 'MyWorkflow',
-        'custom_id' => 'MyCustomId',
-        'event_name' => 'FakeEvent',
-        'event_input' => {
-          'o' => '@zenaton#0',
-          's' => [{ 'a' => {} }]
-        }.to_json,
-        'event_data' => {
-          'o' => '@zenaton#0',
-          's' => [{ 'n' => 'FakeEvent', 'p' => {} }]
-        }.to_json
-      }
-    end
-
     before { client.send_event('MyWorkflow', 'MyCustomId', event) }
 
-    it 'makes a post request' do
-      expect(http).to have_received(:post).with(expected_url, expected_options)
+    it 'delegates to the graphql client' do
+      expect(graphql).to \
+        have_received(:send_event)
+        .with('MyWorkflow', 'MyCustomId', event, credentials)
     end
   end
 

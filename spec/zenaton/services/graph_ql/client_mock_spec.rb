@@ -6,7 +6,7 @@ require 'zenaton/services/http'
 require 'fixtures/workflows'
 
 RSpec.describe Zenaton::Services::GraphQL::Client do
-  subject(:client) { described_class.new(http: http, credentials: credentials) }
+  subject(:client) { described_class.new(http: http) }
 
   let(:http) { Zenaton::Services::Http.new }
   let(:graphql_url) { 'http://localhost:2000/api' }
@@ -32,7 +32,7 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
   end
 
   describe 'Actual request' do
-    subject(:request) { client.schedule_workflow(workflow, cron) }
+    subject(:request) { client.schedule_workflow(workflow, cron, credentials) }
 
     around do |example|
       ENV['ZENATON_GATEWAY_URL'] = graphql_url

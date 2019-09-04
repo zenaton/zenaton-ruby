@@ -6,7 +6,7 @@ require 'fixtures/tasks'
 require 'fixtures/workflows'
 
 RSpec.describe Zenaton::Services::GraphQL::Client do
-  subject(:client) { described_class.new(http: http, credentials: credentials) }
+  subject(:client) { described_class.new(http: http) }
 
   let(:http) { instance_double(Zenaton::Services::Http, post: response) }
   let(:credentials) do
@@ -22,7 +22,7 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
   let(:response) { { 'data': '' } }
 
   describe 'Request url' do
-    before { client.schedule_workflow(workflow, cron) }
+    before { client.schedule_workflow(workflow, cron, credentials) }
 
     context 'without a custom GraphQL endpoint' do
       let(:graphql_url) { 'https://gateway.zenaton.com/api' }
@@ -53,7 +53,7 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
 
   describe 'Request body' do
     context 'when scheduling a workflow' do
-      before { client.schedule_workflow(workflow, cron) }
+      before { client.schedule_workflow(workflow, cron, credentials) }
 
       let(:raw_query) do
         <<~GQL
@@ -100,7 +100,7 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
     end
 
     context 'when scheduling a task' do
-      before { client.schedule_task(task, cron) }
+      before { client.schedule_task(task, cron, credentials) }
 
       let(:raw_query) do
         <<~GQL
@@ -147,7 +147,7 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
   end
 
   describe 'Request headers' do
-    before { client.schedule_workflow(workflow, cron) }
+    before { client.schedule_workflow(workflow, cron, credentials) }
 
     let(:expected_headers) do
       {

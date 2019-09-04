@@ -63,10 +63,7 @@ module Zenaton
     # @private
     def initialize
       @http = Services::Http.new
-      @graphql = Services::GraphQL::Client.new(
-        http: @http,
-        credentials: credentials
-      )
+      @graphql = Services::GraphQL::Client.new(http: @http)
       @serializer = Services::Serializer.new
       @properties = Services::Properties.new
     end
@@ -143,12 +140,12 @@ module Zenaton
     end
 
     def start_scheduled_task(task, cron)
-      res = @graphql.schedule_task(task, cron)
+      res = @graphql.schedule_task(task, cron, credentials)
       res && res['createTaskSchedule']
     end
 
     def start_scheduled_workflow(flow, cron)
-      res = @graphql.schedule_workflow(flow, cron)
+      res = @graphql.schedule_workflow(flow, cron, credentials)
       res && res['createWorkflowSchedule']
     end
 

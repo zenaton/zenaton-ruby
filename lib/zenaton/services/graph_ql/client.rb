@@ -11,24 +11,23 @@ module Zenaton
       class Client
         ZENATON_GATEWAY_URL = 'https://gateway.zenaton.com/api' # Gateway url
 
-        def initialize(http:, credentials:)
+        def initialize(http:)
           @http = http
-          @credentials = credentials
         end
 
-        def schedule_workflow(workflow, cron)
-          app_env = @credentials['app_env']
+        def schedule_workflow(workflow, cron, credentials)
+          app_env = credentials['app_env']
           mutation = CreateWorkflowScheduleMutation.new(workflow, cron, app_env)
-          response = @http.post(url, mutation.body, headers)
+          response = @http.post(url, mutation.body, headers(credentials))
           raise Zenaton::ExternalError if response['errors']
 
           response['data']
         end
 
-        def schedule_task(task, cron)
-          app_env = @credentials['app_env']
+        def schedule_task(task, cron, credentials)
+          app_env = credentials['app_env']
           mutation = CreateTaskScheduleMutation.new(task, cron, app_env)
-          response = @http.post(url, mutation.body, headers)
+          response = @http.post(url, mutation.body, headers(credentials))
           raise Zenaton::ExternalError if response['errors']
 
           response['data']
@@ -40,10 +39,10 @@ module Zenaton
           ENV['ZENATON_GATEWAY_URL'] || ZENATON_GATEWAY_URL
         end
 
-        def headers
+        def headers(credentials)
           {
-            'app-id' => @credentials['app_id'],
-            'api-token' => @credentials['api_token']
+            'app-id' => credentials['app_id'],
+            'api-token' => credentials['api_token']
           }
         end
       end

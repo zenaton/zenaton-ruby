@@ -24,3 +24,15 @@ class FakeTask3 < Zenaton::Interfaces::Task
     'result3'
   end
 end
+
+class FakeTaskMPT < Zenaton::Interfaces::Task
+  attr_reader :max_processing_time
+
+  def initialize(max_processing_time)
+    @max_processing_time = max_processing_time
+  end
+
+  def handle
+    'task with max processing time'
+  end
+end

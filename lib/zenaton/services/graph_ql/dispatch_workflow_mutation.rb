@@ -5,11 +5,10 @@ require 'zenaton/services/graph_ql/base_mutation'
 module Zenaton
   module Services
     module GraphQL
-      class CreateWorkflowScheduleMutation < BaseMutation
-        def initialize(workflow, cron, app_env)
+      class DispatchWorkflowMutation < BaseMutation
+        def initialize(workflow, app_env)
           super
           @workflow = workflow
-          @cron = cron
           @app_env = app_env
         end
 
@@ -19,9 +18,9 @@ module Zenaton
 
         def raw_query
           <<~GQL
-            mutation ($createWorkflowScheduleInput: CreateWorkflowScheduleInput!) {
-              createWorkflowSchedule(input: $createWorkflowScheduleInput) {
-                schedule {
+            mutation dispatchWorkflow($input: DispatchWorkflowInput!) {
+              dispatchWorkflow(input: $input) {
+                workflow {
                   id
                 }
               }
@@ -31,14 +30,14 @@ module Zenaton
 
         def variables
           {
-            'createWorkflowScheduleInput' => {
-              'intentId' => intent_id,
+            'input' => {
+              'customId' => @workflow.id,
               'environmentName' => @app_env,
-              'cron' => @cron,
-              'workflowName' => workflow_name,
-              'canonicalName' => @workflow.class.name,
+              'intentId' => intent_id,
               'programmingLanguage' => 'RUBY',
-              'properties' => @serializer.encode(@properties.from(@workflow))
+              'name' => workflow_name,
+              'canonicalName' => @workflow.class.name,
+              'data' => @serializer.encode(@properties.from(@workflow))
             }
           }
         end

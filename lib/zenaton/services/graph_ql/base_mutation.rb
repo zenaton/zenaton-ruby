@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'securerandom'
 require 'zenaton/services/properties'
 require 'zenaton/services/serializer'
 
@@ -22,6 +23,10 @@ module Zenaton
 
         def query
           raw_query.gsub(/\s+/, ' ')
+        end
+
+        def intent_id
+          SecureRandom.uuid
         end
       end
     end

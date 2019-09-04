@@ -5,11 +5,10 @@ require 'zenaton/services/graph_ql/base_mutation'
 module Zenaton
   module Services
     module GraphQL
-      class CreateTaskScheduleMutation < BaseMutation
-        def initialize(task, cron, app_env)
+      class DispatchTaskMutation < BaseMutation
+        def initialize(task, app_env)
           super
           @task = task
-          @cron = cron
           @app_env = app_env
         end
 
@@ -19,10 +18,10 @@ module Zenaton
 
         def raw_query
           <<~GQL
-            mutation ($createTaskScheduleInput: CreateTaskScheduleInput!) {
-              createTaskSchedule(input: $createTaskScheduleInput) {
-                schedule {
-                  id
+            mutation dispatchTask($input: DispatchTaskInput!) {
+              dispatchTask(input: $input) {
+                task {
+                  intentId
                 }
               }
             }
@@ -31,13 +30,12 @@ module Zenaton
 
         def variables
           {
-            'createTaskScheduleInput' => {
-              'intentId' => intent_id,
+            'input' => {
               'environmentName' => @app_env,
-              'cron' => @cron,
-              'taskName' => @task.class.name,
+              'intentId' => intent_id,
+              'maxProcessingTime' => @task.try(:max_processing_time),
               'programmingLanguage' => 'RUBY',
-              'properties' => @serializer.encode(@properties.from(@task))
+              'data' => @serializer.encode(@properties.from(@task))
             }
           }
         end

@@ -2,7 +2,7 @@
 
 require 'securerandom'
 require 'singleton'
-require 'zenaton/services/graphql'
+require 'zenaton/services/graph_ql/client'
 require 'zenaton/services/http'
 require 'zenaton/services/properties'
 require 'zenaton/services/serializer'
@@ -63,7 +63,10 @@ module Zenaton
     # @private
     def initialize
       @http = Services::Http.new
-      @graphql = Services::GraphQL.new(http: @http)
+      @graphql = Services::GraphQL::Client.new(
+        http: @http,
+        credentials: credentials
+      )
       @serializer = Services::Serializer.new
       @properties = Services::Properties.new
     end
@@ -140,53 +143,13 @@ module Zenaton
     end
 
     def start_scheduled_task(task, cron)
-      res = @graphql.request(
-        gateway_url,
-        Services::GraphQL::CREATE_TASK_SCHEDULE,
-        create_task_schedule_input(task, cron),
-        gateway_headers
-      )
+      res = @graphql.schedule_task(task, cron)
       res && res['createTaskSchedule']
     end
 
     def start_scheduled_workflow(flow, cron)
-      res = @graphql.request(
-        gateway_url,
-        Services::GraphQL::CREATE_WORKFLOW_SCHEDULE,
-        create_workflow_schedule_input(flow, cron),
-        gateway_headers
-      )
+      res = @graphql.schedule_workflow(flow, cron)
       res && res['createWorkflowSchedule']
-    end
-
-    # rubocop:disable Metrics/MethodLength
-    def create_workflow_schedule_input(flow, cron)
-      {
-        'createWorkflowScheduleInput' => {
-          'intentId' => SecureRandom.uuid,
-          'environmentName' => @app_env,
-          'cron' => cron,
-          'customId' => parse_custom_id_from(flow),
-          'workflowName' => class_name(flow),
-          'canonicalName' => canonical_name(flow) || class_name(flow),
-          'programmingLanguage' => PROG.upcase,
-          'properties' => @serializer.encode(@properties.from(flow))
-        }
-      }
-    end
-    # rubocop:enable Metrics/MethodLength
-
-    def create_task_schedule_input(task, cron)
-      {
-        'createTaskScheduleInput' => {
-          'intentId' => SecureRandom.uuid,
-          'environmentName' => @app_env,
-          'cron' => cron,
-          'taskName' => class_name(task),
-          'programmingLanguage' => PROG.upcase,
-          'properties' => @serializer.encode(@properties.from(task))
-        }
-      }
     end
 
     # Stops a workflow
@@ -249,6 +212,14 @@ module Zenaton
     end
 
     private
+
+    def credentials
+      {
+        'app_id' => @app_id,
+        'api_token' => @api_token,
+        'app_env' => @app_env
+      }
+    end
 
     # DEPRECATED: This implementation does not safely encode the parameters to
     # be passed as query params in a get request. This method gets called by

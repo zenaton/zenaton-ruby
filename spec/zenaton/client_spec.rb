@@ -21,7 +21,8 @@ RSpec.describe Zenaton::Client do
       schedule_workflow: nil,
       start_task: nil,
       start_workflow: nil,
-      kill_workflow: nil
+      kill_workflow: nil,
+      pause_workflow: nil
     )
   end
   let(:workflow) { FakeWorkflow1.new(1, 2) }
@@ -331,22 +332,12 @@ RSpec.describe Zenaton::Client do
   end
 
   describe '#pause_workflow' do
-    let(:expected_url) do
-      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId&app_env=AppEnv&app_id=AppId'
-    end
-    let(:expected_options) do
-      {
-        'intent_id' => uuid,
-        'programming_language' => 'Ruby',
-        'name' => 'MyWorkflow',
-        'mode' => 'pause'
-      }
-    end
-
     before { client.pause_workflow('MyWorkflow', 'MyCustomId') }
 
-    it 'makes a put request' do
-      expect(http).to have_received(:put).with(expected_url, expected_options)
+    it 'delegates to the graphql client' do
+      expect(graphql).to \
+        have_received(:pause_workflow)
+        .with('MyWorkflow', 'MyCustomId', credentials)
     end
   end
 

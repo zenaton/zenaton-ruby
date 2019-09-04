@@ -24,7 +24,8 @@ RSpec.describe Zenaton::Client do
       kill_workflow: nil,
       pause_workflow: nil,
       resume_workflow: nil,
-      send_event: nil
+      send_event: nil,
+      find_workflow: nil
     )
   end
   let(:workflow) { FakeWorkflow1.new(1, 2) }
@@ -354,68 +355,14 @@ RSpec.describe Zenaton::Client do
   end
 
   describe '#find_workflow' do
-    let(:expected_url) do
-      'https://api.zenaton.com/v1/instances?custom_id=MyCustomId&name=FakeWorkflow1&programming_language=Ruby&api_token=ApiToken'
-    end
-    let(:result) do
+    before do
       client.find_workflow('FakeWorkflow1', 'MyCustomId')
     end
 
-    context 'when there is a matching workflow' do
-      before do
-        described_class.init(nil, 'ApiToken', nil)
-        allow(http).to receive(:get)
-          .with(expected_url)
-          .and_return(sample_response)
-      end
-
-      let(:sample_response) do
-        {
-          'data' => {
-            'status' => 'ok',
-            'properties' => '{"a":{"@id":2,"@max":10},"s":[]}',
-            'name' => 'FakeWorkflow1',
-            'mode' => 'paused',
-            'custom_id' => 'MyCustomId',
-            'canonical_name' => 'FakeWorkflow1'
-          }
-        }
-      end
-
-      it 'returns the requested instance' do
-        expect(result).to be_a FakeWorkflow1
-      end
-
-      it 'sets the instance variable of the workflow' do
-        expect(result.instance_variable_get(:@id)).to eq(2)
-      end
-    end
-
-    context 'when there is no matching workflow' do
-      before do
-        described_class.init(nil, 'ApiToken', nil)
-        allow(http).to receive(:get)
-          .with(expected_url)
-          .and_raise(Zenaton::InternalError,
-                     '404: No workflow instance found with the id : MyCustomId')
-      end
-
-      it 'returns nil' do
-        expect(result).to be_nil
-      end
-    end
-
-    context 'when another exception is raised' do
-      before do
-        described_class.init(nil, 'ApiToken', nil)
-        allow(http).to receive(:get)
-          .with(expected_url)
-          .and_raise(Zenaton::InternalError, 'Oopsies')
-      end
-
-      it 'raises the exception' do
-        expect { result }.to raise_error Zenaton::InternalError, 'Oopsies'
-      end
+    it 'delegates to the graphql client' do
+      expect(graphql).to \
+        have_received(:find_workflow)
+        .with('FakeWorkflow1', 'MyCustomId', credentials)
     end
   end
 

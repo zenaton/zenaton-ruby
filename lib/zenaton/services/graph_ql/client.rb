@@ -9,6 +9,7 @@ require 'zenaton/services/graph_ql/kill_workflow_mutation'
 require 'zenaton/services/graph_ql/pause_workflow_mutation'
 require 'zenaton/services/graph_ql/resume_workflow_mutation'
 require 'zenaton/services/graph_ql/send_event_mutation'
+require 'zenaton/services/graph_ql/workflow_query'
 
 module Zenaton
   module Services
@@ -91,6 +92,15 @@ module Zenaton
           raise Zenaton::ExternalError, format_errors(response) if response['errors']
 
           response['data']
+        end
+
+        def find_workflow(name, custom_id, credentials)
+          app_env = credentials['app_env']
+          query = WorkflowQuery.new(name, custom_id, app_env)
+          response = @http.post(url, query.body, headers(credentials))
+          raise Zenaton::ExternalError, format_errors(response) if response['errors']
+
+          query.result(resp['data'])
         end
 
         private

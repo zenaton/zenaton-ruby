@@ -18,6 +18,7 @@ RSpec.describe Zenaton::Services::GraphQL::DispatchTaskMutation do
           'input' => {
             'environmentName' => 'dev',
             'intentId' => String,
+            'name' => 'FakeTask1',
             'maxProcessingTime' => nil,
             'programmingLanguage' => 'RUBY',
             'data' => {
@@ -38,6 +39,7 @@ RSpec.describe Zenaton::Services::GraphQL::DispatchTaskMutation do
           'input' => {
             'environmentName' => 'dev',
             'intentId' => String,
+            'name' => 'FakeTaskMPT',
             'maxProcessingTime' => 1000,
             'programmingLanguage' => 'RUBY',
             'data' => {

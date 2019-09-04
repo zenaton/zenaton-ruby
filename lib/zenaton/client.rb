@@ -114,29 +114,14 @@ module Zenaton
     # Start a single task
     # @param task [Zenaton::Interfaces::Task]
     def start_task(task)
-      max_processing_time = task.try(:max_processing_time)
-      @http.post(
-        worker_url('tasks'),
-        ATTR_INTENT_ID => SecureRandom.uuid,
-        ATTR_PROG => PROG,
-        ATTR_NAME => class_name(task),
-        ATTR_DATA => @serializer.encode(@properties.from(task)),
-        ATTR_MAX_PROCESSING_TIME => max_processing_time
-      )
+      @graphql.start_task(task, credentials)
     end
 
     # Start the specified workflow
     # @param flow [Zenaton::Interfaces::Workflow]
     def start_workflow(flow)
-      @http.post(
-        instance_worker_url,
-        ATTR_INTENT_ID => SecureRandom.uuid,
-        ATTR_PROG => PROG,
-        ATTR_CANONICAL => canonical_name(flow),
-        ATTR_NAME => class_name(flow),
-        ATTR_DATA => @serializer.encode(@properties.from(flow)),
-        ATTR_ID => parse_custom_id_from(flow)
-      )
+      check_custom_id(flow)
+      @graphql.start_workflow(flow, credentials)
     end
 
     def start_scheduled_task(task, cron)
@@ -253,23 +238,19 @@ module Zenaton
       worker_url('events')
     end
 
-    # rubocop:disable Metrics/MethodLength
-    def parse_custom_id_from(flow)
-      custom_id = flow.id
-      if custom_id
-        unless custom_id.is_a?(String) || custom_id.is_a?(Integer)
-          raise InvalidArgumentError,
-                'Provided ID must be a string or an integer'
-        end
-        custom_id = custom_id.to_s
-        if custom_id.length > MAX_ID_SIZE
-          raise InvalidArgumentError,
-                "Provided Id must not exceed #{MAX_ID_SIZE} bytes"
-        end
+    def check_custom_id(flow)
+      return unless flow.id
+
+      unless flow.id.is_a?(String) || flow.id.is_a?(Integer)
+        raise InvalidArgumentError,
+              'Provided ID must be a string or an integer'
       end
-      custom_id
+
+      if flow.id.to_s.length > MAX_ID_SIZE
+        raise InvalidArgumentError,
+              "Provided Id must not exceed #{MAX_ID_SIZE} bytes"
+      end
     end
-    # rubocop:enable Metrics/MethodLength
 
     def canonical_name(flow)
       flow.class.name if flow.is_a? Workflows::Version

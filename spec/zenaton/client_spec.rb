@@ -18,7 +18,9 @@ RSpec.describe Zenaton::Client do
     instance_double(
       Zenaton::Services::GraphQL::Client,
       schedule_task: nil,
-      schedule_workflow: nil
+      schedule_workflow: nil,
+      start_task: nil,
+      start_workflow: nil
     )
   end
   let(:workflow) { FakeWorkflow1.new(1, 2) }
@@ -28,30 +30,29 @@ RSpec.describe Zenaton::Client do
   let(:workflow_data) { { 'name' => 'Zenaton::Interfaces::Workflow' } }
   let(:uuid) { 'some-very-valid-uuid4' }
   let(:cron) { '* * * * * *' }
+  let(:credentials) do
+    {
+      'app_id' => 'AppId',
+      'api_token' => 'SecretToken',
+      'app_env' => 'AppEnv'
+    }
+  end
 
   before do
     setup_client
   end
 
   describe '::init' do
-    let(:instance) { described_class.init('AppId', 'SecretToken', 'AppEnv') }
-
-    before { instance }
-
-    it 'returns the instance of the class' do
-      expect(instance).to eq(client)
-    end
-
     it 'sets the app id' do
-      expect(instance.instance_variable_get(:@app_id)).to eq('AppId')
+      expect(client.instance_variable_get(:@app_id)).to eq('AppId')
     end
 
     it 'sets the api token' do
-      expect(instance.instance_variable_get(:@api_token)).to eq('SecretToken')
+      expect(client.instance_variable_get(:@api_token)).to eq('SecretToken')
     end
 
     it 'sets the app environment' do
-      expect(instance.instance_variable_get(:@app_env)).to eq('AppEnv')
+      expect(client.instance_variable_get(:@app_env)).to eq('AppEnv')
     end
   end
 
@@ -88,7 +89,7 @@ RSpec.describe Zenaton::Client do
       it 'returns the worker url with hash params' do
         url = client.worker_url('my_resource', 'myParam' => 1)
         expect(url).to \
-          eq('http://192.168.1.1:42/api/v_newton/my_resource?myParam=1')
+          eq('http://192.168.1.1:42/api/v_newton/my_resource?myParam=1&app_env=AppEnv&app_id=AppId')
       end
 
       # rubocop:disable RSpec/MultipleExpectations
@@ -143,7 +144,7 @@ RSpec.describe Zenaton::Client do
       it 'returns the default worker url' do
         url = client.worker_url('my_resource')
         expect(url).to \
-          eq('http://localhost:4001/api/v_newton/my_resource?')
+          eq('http://localhost:4001/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId')
       end
 
       it 'encodes query params' do
@@ -200,25 +201,13 @@ RSpec.describe Zenaton::Client do
 
   describe '#start_task' do
     let(:start_task) { client.start_task(task) }
-    let(:expected_url) { 'http://localhost:4001/api/v_newton/tasks?' }
-    let(:expected_hash) do
-      {
-        'intent_id' => uuid,
-        'programming_language' => 'Ruby',
-        'name' => 'FakeTask3',
-        'maxProcessingTime' => nil,
-        'data' => {
-          'o' => '@zenaton#0',
-          's' => [{ 'a' => { :@arg1 => 1, :@arg2 => 2 } }]
-        }.to_json
-      }
-    end
 
     before { start_task }
 
     it 'sends the serialized task to the worker' do
-      expect(http).to have_received(:post)
-        .with(expected_url, expected_hash)
+      expect(graphql).to \
+        have_received(:start_task)
+        .with(task, credentials)
     end
   end
 
@@ -245,8 +234,9 @@ RSpec.describe Zenaton::Client do
 
       it 'sends the custom id as a string' do
         start_workflow
-        expect(http).to have_received(:post)
-          .with(expected_url, hash_including('custom_id' => '123'))
+        expect(graphql).to \
+          have_received(:start_workflow)
+          .with(workflow, credentials)
       end
     end
 
@@ -255,8 +245,9 @@ RSpec.describe Zenaton::Client do
 
       it 'sends the custom id' do
         start_workflow
-        expect(http).to have_received(:post)
-          .with(expected_url, hash_including('custom_id' => 'MyWorkflowId'))
+        expect(graphql).to \
+          have_received(:start_workflow)
+          .with(workflow, credentials)
       end
     end
 
@@ -281,21 +272,18 @@ RSpec.describe Zenaton::Client do
     context 'without a custom id' do
       it 'sends a post request to the http client' do
         start_workflow
-        expect(http).to have_received(:post).with(expected_url, expected_hash)
+        expect(graphql).to \
+          have_received(:start_workflow)
+          .with(workflow, credentials)
       end
     end
 
     context 'with a version workflow' do
-      it 'sends the version class name as the canonical name' do
+      it 'delegates to the graphql client' do
         start_version_workflow
-        expect(http).to have_received(:post)
-          .with(expected_url, hash_including('canonical_name' => 'FakeVersion'))
-      end
-
-      it 'sends the workflow name as the name' do
-        start_version_workflow
-        expect(http).to have_received(:post)
-          .with(expected_url, hash_including('name' => 'FakeWorkflow2'))
+        expect(graphql).to \
+          have_received(:start_workflow)
+          .with(version, credentials)
       end
     end
   end
@@ -306,7 +294,7 @@ RSpec.describe Zenaton::Client do
         client.start_scheduled_workflow(workflow, cron)
         expect(graphql).to \
           have_received(:schedule_workflow)
-          .with(workflow, cron)
+          .with(workflow, cron, credentials)
       end
     end
 
@@ -315,7 +303,7 @@ RSpec.describe Zenaton::Client do
         client.start_scheduled_workflow(version, cron)
         expect(graphql).to \
           have_received(:schedule_workflow)
-          .with(version, cron)
+          .with(version, cron, credentials)
       end
     end
   end
@@ -326,14 +314,14 @@ RSpec.describe Zenaton::Client do
         client.start_scheduled_task(task, cron)
         expect(graphql).to \
           have_received(:schedule_task)
-          .with(task, cron)
+          .with(task, cron, credentials)
       end
     end
   end
 
   describe '#kill_workflow' do
     let(:expected_url) do
-      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId'
+      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId&app_env=AppEnv&app_id=AppId'
     end
     let(:expected_options) do
       {
@@ -353,7 +341,7 @@ RSpec.describe Zenaton::Client do
 
   describe '#pause_workflow' do
     let(:expected_url) do
-      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId'
+      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId&app_env=AppEnv&app_id=AppId'
     end
     let(:expected_options) do
       {
@@ -373,7 +361,7 @@ RSpec.describe Zenaton::Client do
 
   describe '#resume_workflow' do
     let(:expected_url) do
-      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId'
+      'http://localhost:4001/api/v_newton/instances?custom_id=MyCustomId&app_env=AppEnv&app_id=AppId'
     end
     let(:expected_options) do
       {
@@ -459,7 +447,7 @@ RSpec.describe Zenaton::Client do
 
   describe '#send_event' do
     let(:expected_url) do
-      'http://localhost:4001/api/v_newton/events?'
+      'http://localhost:4001/api/v_newton/events?app_env=AppEnv&app_id=AppId'
     end
     let(:expected_options) do
       {
@@ -492,6 +480,7 @@ RSpec.describe Zenaton::Client do
     allow(Zenaton::Services::Http).to receive(:new).and_return(http)
     allow(Zenaton::Services::GraphQL::Client).to receive(:new).and_return(graphql)
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
+    described_class.init(*credentials.values)
   end
   # rubocop:enable Metrics/AbcSize
 end

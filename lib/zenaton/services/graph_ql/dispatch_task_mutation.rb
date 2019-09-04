@@ -33,6 +33,7 @@ module Zenaton
             'input' => {
               'environmentName' => @app_env,
               'intentId' => intent_id,
+              'name' => @task.class.name,
               'maxProcessingTime' => @task.try(:max_processing_time),
               'programmingLanguage' => 'RUBY',
               'data' => @serializer.encode(@properties.from(@task))

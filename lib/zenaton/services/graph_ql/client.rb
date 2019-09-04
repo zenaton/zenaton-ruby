@@ -3,6 +3,8 @@
 require 'securerandom'
 require 'zenaton/services/graph_ql/create_workflow_schedule_mutation'
 require 'zenaton/services/graph_ql/create_task_schedule_mutation'
+require 'zenaton/services/graph_ql/dispatch_task_mutation'
+require 'zenaton/services/graph_ql/dispatch_workflow_mutation'
 
 module Zenaton
   module Services
@@ -19,7 +21,7 @@ module Zenaton
           app_env = credentials['app_env']
           mutation = CreateWorkflowScheduleMutation.new(workflow, cron, app_env)
           response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError if response['errors']
+          raise Zenaton::ExternalError, format_errors(response) if response['errors']
 
           response['data']
         end
@@ -28,7 +30,25 @@ module Zenaton
           app_env = credentials['app_env']
           mutation = CreateTaskScheduleMutation.new(task, cron, app_env)
           response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError if response['errors']
+          raise Zenaton::ExternalError, format_errors(response) if response['errors']
+
+          response['data']
+        end
+
+        def start_task(task, credentials)
+          app_env = credentials['app_env']
+          mutation = DispatchTaskMutation.new(task, app_env)
+          response = @http.post(url, mutation.body, headers(credentials))
+          raise Zenaton::ExternalError, format_errors(response) if response['errors']
+
+          response['data']
+        end
+
+        def start_workflow(workflow, credentials)
+          app_env = credentials['app_env']
+          mutation = DispatchWorkflowMutation.new(workflow, app_env)
+          response = @http.post(url, mutation.body, headers(credentials))
+          raise Zenaton::ExternalError, format_errors(response) if response['errors']
 
           response['data']
         end
@@ -44,6 +64,13 @@ module Zenaton
             'app-id' => credentials['app_id'],
             'api-token' => credentials['api_token']
           }
+        end
+
+        def format_errors(response)
+          response['errors'].map do |error|
+            path = error['path'] ? "- #{error['path']}: " : ''
+            "#{path}#{error['message']}"
+          end.join("\n")
         end
       end
     end

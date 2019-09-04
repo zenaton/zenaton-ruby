@@ -151,11 +151,11 @@ module Zenaton
     end
 
     # Resumes a workflow
-    # @param workflow_name [String] the class name of the workflow
+    # @param name [String] the class name of the workflow
     # @param custom_id [String] the custom ID of the workflow (if any)
     # @return [NilClass]
-    def resume_workflow(workflow_name, custom_id)
-      update_instance(workflow_name, custom_id, WORKFLOW_RUN)
+    def resume_workflow(name, custom_id)
+      @graphql.resume_workflow(name, custom_id, credentials)
     end
 
     # Finds a workflow

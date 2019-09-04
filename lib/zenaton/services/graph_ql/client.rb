@@ -7,6 +7,7 @@ require 'zenaton/services/graph_ql/dispatch_task_mutation'
 require 'zenaton/services/graph_ql/dispatch_workflow_mutation'
 require 'zenaton/services/graph_ql/kill_workflow_mutation'
 require 'zenaton/services/graph_ql/pause_workflow_mutation'
+require 'zenaton/services/graph_ql/resume_workflow_mutation'
 
 module Zenaton
   module Services
@@ -67,6 +68,15 @@ module Zenaton
         def pause_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           mutation = PauseWorkflowMutation.new(name, custom_id, app_env)
+          response = @http.post(url, mutation.body, headers(credentials))
+          raise Zenaton::ExternalError, format_errors(response) if response['errors']
+
+          response['data']
+        end
+
+        def resume_workflow(name, custom_id, credentials)
+          app_env = credentials['app_env']
+          mutation = ResumeWorkflowMutation.new(name, custom_id, app_env)
           response = @http.post(url, mutation.body, headers(credentials))
           raise Zenaton::ExternalError, format_errors(response) if response['errors']
 

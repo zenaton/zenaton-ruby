@@ -33,7 +33,7 @@ RSpec.describe Zenaton::Services::GraphQL::DispatchWorkflowMutation do
       it { is_expected.to match(expected_variables) }
     end
 
-    context 'with a custom id' do
+    context 'with a string custom id' do
       let(:workflow) { FakeWorkflowWithID.new('my-custom-id') }
       let(:expected_variables) do
         {
@@ -47,6 +47,28 @@ RSpec.describe Zenaton::Services::GraphQL::DispatchWorkflowMutation do
             'data' => {
               o: '@zenaton#0',
               s: [{ a: { '@custom_id': 'my-custom-id' } }]
+            }.to_json
+          }
+        }
+      end
+
+      it { is_expected.to match(expected_variables) }
+    end
+
+    context 'with an integer custom id' do
+      let(:workflow) { FakeWorkflowWithID.new(123) }
+      let(:expected_variables) do
+        {
+          'input' => {
+            'customId' => '123',
+            'environmentName' => 'dev',
+            'intentId' => String,
+            'programmingLanguage' => 'RUBY',
+            'name' => 'FakeWorkflowWithID',
+            'canonicalName' => 'FakeWorkflowWithID',
+            'data' => {
+              o: '@zenaton#0',
+              s: [{ a: { '@custom_id': 123 } }]
             }.to_json
           }
         }

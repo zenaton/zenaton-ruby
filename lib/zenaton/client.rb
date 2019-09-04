@@ -135,11 +135,11 @@ module Zenaton
     end
 
     # Stops a workflow
-    # @param workflow_name [String] the class name of the workflow
-    # @param custom_id [String] the custom ID of the workflow (if any)
+    # @param name [String] the class name of the workflow
+    # @param custom_id [String] the custom ID of the workflow
     # @return [NilClass]
-    def kill_workflow(workflow_name, custom_id)
-      update_instance(workflow_name, custom_id, WORKFLOW_KILL)
+    def kill_workflow(name, custom_id)
+      @graphql.kill_workflow(name, custom_id, credentials)
     end
 
     # Pauses a workflow

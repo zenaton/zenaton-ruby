@@ -31,7 +31,7 @@ module Zenaton
         def variables
           {
             'input' => {
-              'customId' => @workflow.id,
+              'customId' => @workflow.id.try(:to_s),
               'environmentName' => @app_env,
               'intentId' => intent_id,
               'programmingLanguage' => 'RUBY',

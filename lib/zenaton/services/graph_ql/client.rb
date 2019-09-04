@@ -5,6 +5,7 @@ require 'zenaton/services/graph_ql/create_workflow_schedule_mutation'
 require 'zenaton/services/graph_ql/create_task_schedule_mutation'
 require 'zenaton/services/graph_ql/dispatch_task_mutation'
 require 'zenaton/services/graph_ql/dispatch_workflow_mutation'
+require 'zenaton/services/graph_ql/kill_workflow_mutation'
 
 module Zenaton
   module Services
@@ -47,6 +48,15 @@ module Zenaton
         def start_workflow(workflow, credentials)
           app_env = credentials['app_env']
           mutation = DispatchWorkflowMutation.new(workflow, app_env)
+          response = @http.post(url, mutation.body, headers(credentials))
+          raise Zenaton::ExternalError, format_errors(response) if response['errors']
+
+          response['data']
+        end
+
+        def kill_workflow(name, custom_id, credentials)
+          app_env = credentials['app_env']
+          mutation = KillWorkflowMutation.new(name, custom_id, app_env)
           response = @http.post(url, mutation.body, headers(credentials))
           raise Zenaton::ExternalError, format_errors(response) if response['errors']
 

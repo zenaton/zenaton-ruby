@@ -6,9 +6,11 @@ require 'zenaton/exceptions'
 module Zenaton
   module Services
     module GraphQL
+      # Mutation parameters for executing a workflow
       class DispatchWorkflowMutation < BaseMutation
         MAX_ID_SIZE = 256
 
+        # @raise [Zenaton::InvalidArgumentError] if custom id fails validation
         def initialize(workflow, app_env)
           super
           @workflow = workflow
@@ -16,10 +18,12 @@ module Zenaton
           validate_custom_id
         end
 
+        # The body of the GraphQL request
         def body
           { 'query' => query, 'variables' => variables }
         end
 
+        # The query to be executed
         def raw_query
           <<~GQL
             mutation dispatchWorkflow($input: DispatchWorkflowInput!) {
@@ -33,6 +37,7 @@ module Zenaton
         end
 
         # rubocop:disable Metrics/MethodLength
+        # The variables used in the query
         def variables
           {
             'input' => {

@@ -5,6 +5,7 @@ require 'zenaton/services/graph_ql/base_mutation'
 module Zenaton
   module Services
     module GraphQL
+      # Mutation parameters for scheduling a Task
       class CreateWorkflowScheduleMutation < BaseMutation
         def initialize(workflow, cron, app_env)
           super
@@ -13,10 +14,12 @@ module Zenaton
           @app_env = app_env
         end
 
+        # The body of the GraphQL request
         def body
           { 'query' => query, 'variables' => variables }
         end
 
+        # The query to be executed
         def raw_query
           <<~GQL
             mutation ($input: CreateWorkflowScheduleInput!) {
@@ -29,18 +32,9 @@ module Zenaton
           GQL
         end
 
+        # The variables used in the query
         def variables
-          {
-            'input' => {
-              'intentId' => intent_id,
-              'environmentName' => @app_env,
-              'cron' => @cron,
-              'workflowName' => workflow_name,
-              'canonicalName' => @workflow.class.name,
-              'programmingLanguage' => 'RUBY',
-              'properties' => @serializer.encode(@properties.from(@workflow))
-            }
-          }
+          { 'input' => input }
         end
 
         private
@@ -51,6 +45,18 @@ module Zenaton
           else
             @workflow.class.name
           end
+        end
+
+        def input
+          {
+            'intentId' => intent_id,
+            'environmentName' => @app_env,
+            'cron' => @cron,
+            'workflowName' => workflow_name,
+            'canonicalName' => @workflow.class.name,
+            'programmingLanguage' => 'RUBY',
+            'properties' => @serializer.encode(@properties.from(@workflow))
+          }
         end
       end
     end

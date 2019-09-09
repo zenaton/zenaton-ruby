@@ -18,58 +18,68 @@ module Zenaton
       class Client
         ZENATON_GATEWAY_URL = 'https://gateway.zenaton.com/api' # Gateway url
 
+        # Setup the GraphQL client with the HTTP client to use
         def initialize(http:)
           @http = http
         end
 
+        # Scheduling a workflow
         def schedule_workflow(workflow, cron, credentials)
           app_env = credentials['app_env']
           mutation = CreateWorkflowScheduleMutation.new(workflow, cron, app_env)
           run_mutation(mutation, credentials)
         end
 
+        # Scheduling a task
         def schedule_task(task, cron, credentials)
           app_env = credentials['app_env']
           mutation = CreateTaskScheduleMutation.new(task, cron, app_env)
           run_mutation(mutation, credentials)
         end
 
+        # Dispatching a single task
         def start_task(task, credentials)
           app_env = credentials['app_env']
           mutation = DispatchTaskMutation.new(task, app_env)
           run_mutation(mutation, credentials)
         end
 
+        # Dispatching a workflow
         def start_workflow(workflow, credentials)
           app_env = credentials['app_env']
           mutation = DispatchWorkflowMutation.new(workflow, app_env)
           run_mutation(mutation, credentials)
         end
 
+        # Stopping an existing workflow
         def kill_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           mutation = KillWorkflowMutation.new(name, custom_id, app_env)
           run_mutation(mutation, credentials)
         end
 
+        # Pausing an existing workflow
         def pause_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           mutation = PauseWorkflowMutation.new(name, custom_id, app_env)
           run_mutation(mutation, credentials)
         end
 
+        # Resuming a paused workflow
         def resume_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           mutation = ResumeWorkflowMutation.new(name, custom_id, app_env)
           run_mutation(mutation, credentials)
         end
 
+        # Sending an event to an existing workflow
         def send_event(name, custom_id, event, credentials)
           app_env = credentials['app_env']
           mutation = SendEventMutation.new(name, custom_id, event, app_env)
           run_mutation(mutation, credentials)
         end
 
+        # Search for a workflow with a custom ID
         def find_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           query = WorkflowQuery.new(name, custom_id, app_env)

@@ -5,6 +5,7 @@ require 'zenaton/services/graph_ql/base_mutation'
 module Zenaton
   module Services
     module GraphQL
+      # Mutation parameters for executing a single task
       class DispatchTaskMutation < BaseMutation
         def initialize(task, app_env)
           super
@@ -12,10 +13,12 @@ module Zenaton
           @app_env = app_env
         end
 
+        # The body of the GraphQL request
         def body
           { 'query' => query, 'variables' => variables }
         end
 
+        # The query to be executed
         def raw_query
           <<~GQL
             mutation dispatchTask($input: DispatchTaskInput!) {
@@ -28,6 +31,7 @@ module Zenaton
           GQL
         end
 
+        # The variables used in the query
         def variables
           {
             'input' => {

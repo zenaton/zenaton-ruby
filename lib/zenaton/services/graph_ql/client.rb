@@ -25,82 +25,55 @@ module Zenaton
         def schedule_workflow(workflow, cron, credentials)
           app_env = credentials['app_env']
           mutation = CreateWorkflowScheduleMutation.new(workflow, cron, app_env)
-          response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          response['data']
+          run_mutation(mutation, credentials)
         end
 
         def schedule_task(task, cron, credentials)
           app_env = credentials['app_env']
           mutation = CreateTaskScheduleMutation.new(task, cron, app_env)
-          response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          response['data']
+          run_mutation(mutation, credentials)
         end
 
         def start_task(task, credentials)
           app_env = credentials['app_env']
           mutation = DispatchTaskMutation.new(task, app_env)
-          response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          response['data']
+          run_mutation(mutation, credentials)
         end
 
         def start_workflow(workflow, credentials)
           app_env = credentials['app_env']
           mutation = DispatchWorkflowMutation.new(workflow, app_env)
-          response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          response['data']
+          run_mutation(mutation, credentials)
         end
 
         def kill_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           mutation = KillWorkflowMutation.new(name, custom_id, app_env)
-          response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          response['data']
+          run_mutation(mutation, credentials)
         end
 
         def pause_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           mutation = PauseWorkflowMutation.new(name, custom_id, app_env)
-          response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          response['data']
+          run_mutation(mutation, credentials)
         end
 
         def resume_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           mutation = ResumeWorkflowMutation.new(name, custom_id, app_env)
-          response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          response['data']
+          run_mutation(mutation, credentials)
         end
 
         def send_event(name, custom_id, event, credentials)
           app_env = credentials['app_env']
           mutation = SendEventMutation.new(name, custom_id, event, app_env)
-          response = @http.post(url, mutation.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          response['data']
+          run_mutation(mutation, credentials)
         end
 
         def find_workflow(name, custom_id, credentials)
           app_env = credentials['app_env']
           query = WorkflowQuery.new(name, custom_id, app_env)
-          response = @http.post(url, query.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) if response['errors']
-
-          query.result(resp['data'])
+          run_query(query, credentials)
         end
 
         private
@@ -114,6 +87,22 @@ module Zenaton
             'app-id' => credentials['app_id'],
             'api-token' => credentials['api_token']
           }
+        end
+
+        def run_mutation(mutation, credentials)
+          response = @http.post(url, mutation.body, headers(credentials))
+          raise Zenaton::ExternalError, format_errors(response) \
+            if response['errors']
+
+          response['data']
+        end
+
+        def run_query(query, credentials)
+          response = @http.post(url, query.body, headers(credentials))
+          raise Zenaton::ExternalError, format_errors(response) \
+            if response['errors']
+
+          query.result(resp['data'])
         end
 
         def format_errors(response)

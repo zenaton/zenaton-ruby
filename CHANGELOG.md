@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- `start workflow` now uses the graphql client
+- `start task` now uses the graphql client
+- `kill workflow` now uses the graphql client
+- `pause workflow` now uses the graphql client
+- `resume workflow` now uses the graphql client
+- `find workflow` now uses the graphql client
+
 ### Deprecated
 
 ### Removed
@@ -36,6 +43,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added missing documentation for serialization.
 - Added `custom_id` argument for workflow schedule.
+
+### Removed
+
+- Removed code from the client that pertained to the client mode
 
 ## [0.5.0] - 2019-08-27
 ### Changed

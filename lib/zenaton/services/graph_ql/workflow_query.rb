@@ -22,8 +22,8 @@ module Zenaton
         # The query to be executed
         def raw_query
           <<~GQL
-            query workflow($workflowName: String, $customId: ID, $environmentName: String, $programmingLanguage: String) {
-              workflow(environmentName: $environmentName, programmingLanguage: $programmingLanguage, customId: $customId, name: $workflowName) {
+            query ($workflowName: String, $customId: ID, $environmentName: String, $programmingLanguage: String) {
+              findWorkflow(environmentName: $environmentName, programmingLanguage: $programmingLanguage, customId: $customId, name: $workflowName) {
                 name
                 properties
               }
@@ -44,8 +44,8 @@ module Zenaton
         # Parses the results of the query
         def result(data)
           @properties.object_from(
-            data['name'],
-            @serializer.decode(data['properties'])
+            data['findWorkflow']['name'],
+            @serializer.decode(data['findWorkflow']['properties'])
           )
         end
       end

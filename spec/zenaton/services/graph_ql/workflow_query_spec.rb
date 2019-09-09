@@ -22,6 +22,23 @@ RSpec.describe Zenaton::Services::GraphQL::WorkflowQuery do
       }
     end
 
-    it { is_expected.to match(expected_variables) }
+    it { is_expected.to eq(expected_variables) }
+  end
+
+  describe 'result from response' do
+    subject(:workflow) { query.result(response['data']) }
+
+    let(:response) do
+      {
+        'data' => {
+          'findWorkflow' => {
+            'name' => 'FakeWorkflow2',
+            'properties' => '{"o":"@zenaton#0","s":[{"a":{"@a":0,"@b":10}}]}'
+          }
+        }
+      }
+    end
+
+    it { is_expected.to be_a(FakeWorkflow2) }
   end
 end

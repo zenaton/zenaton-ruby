@@ -112,7 +112,7 @@ module Zenaton
           raise Zenaton::ExternalError, format_errors(response) \
             if response['errors']
 
-          query.result(resp['data'])
+          query.result(response['data'])
         end
 
         def format_errors(response)

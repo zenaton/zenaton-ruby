@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'zenaton/services/graph_ql/base_mutation'
+require 'zenaton/workflows/version'
 
 module Zenaton
   module Services

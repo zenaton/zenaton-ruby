@@ -6,44 +6,11 @@ require 'zenaton/services/graph_ql/client'
 require 'zenaton/services/http'
 require 'zenaton/services/properties'
 require 'zenaton/services/serializer'
-require 'zenaton/workflows/version'
 
 module Zenaton
   # Zenaton Client
   class Client
     include Singleton
-
-    ZENATON_API_URL = 'https://api.zenaton.com/v1' # Zenaton api url
-    ZENATON_GATEWAY_URL = 'https://gateway.zenaton.com/api' # Gateway url
-    ZENATON_WORKER_URL = 'http://localhost' # Default worker url
-    DEFAULT_WORKER_PORT = 4001 # Default worker port
-    WORKER_API_VERSION = 'v_newton' # Default worker api version
-
-    MAX_ID_SIZE = 256 # Limit on length of custom ids
-
-    APP_ENV = 'app_env' # Parameter name for the application environment
-    APP_ID = 'app_id' # Parameter name for the application ID
-    API_TOKEN = 'api_token' # Parameter name for the API token
-
-    ATTR_INTENT_ID = 'intent_id' # Internal parameter for retries
-    ATTR_ID = 'custom_id' # Parameter name for custom ids
-    ATTR_NAME = 'name' # Parameter name for workflow names
-    ATTR_CANONICAL = 'canonical_name' # Parameter name for version name
-    ATTR_DATA = 'data' # Parameter name for json payload
-    ATTR_PROG = 'programming_language' # Parameter name for the language
-    ATTR_MODE = 'mode' # Parameter name for the worker update mode
-    # Parameter name for task maximum processing time
-    ATTR_MAX_PROCESSING_TIME = 'maxProcessingTime'
-
-    PROG = 'Ruby' # The current programming language
-
-    EVENT_INPUT = 'event_input' # Parameter name for event input
-    EVENT_NAME = 'event_name' # Parameter name for event name
-    EVENT_DATA = 'event_data' # Parameter name for event data
-
-    WORKFLOW_KILL = 'kill' # Worker update mode to stop a worker
-    WORKFLOW_PAUSE = 'pause' # Worker udpate mode to pause a worker
-    WORKFLOW_RUN = 'run' # Worker update mode to resume a worker
 
     attr_writer :app_id, :api_token, :app_env
 
@@ -66,49 +33,6 @@ module Zenaton
       @graphql = Services::GraphQL::Client.new(http: @http)
       @serializer = Services::Serializer.new
       @properties = Services::Properties.new
-    end
-
-    # Gets the url for the workers
-    # @param resource [String] the endpoint for the worker
-    # @param params [Hash|String] query params to be url encoded
-    # @return [String] the workers url with parameters
-    def worker_url(resource = '', params = {})
-      base_url = ENV['ZENATON_WORKER_URL'] || ZENATON_WORKER_URL
-      port = ENV['ZENATON_WORKER_PORT'] || DEFAULT_WORKER_PORT
-      url = "#{base_url}:#{port}/api/#{WORKER_API_VERSION}/#{resource}"
-
-      if params.is_a?(Hash)
-        append_params_to_url(url, params)
-      else
-        add_app_env("#{url}?", params)
-      end
-    end
-
-    def gateway_url
-      ENV['ZENATON_GATEWAY_URL'] || ZENATON_GATEWAY_URL
-    end
-
-    def gateway_headers
-      {
-        'app-id' => @app_id,
-        'api-token' => @api_token
-      }
-    end
-
-    # Gets the url for zenaton api
-    # @param resource [String] the endpoint for the api
-    # @param params [Hash|String] query params to be url encoded
-    # @return [String] the api url with parameters
-    def website_url(resource = '', params = {})
-      api_url = ENV['ZENATON_API_URL'] || ZENATON_API_URL
-      url = "#{api_url}/#{resource}"
-
-      if params.is_a?(Hash)
-        params[API_TOKEN] = @api_token
-        append_params_to_url(url, params)
-      else
-        add_app_env("#{url}?#{API_TOKEN}=#{@api_token}&", params)
-      end
     end
 
     # Start a single task
@@ -182,62 +106,6 @@ module Zenaton
         'api_token' => @api_token,
         'app_env' => @app_env
       }
-    end
-
-    # DEPRECATED: This implementation does not safely encode the parameters to
-    # be passed as query params in a get request. This method gets called by
-    # agents up to version 0.4.5
-    def add_app_env(url, params)
-      deprecation_warning = <<~WARN
-        [WARNING] You are running a Zenaton agent with a version <= 0.4.5
-                  Please consider upgrading to a more recent version.
-      WARN
-      warn(deprecation_warning)
-
-      app_env = @app_env ? "#{APP_ENV}=#{@app_env}&" : ''
-      app_id = @app_id ? "#{APP_ID}=#{@app_id}&" : ''
-
-      "#{url}#{app_env}#{app_id}#{params}"
-    end
-
-    def append_params_to_url(url, params)
-      params[APP_ENV] = @app_env if @app_env
-      params[APP_ID] = @app_id if @app_id
-
-      "#{url}?#{URI.encode_www_form(params)}"
-    end
-
-    def instance_website_url(params)
-      website_url('instances', params)
-    end
-
-    def instance_worker_url(params = {})
-      worker_url('instances', params)
-    end
-
-    def send_event_url
-      worker_url('events')
-    end
-
-    def canonical_name(flow)
-      flow.class.name if flow.is_a? Workflows::Version
-    end
-
-    def class_name(flow)
-      return flow.class.name unless flow.is_a? Workflows::Version
-      flow.current_implementation.class.name
-    end
-
-    def update_instance(workflow_name, custom_id, mode)
-      params = { ATTR_ID => custom_id }
-      url = instance_worker_url(params)
-      options = {
-        ATTR_INTENT_ID => SecureRandom.uuid,
-        ATTR_PROG => PROG,
-        ATTR_NAME => workflow_name,
-        ATTR_MODE => mode
-      }
-      @http.put(url, options)
     end
   end
 end

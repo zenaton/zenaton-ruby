@@ -81,129 +81,6 @@ RSpec.describe Zenaton::Client do
     end
   end
 
-  describe '#worker_url' do
-    context 'with environment variables but no instance variables set' do
-      around do |example|
-        ENV['ZENATON_WORKER_URL'] = 'http://192.168.1.1'
-        ENV['ZENATON_WORKER_PORT'] = '42'
-        example.run
-        ENV.delete('ZENATON_WORKER_URL')
-        ENV.delete('ZENATON_WORKER_PORT')
-      end
-
-      it 'returns the worker url with hash params' do
-        url = client.worker_url('my_resource', 'myParam' => 1)
-        expect(url).to \
-          eq('http://192.168.1.1:42/api/v_newton/my_resource?myParam=1&app_env=AppEnv&app_id=AppId')
-      end
-
-      # rubocop:disable RSpec/MultipleExpectations
-      it 'returns the worker url with string params' do
-        expect do
-          url = client.worker_url('my_resource', 'myParam=1')
-          expect(url).to match(/myParam=1/)
-        end.to output(/WARNING/).to_stderr
-      end
-      # rubocop:enable RSpec/MultipleExpectations
-    end
-
-    context 'with environment and instances variables set' do
-      before { described_class.init('AppId', 'ApiToken', 'AppEnv') }
-
-      around do |example|
-        ENV['ZENATON_WORKER_URL'] = 'http://192.168.1.1'
-        ENV['ZENATON_WORKER_PORT'] = '42'
-        example.run
-        ENV.delete('ZENATON_WORKER_URL')
-        ENV.delete('ZENATON_WORKER_PORT')
-      end
-
-      it 'returns the worker url with app env' do
-        url = client.worker_url('my_resource')
-        expect(url).to \
-          eq('http://192.168.1.1:42/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId')
-      end
-
-      it 'encodes query params' do
-        url = client.worker_url('my_resource', 'this+that' => '@')
-        expect(url).to match(/this%2Bthat=%40/)
-      end
-    end
-
-    context 'with instances variables but no environment variables set' do
-      before { described_class.init('AppId', 'ApiToken', 'AppEnv') }
-
-      it 'returns the default worker url with app env' do
-        url = client.worker_url('my_resource')
-        expect(url).to \
-          eq('http://localhost:4001/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId')
-      end
-
-      it 'encodes query params' do
-        url = client.worker_url('my_resource', 'this+that' => '@')
-        expect(url).to match(/this%2Bthat=%40/)
-      end
-    end
-
-    context 'with no environment nor instances variables set' do
-      it 'returns the default worker url' do
-        url = client.worker_url('my_resource')
-        expect(url).to \
-          eq('http://localhost:4001/api/v_newton/my_resource?app_env=AppEnv&app_id=AppId')
-      end
-
-      it 'encodes query params' do
-        url = client.worker_url('my_resource', 'this+that' => '@')
-        expect(url).to match(/this%2Bthat=%40/)
-      end
-    end
-  end
-
-  describe '#website_url' do
-    before { described_class.init('AppId', 'ApiToken', 'AppEnv') }
-
-    context 'with environment variables set' do
-      around do |example|
-        ENV['ZENATON_API_URL'] = 'http://192.168.1.1'
-        example.run
-        ENV.delete('ZENATON_API_URL')
-      end
-
-      it 'returns the website url with api token' do
-        url = client.website_url('my_resource')
-        expect(url).to \
-          eq('http://192.168.1.1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId')
-      end
-
-      # rubocop:disable RSpec/MultipleExpectations
-      it 'returns the worker url with string params' do
-        expect do
-          url = client.website_url('my_resource', 'param=1')
-          expect(url).to match(/param=1/)
-        end.to output(/WARNING/).to_stderr
-      end
-      # rubocop:enable RSpec/MultipleExpectations
-
-      it 'urlencodes hash params' do
-        url = client.website_url('my_resource', 'this+that' => '@')
-        expect(url).to match(/this%2Bthat=%40/)
-      end
-    end
-
-    context 'with no environment variables set' do
-      it 'returns the default website url api token' do
-        url = client.website_url('my_resource')
-        expect(url).to \
-          eq('https://api.zenaton.com/v1/my_resource?api_token=ApiToken&app_env=AppEnv&app_id=AppId')
-      end
-
-      it 'encodes query params' do
-        url = client.website_url('my_resource', 'this+that' => '@')
-        expect(url).to match(/this%2Bthat=%40/)
-      end
-    end
-  end
-
   describe '#start_task' do
     let(:start_task) { client.start_task(task) }
 
@@ -217,28 +94,26 @@ RSpec.describe Zenaton::Client do
   end
 
   describe '#start_workflow' do
-    let(:start_workflow) { client.start_workflow(workflow) }
-    let(:start_version_workflow) { client.start_workflow(version) }
-    let(:expected_url) { 'http://localhost:4001/api/v_newton/instances?' }
-    let(:expected_hash) do
-      {
-        'intent_id' => uuid,
-        'programming_language' => 'Ruby',
-        'canonical_name' => nil,
-        'name' => 'FakeWorkflow1',
-        'data' => {
-          'o' => '@zenaton#0',
-          's' => [{ 'a' => { :@first => 1, :@second => 2 } }]
-        }.to_json,
-        'custom_id' => nil
-      }
+    context 'with a canonical worflow' do
+      let(:start_workflow) { client.start_workflow(workflow) }
+
+      it 'delegates to the graphql client' do
+        start_workflow
+        expect(graphql).to \
+          have_received(:start_workflow)
+          .with(workflow, credentials)
+      end
     end
 
-    it 'delegates to the graphql client' do
-      start_version_workflow
-      expect(graphql).to \
-        have_received(:start_workflow)
-        .with(version, credentials)
+    context 'with a version workflow' do
+      let(:start_version_workflow) { client.start_workflow(version) }
+
+      it 'delegates to the graphql client' do
+        start_version_workflow
+        expect(graphql).to \
+          have_received(:start_workflow)
+          .with(version, credentials)
+      end
     end
   end
 
@@ -331,7 +206,6 @@ RSpec.describe Zenaton::Client do
     allow(Zenaton::Services::Http).to receive(:new).and_return(http)
     allow(Zenaton::Services::GraphQL::Client).to \
       receive(:new).and_return(graphql)
-    allow(SecureRandom).to receive(:uuid).and_return(uuid)
     described_class.init(*credentials.values)
   end
   # rubocop:enable Metrics/AbcSize

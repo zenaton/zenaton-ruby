@@ -16,7 +16,7 @@ RSpec.describe Zenaton::Services::GraphQL::CreateWorkflowScheduleMutation do
       let(:workflow) { FakeWorkflow2.new(1, 2) }
       let(:expected_variables) do
         {
-          'createWorkflowScheduleInput' => {
+          'input' => {
             'intentId' => String,
             'environmentName' => 'dev',
             'cron' => '* * * * *',
@@ -38,7 +38,7 @@ RSpec.describe Zenaton::Services::GraphQL::CreateWorkflowScheduleMutation do
       let(:workflow) { FakeWorkflowWithID.new('my-custom-id') }
       let(:expected_variables) do
         {
-          'createWorkflowScheduleInput' => {
+          'input' => {
             'intentId' => String,
             'environmentName' => 'dev',
             'cron' => '* * * * *',
@@ -60,7 +60,7 @@ RSpec.describe Zenaton::Services::GraphQL::CreateWorkflowScheduleMutation do
       let(:workflow) { FakeVersion.new(1, 2) }
       let(:expected_variables) do
         {
-          'createWorkflowScheduleInput' => {
+          'input' => {
             'intentId' => String,
             'environmentName' => 'dev',
             'cron' => '* * * * *',

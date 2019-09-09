@@ -57,8 +57,8 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
 
       let(:raw_query) do
         <<~GQL
-          mutation ($createWorkflowScheduleInput: CreateWorkflowScheduleInput!) {
-            createWorkflowSchedule(input: $createWorkflowScheduleInput) {
+          mutation ($input: CreateWorkflowScheduleInput!) {
+            createWorkflowSchedule(input: $input) {
               schedule {
                 id
               }
@@ -71,7 +71,7 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
 
       let(:variables) do
         {
-          'createWorkflowScheduleInput' => {
+          'input' => {
             'intentId' => String,
             'environmentName' => 'dev',
             'cron' => cron,
@@ -104,8 +104,8 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
 
       let(:raw_query) do
         <<~GQL
-          mutation ($createTaskScheduleInput: CreateTaskScheduleInput!) {
-            createTaskSchedule(input: $createTaskScheduleInput) {
+          mutation ($input: CreateTaskScheduleInput!) {
+            createTaskSchedule(input: $input) {
               schedule {
                 id
               }
@@ -118,7 +118,7 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
 
       let(:variables) do
         {
-          'createTaskScheduleInput' => {
+          'input' => {
             'intentId' => String,
             'environmentName' => 'dev',
             'cron' => cron,

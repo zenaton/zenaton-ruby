@@ -16,7 +16,7 @@ RSpec.describe Zenaton::Services::GraphQL::CreateTaskScheduleMutation do
       let(:task) { FakeTask1.new }
       let(:expected_variables) do
         {
-          'createTaskScheduleInput' => {
+          'input' => {
             'intentId' => String,
             'environmentName' => 'dev',
             'cron' => '* * * * *',
@@ -37,7 +37,7 @@ RSpec.describe Zenaton::Services::GraphQL::CreateTaskScheduleMutation do
       let(:task) { FakeTaskMPT.new(1000) }
       let(:expected_variables) do
         {
-          'createTaskScheduleInput' => {
+          'input' => {
             'intentId' => String,
             'environmentName' => 'dev',
             'cron' => '* * * * *',

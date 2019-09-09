@@ -19,8 +19,8 @@ module Zenaton
 
         def raw_query
           <<~GQL
-            mutation ($createTaskScheduleInput: CreateTaskScheduleInput!) {
-              createTaskSchedule(input: $createTaskScheduleInput) {
+            mutation ($input: CreateTaskScheduleInput!) {
+              createTaskSchedule(input: $input) {
                 schedule {
                   id
                 }
@@ -31,7 +31,7 @@ module Zenaton
 
         def variables
           {
-            'createTaskScheduleInput' => {
+            'input' => {
               'intentId' => intent_id,
               'environmentName' => @app_env,
               'cron' => @cron,

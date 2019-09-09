@@ -35,7 +35,7 @@ module Zenaton
           {
             'input' => {
               'customId' => @custom_id,
-              'environmentName' => 'dev',
+              'environmentName' => @app_env,
               'intentId' => intent_id,
               'programmingLanguage' => 'RUBY',
               'name' => @name

@@ -120,7 +120,6 @@ module Zenaton
     # Start the specified workflow
     # @param flow [Zenaton::Interfaces::Workflow]
     def start_workflow(flow)
-      check_custom_id(flow)
       @graphql.start_workflow(flow, credentials)
     end
 
@@ -218,20 +217,6 @@ module Zenaton
 
     def send_event_url
       worker_url('events')
-    end
-
-    def check_custom_id(flow)
-      return unless flow.id
-
-      unless flow.id.is_a?(String) || flow.id.is_a?(Integer)
-        raise InvalidArgumentError,
-              'Provided ID must be a string or an integer'
-      end
-
-      if flow.id.to_s.length > MAX_ID_SIZE
-        raise InvalidArgumentError,
-              "Provided Id must not exceed #{MAX_ID_SIZE} bytes"
-      end
     end
 
     def canonical_name(flow)

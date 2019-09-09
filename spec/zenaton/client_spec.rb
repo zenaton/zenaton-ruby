@@ -209,7 +209,7 @@ RSpec.describe Zenaton::Client do
 
     before { start_task }
 
-    it 'sends the serialized task to the worker' do
+    it 'delegates to the graphql client' do
       expect(graphql).to \
         have_received(:start_task)
         .with(task, credentials)
@@ -234,62 +234,11 @@ RSpec.describe Zenaton::Client do
       }
     end
 
-    context 'with an integer custom id' do
-      before { workflow.define_singleton_method(:id) { 123 } }
-
-      it 'sends the custom id as a string' do
-        start_workflow
-        expect(graphql).to \
-          have_received(:start_workflow)
-          .with(workflow, credentials)
-      end
-    end
-
-    context 'with an string custom id' do
-      before { workflow.define_singleton_method(:id) { 'MyWorkflowId' } }
-
-      it 'sends the custom id' do
-        start_workflow
-        expect(graphql).to \
-          have_received(:start_workflow)
-          .with(workflow, credentials)
-      end
-    end
-
-    context 'with an invalid custom id type' do
-      before { workflow.define_singleton_method(:id) { {} } }
-
-      it 'raises an error' do
-        expect { start_workflow }.to \
-          raise_error Zenaton::InvalidArgumentError
-      end
-    end
-
-    context 'with a custom id too long' do
-      before { workflow.define_singleton_method(:id) { 'a' * 300 } }
-
-      it 'raises an error' do
-        expect { start_workflow }.to \
-          raise_error Zenaton::InvalidArgumentError
-      end
-    end
-
-    context 'without a custom id' do
-      it 'sends a post request to the http client' do
-        start_workflow
-        expect(graphql).to \
-          have_received(:start_workflow)
-          .with(workflow, credentials)
-      end
-    end
-
-    context 'with a version workflow' do
-      it 'delegates to the graphql client' do
-        start_version_workflow
-        expect(graphql).to \
-          have_received(:start_workflow)
-          .with(version, credentials)
-      end
+    it 'delegates to the graphql client' do
+      start_version_workflow
+      expect(graphql).to \
+        have_received(:start_workflow)
+        .with(version, credentials)
     end
   end
 
@@ -380,7 +329,8 @@ RSpec.describe Zenaton::Client do
   def setup_client
     Singleton.__init__(described_class)
     allow(Zenaton::Services::Http).to receive(:new).and_return(http)
-    allow(Zenaton::Services::GraphQL::Client).to receive(:new).and_return(graphql)
+    allow(Zenaton::Services::GraphQL::Client).to \
+      receive(:new).and_return(graphql)
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
     described_class.init(*credentials.values)
   end

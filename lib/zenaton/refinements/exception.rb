@@ -4,6 +4,7 @@ module Zenaton
   # :nodoc
   module Refinements
     refine Exception do
+      # Convert to a simple hash
       def to_zenaton
         {
           'm' => message,
@@ -16,6 +17,7 @@ end
 
 # Reimplements `json/add/exception`
 class Exception
+  # Parse from simple hash
   def self.from_zenaton(props)
     result = new(props['m'])
     result.set_backtrace props['b']

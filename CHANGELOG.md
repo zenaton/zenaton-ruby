@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added missing documentation for serialization
+
 ### Fixed
 
 ## [0.5.0] - 2019-08-27

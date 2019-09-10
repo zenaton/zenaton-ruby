@@ -4,6 +4,7 @@ module Zenaton
   # :nodoc
   module Refinements
     refine Object do
+      # Convert to a simple hash
       def to_zenaton
         instance_variables.map do |ivar|
           value = instance_variable_get(ivar)

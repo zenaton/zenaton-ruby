@@ -12,6 +12,8 @@ require 'zenaton/services/graph_ql/workflow_query'
 
 module Zenaton
   module Services
+    # Module for client, mutations and queries used to communicate with
+    # Zenaton's GraphQL API
     module GraphQL
       # Small client to interact with Zenaton's GraphQL API
       class Client

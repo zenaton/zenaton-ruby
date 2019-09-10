@@ -69,11 +69,13 @@ module Zenaton
       @graphql.start_workflow(flow, credentials)
     end
 
+    # Schedule a task for repeated execution
     def start_scheduled_task(task, cron)
       res = @graphql.schedule_task(task, cron, credentials)
       res && res['createTaskSchedule']
     end
 
+    # Schedule a workflow for repeated execution
     def start_scheduled_workflow(flow, cron)
       res = @graphql.schedule_workflow(flow, cron, credentials)
       res && res['createWorkflowSchedule']

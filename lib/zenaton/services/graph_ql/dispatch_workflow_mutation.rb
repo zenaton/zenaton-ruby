@@ -9,7 +9,7 @@ module Zenaton
     module GraphQL
       # Mutation parameters for executing a workflow
       class DispatchWorkflowMutation < BaseOperation
-        MAX_ID_SIZE = 256
+        MAX_ID_SIZE = 256 # Maximum length for custom ids
 
         # @raise [Zenaton::InvalidArgumentError] if custom id fails validation
         def initialize(workflow, app_env)

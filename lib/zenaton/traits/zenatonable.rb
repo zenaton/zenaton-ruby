@@ -22,6 +22,7 @@ module Zenaton
         Engine.instance.dispatch([self])
       end
 
+      # Sets the repeatable frequency of execution of a given job
       def schedule(cron)
         if !cron.is_a?(String) || cron.blank?
           raise InvalidArgumentError,

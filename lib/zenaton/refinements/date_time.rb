@@ -3,9 +3,9 @@
 require 'date'
 
 module Zenaton
-  # :nodoc
   module Refinements
     refine DateTime do
+      # Convert to a simple hash
       def to_zenaton
         {
           'y' => year,
@@ -24,6 +24,7 @@ end
 
 # Reimplements `json/add/date_time`
 class DateTime
+  # Parse from simple hash
   def self.from_zenaton(props)
     args = props.values_at('y', 'm', 'd', 'H', 'M', 'S')
     of_a, of_b = props['of'].split('/')

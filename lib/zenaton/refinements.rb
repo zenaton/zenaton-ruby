@@ -14,3 +14,9 @@ require 'zenaton/refinements/regexp'
 require 'zenaton/refinements/struct'
 require 'zenaton/refinements/symbol'
 require 'zenaton/refinements/time'
+
+module Zenaton
+  # Reimplements json encoding from `json/add` as refinements
+  module Refinements
+  end
+end

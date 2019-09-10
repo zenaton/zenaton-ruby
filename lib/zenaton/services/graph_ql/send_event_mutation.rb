@@ -45,7 +45,7 @@ module Zenaton
             'customId' => @custom_id,
             'workflowName' => @workflow_name,
             'name' => @event.class.name,
-            'environmentName' => 'dev',
+            'environmentName' => @app_env,
             'intentId' => intent_id,
             'programmingLanguage' => 'RUBY',
             'input' => @serializer.encode(@properties.from(@event)),

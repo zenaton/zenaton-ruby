@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'zenaton/services/graph_ql/base_mutation'
+require 'zenaton/services/graph_ql/base_operation'
 require 'zenaton/workflows/version'
 
 module Zenaton
   module Services
     module GraphQL
       # Mutation parameters for scheduling a Task
-      class CreateWorkflowScheduleMutation < BaseMutation
+      class CreateWorkflowScheduleMutation < BaseOperation
         def initialize(workflow, cron, app_env)
           super
           @workflow = workflow

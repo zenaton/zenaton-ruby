@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'zenaton/services/graph_ql/base_mutation'
+require 'zenaton/services/graph_ql/base_operation'
 require 'zenaton/workflows/version'
 require 'zenaton/exceptions'
 
@@ -8,7 +8,7 @@ module Zenaton
   module Services
     module GraphQL
       # Mutation parameters for executing a workflow
-      class DispatchWorkflowMutation < BaseMutation
+      class DispatchWorkflowMutation < BaseOperation
         MAX_ID_SIZE = 256
 
         # @raise [Zenaton::InvalidArgumentError] if custom id fails validation

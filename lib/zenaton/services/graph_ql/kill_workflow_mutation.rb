@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'zenaton/services/graph_ql/base_mutation'
+require 'zenaton/services/graph_ql/base_operation'
 
 module Zenaton
   module Services
     module GraphQL
       # Mutation parameters for stopping a workflow
-      class KillWorkflowMutation < BaseMutation
+      class KillWorkflowMutation < BaseOperation
         def initialize(name, custom_id, app_env)
           super
           @name = name

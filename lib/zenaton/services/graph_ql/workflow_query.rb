@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'zenaton/services/graph_ql/base_query'
+require 'zenaton/services/graph_ql/base_operation'
 
 module Zenaton
   module Services
     module GraphQL
       # Query parameters to search for a Workflow
-      class WorkflowQuery < BaseQuery
+      class WorkflowQuery < BaseOperation
         def initialize(workflow_name, custom_id, app_env)
           super
           @workflow_name = workflow_name

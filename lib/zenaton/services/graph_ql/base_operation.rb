@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 require 'securerandom'
+require 'zenaton/exceptions'
 require 'zenaton/services/properties'
 require 'zenaton/services/serializer'
 
 module Zenaton
   module Services
     module GraphQL
-      # @abstract Superclass for graphql queries.
+      # @abstract Superclass for graphql queries and mutations.
       # It expects two methods to be implemented in children classes:
       # - #body
       # - #raw_query
-      # - #result
-      class BaseQuery
+      class BaseOperation
         # Sets up common dependencies for serialization
         # Don't forget to call #super in your children #initialize if
         # overriding this method.
@@ -35,11 +35,14 @@ module Zenaton
           raise NotImplemented
         end
 
-        # To be implemented in subclasses.
-        # Handle the response from GraphQL
+        # Default implementation for parsing GraphQL responses
+        # Override in subclasses if needed.
         # @raise [NotImplemented]
-        def result
-          raise NotImplemented
+        def result(response)
+          raise Zenaton::ExternalError, format_errors(response) \
+            if response['errors']
+
+          response['data']
         end
 
         # Removes duplicate white space from the raw_query
@@ -57,8 +60,16 @@ module Zenaton
         private
 
         def format_errors(response)
-          response['errors'].map { |error| "- #{error['message']}" }
+          response['errors'].map(&method(:format_error))
                             .join("\n")
+        end
+
+        def format_error(error)
+          if error['path']
+            "- #{error['path']}: #{error['message']}"
+          else
+            "- #{error['message']}"
+          end
         end
       end
     end

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'zenaton/services/graph_ql/base_mutation'
+require 'zenaton/services/graph_ql/base_operation'
 
 module Zenaton
   module Services
     module GraphQL
       # Mutation parameters for sending an Event to a Workflow
-      class SendEventMutation < BaseMutation
+      class SendEventMutation < BaseOperation
         def initialize(name, custom_id, event, app_env)
           super
           @workflow_name = name

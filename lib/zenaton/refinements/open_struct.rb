@@ -3,6 +3,7 @@
 require 'ostruct'
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine OpenStruct do
       # Convert to a simple hash

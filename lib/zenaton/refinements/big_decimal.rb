@@ -5,6 +5,7 @@ defined?(::BigDecimal) or require 'bigdecimal'
 # rubocop:enable Style/AndOr
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine BigDecimal do
       # Convert to a simple hash

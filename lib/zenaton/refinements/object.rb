@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine Object do
       # Convert to a simple hash

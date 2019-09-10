@@ -3,6 +3,7 @@
 require 'date'
 
 module Zenaton
+  # :nodoc
   module Refinements
     refine DateTime do
       # Convert to a simple hash

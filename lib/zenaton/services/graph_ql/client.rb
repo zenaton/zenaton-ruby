@@ -109,10 +109,7 @@ module Zenaton
 
         def run_query(query, credentials)
           response = @http.post(url, query.body, headers(credentials))
-          raise Zenaton::ExternalError, format_errors(response) \
-            if response['errors']
-
-          query.result(response['data'])
+          query.result(response)
         end
 
         def format_errors(response)

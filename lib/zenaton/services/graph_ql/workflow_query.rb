@@ -42,7 +42,12 @@ module Zenaton
         end
 
         # Parses the results of the query
-        def result(data)
+        def result(response)
+          data = response['data']
+          raise Zenaton::ExternalError, format_errors(response) unless data
+
+          return nil if data['findWorkflow'].nil?
+
           @properties.object_from(
             data['findWorkflow']['name'],
             @serializer.decode(data['findWorkflow']['properties'])

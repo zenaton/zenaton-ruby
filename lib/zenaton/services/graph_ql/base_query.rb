@@ -11,6 +11,7 @@ module Zenaton
       # It expects two methods to be implemented in children classes:
       # - #body
       # - #raw_query
+      # - #result
       class BaseQuery
         # Sets up common dependencies for serialization
         # Don't forget to call #super in your children #initialize if
@@ -34,6 +35,13 @@ module Zenaton
           raise NotImplemented
         end
 
+        # To be implemented in subclasses.
+        # Handle the response from GraphQL
+        # @raise [NotImplemented]
+        def result
+          raise NotImplemented
+        end
+
         # Removes duplicate white space from the raw_query
         # @return [String]
         def query
@@ -44,6 +52,13 @@ module Zenaton
         # @return [String]
         def intent_id
           SecureRandom.uuid
+        end
+
+        private
+
+        def format_errors(response)
+          response['errors'].map { |error| "- #{error['message']}" }
+                            .join("\n")
         end
       end
     end

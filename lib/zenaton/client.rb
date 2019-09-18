@@ -166,6 +166,7 @@ module Zenaton
           'intentId' => SecureRandom.uuid,
           'environmentName' => @app_env,
           'cron' => cron,
+          'customId' => parse_custom_id_from(flow),
           'workflowName' => class_name(flow),
           'canonicalName' => canonical_name(flow) || class_name(flow),
           'programmingLanguage' => PROG.upcase,

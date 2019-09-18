@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added missing documentation for serialization
+- Added missing documentation for serialization.
+- Added `custom_id` argument for workflow schedule.
 
 ### Fixed
 

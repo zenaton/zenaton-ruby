@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    zenaton (0.5.0)
-      activesupport
+    zenaton (0.5.2)
+      activesupport (~> 5)
       tzinfo-data
 
 GEM
@@ -80,7 +80,7 @@ GEM
     timecop (0.9.1)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    tzinfo-data (1.2019.2)
+    tzinfo-data (1.2019.3)
       tzinfo (>= 1.0.0)
     unicode-display_width (1.4.0)
     vcr (4.0.0)

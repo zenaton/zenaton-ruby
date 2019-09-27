@@ -12,8 +12,13 @@ module Zenaton
       include WithDuration
       extend ActiveSupport::Concern
 
-      # Array of weekdays as symbols from ActiveSupport
-      WEEKDAYS = DateAndTime::Calculations::DAYS_INTO_WEEK.keys
+      WEEKDAYS = %i[monday
+                    tuesday
+                    wednesday
+                    thursday
+                    friday
+                    saturday
+                    sunday].freeze
       MODE_AT = 'AT' # When specifying a time
       MODE_WEEK_DAY = 'WEEK_DAY' # When specifying a day of the week
       MODE_MONTH_DAY = 'MONTH_DAY' # When specifying a day of the month

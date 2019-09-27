@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changes
 
 ### Added
+- Added support to activesupport 6.0.0.
 
 ### Fixed
 

@@ -8,8 +8,13 @@ commands:
       - checkout
       - restore_cache:
           keys:
-          - v3-dependencies-{{ checksum "Gemfile.lock" }}
-          - v3-dependencies-
+            - v3-dependencies-{{ checksum "Gemfile.lock" }}
+            - v3-dependencies-
+
+      - run:
+          name: release activesupport version
+          command: |
+            bundle lock --update activesupport
 
       - run:
           name: install dependencies

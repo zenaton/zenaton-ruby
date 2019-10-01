@@ -2,7 +2,7 @@
 
 require 'json'
 require 'zenaton/services/properties'
-require 'json'
+require 'active_support/core_ext/hash/indifferent_access.rb'
 
 module Zenaton
   module Services
@@ -169,7 +169,7 @@ module Zenaton
       end
 
       def decode_hash(id, hash)
-        @decoded[id] = {}
+        @decoded[id] = ActiveSupport::HashWithIndifferentAccess.new
         hash.each do |key, value|
           @decoded[id][key] = decode_element(value)
         end

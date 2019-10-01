@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added support to activesupport 6.0.0.
 
-### Fixed
+### Changed
+- Decoded hashes are now instances of `ActiveSupport::HashWithIndifferentAccess`
 
 ## [0.5.2] - 2019-09-19
 

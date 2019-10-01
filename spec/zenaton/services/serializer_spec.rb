@@ -586,6 +586,10 @@ RSpec.describe Zenaton::Services::Serializer do
       it 'has correct circular structure' do
         expect(decoded['child']['parent']).to eq(decoded)
       end
+
+      it 'has indifferent access' do
+        expect(decoded[:child][:parent]).to eq(decoded['child']['parent'])
+      end
     end
 
     context 'with empty circular hashes' do

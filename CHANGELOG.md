@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added Rails  6 to the test matrix
+
 ### Changed
 
 ### Deprecated

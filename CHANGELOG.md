@@ -5,7 +5,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Changes
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.5.3] - 2019-10-02
 
 ### Added
 - Added support to activesupport 6.0.0.
@@ -25,7 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added `custom_id` argument for workflow schedule.
 
 ## [0.5.0] - 2019-08-27
-### Changes
+### Changed
 - No longer load JSON core extensions. Use our own refinements to avoid clashes
   with frameworks and user code.
 
@@ -49,7 +62,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed an error caused by a bad class name serialization when `as_json` is overrided (in rails for example).
 
 ## [0.4.1] - 2019-06-04
- ### Changes
+ ### Changed
 - Fix symbol json encoding breaking compatibility with some gems
 
 ### Added
@@ -59,7 +72,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Calling `#dispatch` on tasks now allows to process tasks asynchronously
 
-### Changes
+### Changed
 - Update Zenaton engine URL to point to the new subdomain.
 
 ### Fixed
@@ -124,8 +137,9 @@ available.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.2...HEAD
-[0.5.2]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.0...v0.5.2
+[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.3...HEAD
+[0.5.3]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.2...v0.5.3
+[0.5.2]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/zenaton/zenaton-ruby/compare/v0.4.1...v0.4.2

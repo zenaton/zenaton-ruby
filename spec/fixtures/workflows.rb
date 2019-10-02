@@ -23,3 +23,15 @@ class FakeWorkflow2 < Zenaton::Interfaces::Workflow
     FakeTask2.new.execute
   end
 end
+
+class FakeWorkflowWithID < Zenaton::Interfaces::Workflow
+  def initialize(custom_id)
+    @custom_id = custom_id
+  end
+
+  def handle; end
+
+  def id
+    @custom_id
+  end
+end

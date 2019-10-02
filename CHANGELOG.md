@@ -10,13 +10,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- `start workflow` now uses the graphql client
-- `start task` now uses the graphql client
-- `kill workflow` now uses the graphql client
-- `pause workflow` now uses the graphql client
-- `resume workflow` now uses the graphql client
-- `find workflow` now uses the graphql client
-
 ### Deprecated
 
 ### Removed
@@ -24,6 +17,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 ### Security
+
+## [0.6.0] - 2019-10-02
+
+### Changed
+
+- `start workflow` now uses the graphql client
+- `start task` now uses the graphql client
+- `kill workflow` now uses the graphql client
+- `pause workflow` now uses the graphql client
+- `resume workflow` now uses the graphql client
+- `find workflow` now uses the graphql client
+
 
 ## [0.5.3] - 2019-10-02
 
@@ -148,7 +153,8 @@ available.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.3...HEAD
+[Unreleased]: https://github.com/zenaton/zenaton-ruby/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/zenaton/zenaton-ruby/compare/v0.5.0...v0.5.1

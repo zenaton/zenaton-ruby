@@ -2,69 +2,14 @@
 
 require 'zenaton/services/graph_ql/dispatch_workflow_mutation'
 require 'fixtures/version'
+require 'shared_examples/mutation_with_custom_id'
 
 RSpec.describe Zenaton::Services::GraphQL::DispatchWorkflowMutation do
   subject(:mutation) { described_class.new(workflow, app_env) }
 
   let(:app_env) { 'dev' }
 
-  describe 'custom IDs' do
-    context 'when there is no custom ID' do
-      let(:workflow) { FakeWorkflow2.new(1, 2) }
-
-      it 'does not raise any exception' do
-        expect { mutation }.not_to raise_exception
-      end
-    end
-
-    context 'when the custom is nil' do
-      let(:workflow) { FakeWorkflowWithID.new(nil) }
-
-      it 'does not raise any exception' do
-        expect { mutation }.not_to raise_exception
-      end
-    end
-
-    context 'when the custom is a string shorter than 256 chars' do
-      let(:workflow) { FakeWorkflowWithID.new('my-custom-id') }
-
-      it 'does not raise any exception' do
-        expect { mutation }.not_to raise_exception
-      end
-    end
-
-    context 'when the custom is a string longer than 256 chars' do
-      let(:workflow) { FakeWorkflowWithID.new('*' * 257) }
-
-      it 'raises an exception' do
-        expect { mutation }.to raise_exception Zenaton::InvalidArgumentError
-      end
-    end
-
-    context 'when the custom is an integer shorter than 256 digits' do
-      let(:workflow) { FakeWorkflowWithID.new(123) }
-
-      it 'does not raise any exception' do
-        expect { mutation }.not_to raise_exception
-      end
-    end
-
-    context 'when the custom is an integer longer than 256 digits' do
-      let(:workflow) { FakeWorkflowWithID.new(('1' * 257).to_i) }
-
-      it 'raises an exception' do
-        expect { mutation }.to raise_exception Zenaton::InvalidArgumentError
-      end
-    end
-
-    context 'when the custom id is from any another type' do
-      let(:workflow) { FakeWorkflowWithID.new(:symbol) }
-
-      it 'raises an exception' do
-        expect { mutation }.to raise_exception Zenaton::InvalidArgumentError
-      end
-    end
-  end
+  it_behaves_like 'Mutation with CustomId'
 
   describe 'variables' do
     subject { mutation.variables }

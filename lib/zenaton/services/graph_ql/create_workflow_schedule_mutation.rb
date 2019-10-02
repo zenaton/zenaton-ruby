@@ -1,18 +1,22 @@
 # frozen_string_literal: true
 
 require 'zenaton/services/graph_ql/base_operation'
-require 'zenaton/workflows/version'
+require 'zenaton/concerns/workflow'
 
 module Zenaton
   module Services
     module GraphQL
       # Mutation parameters for scheduling a Task
       class CreateWorkflowScheduleMutation < BaseOperation
+        include Concerns::Workflow
+
+        # @raise [Zenaton::InvalidArgumentError] if custom id fails validation
         def initialize(workflow, cron, app_env)
           super
           @workflow = workflow
           @cron = cron
           @app_env = app_env
+          validate_custom_id
         end
 
         # The body of the GraphQL request
@@ -40,19 +44,12 @@ module Zenaton
 
         private
 
-        def workflow_name
-          if @workflow.is_a? Workflows::Version
-            @workflow.current_implementation.class.name
-          else
-            @workflow.class.name
-          end
-        end
-
         def input
           {
             'intentId' => intent_id,
             'environmentName' => @app_env,
             'cron' => @cron,
+            'customId' => @workflow.id.try(:to_s),
             'workflowName' => workflow_name,
             'canonicalName' => @workflow.class.name,
             'programmingLanguage' => 'RUBY',

@@ -75,6 +75,7 @@ RSpec.describe Zenaton::Services::GraphQL::Client do
             'intentId' => String,
             'environmentName' => 'dev',
             'cron' => cron,
+            'customId' => nil,
             'workflowName' => 'FakeWorkflow2',
             'canonicalName' => 'FakeWorkflow2',
             'programmingLanguage' => 'RUBY',

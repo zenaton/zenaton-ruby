@@ -1,3 +1,5 @@
+> ⚠️ This repository is abandoned.
+
 <p align="center">
 <img src="https://user-images.githubusercontent.com/36400935/58254828-e5176880-7d6b-11e9-9094-3f46d91faeee.png" /><br>
   Easy Asynchronous Jobs Manager for Developers <br>
